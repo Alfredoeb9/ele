@@ -7,6 +7,7 @@ import Provider from "./_components/providers/SessionProvider";
 import Header from "./_components/header";
 import ReduxProvider from "./_components/providers/ReduxProvider";
 import { getServerSession } from "next-auth/next";
+import { NextUiProvider } from "./_components/providers/NextUIProvider";
 
 
 const inter = Inter({
@@ -33,11 +34,12 @@ export default async function RootLayout({
         <Provider>
           <ReduxProvider user={session?.user}>
             <TRPCReactProvider>
-              <div className="">
-                <Header />
-                {children}
-              </div>
-              
+              <NextUiProvider>
+                <div>
+                  <Header />
+                  {children}
+                </div>
+              </NextUiProvider>
             </TRPCReactProvider>
           </ReduxProvider>
           

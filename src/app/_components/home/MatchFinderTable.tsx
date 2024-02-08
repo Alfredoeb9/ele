@@ -162,10 +162,16 @@ export const MatchFinderTable = ({data}: MatchListProps) => {
             case "rules":
                 return (
                     <div className="relative flex justify-center items-center gap-2">
-                        <Tooltip classNames={{content: [
-          "py-2 px-4 shadow-xl",
-          "text-black bg-gradient-to-br from-white to-neutral-400",
-        ],}} content={renderToolTip(user?.rules)}>
+                        <Tooltip 
+                            classNames={{
+                                content: [
+                                    "py-2 px-4 shadow-xl",
+                                    "text-black bg-gradient-to-br from-white to-neutral-400",
+                                ],
+                            }} 
+
+                            content={renderToolTip(user?.rules)}
+                        >
                             <button className="text-center bg-gray-400 px-2 py-1 rounded-full">i</button>
                         </Tooltip>
                     </div>
@@ -174,8 +180,8 @@ export const MatchFinderTable = ({data}: MatchListProps) => {
                 return (
                     <div className="flex">
                         <Button 
-                            // isDisabled={d2.valueOf() >= d1.valueOf() ? true : false} 
-                            className="bg-green-600"><Link  href={`/tournaments/${user.id}`}>Accept</Link></Button>
+                            isDisabled={d2.valueOf() >= d1.valueOf() ? true : false} 
+                            className="bg-green-600  p-2 rounded-2xl"><Link  href={`/tournaments/${user.id}`}>Accept</Link></Button>
                     </div>
                 );
             default:
