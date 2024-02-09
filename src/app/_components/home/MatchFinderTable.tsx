@@ -128,10 +128,10 @@ export const MatchFinderTable = ({data}: MatchListProps) => {
                 return (
                     <div>
                          <Image
-                            src={`/images/${user.name}.png`} // Route of the image file
+                            src={`/images/${user.game}.png`} // Route of the image file
                             height={40} // Desired size with correct aspect ratio
                             width={40} // Desired size with correct aspect ratio
-                            alt={`${user.name} placeholder image`}
+                            alt={`${user.game} placeholder image`}
                         />
                     </div>
                 
