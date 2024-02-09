@@ -119,8 +119,9 @@ export const authOptions: NextAuthOptions = {
             return {
                 id: `${existingUserByEmail[0].id}`,
                 username: existingUserByEmail[0].username!,
-                email: existingUserByEmail[0].email,
+                email: existingUserByEmail[0].email!,
                 firstName: existingUserByEmail[0].firstName!,
+                role: existingUserByEmail[0].role!,
                 lastName: existingUserByEmail[0].lastName!
             }
         }
@@ -146,7 +147,8 @@ export const authOptions: NextAuthOptions = {
                 id: (user as unknown as User).id,
                 username: (user as unknown as User).username,
                 firstName: (user as unknown as User).firstName,
-                lastName: (user as unknown as User).lastName
+                lastName: (user as unknown as User).lastName,
+                role: user.role
             }
         }  
         if (account) {
@@ -155,6 +157,7 @@ export const authOptions: NextAuthOptions = {
             token.username = (user as unknown as User).username;
             token.firstName = (user as unknown as User).firstName,
             token.lastName = (user as unknown as User).lastName
+            token.role = (user as User).role
         }
 
         return token
@@ -169,8 +172,8 @@ export const authOptions: NextAuthOptions = {
                     id: token.id,
                     username: token.username,
                     firstName: token.firstName,
-                    lastName: token.lastName
-                    
+                    lastName: token.lastName,
+                    role: token.role
                 }
             }
         }
