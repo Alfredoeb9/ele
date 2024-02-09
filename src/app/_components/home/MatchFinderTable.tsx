@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useMemo, useState } from "react";
+import { ReactNode, useCallback, useMemo, useState } from "react";
 import {
     Table,
     TableHeader,
@@ -22,7 +22,7 @@ interface MatchListProps {
 }
 
 interface MatchFinderTableProps {
-    id: number | string | any
+    id: number | string
     game: string,
     platform: string,
     entry: number,
@@ -101,13 +101,13 @@ export const MatchFinderTable = ({data}: MatchListProps) => {
         }
     }, [page]);
 
-    const renderToolTip = ((data: any) => {
+    const renderToolTip = ((data: ( Record<string, string> | ArrayLike<ReactNode>)[] | undefined) => {
         if (!data || data === undefined) return null;
         
         return (
             <div>
                 <ul>
-                    {data.map((rule: any, i: number) => (
+                    {data.map((rule: Record<string, string> | ArrayLike<ReactNode>, i: number) => (
                         <li key={i}><span className="font-bold">{Object.keys(rule)[0]}:</span> {Object.values(rule)}</li>
                     ))}
                 </ul>
@@ -118,10 +118,9 @@ export const MatchFinderTable = ({data}: MatchListProps) => {
     
     
     const renderCell = useCallback((user: any, columnKey: React.Key) => {
-        console.log("user", user)
         const cellValue = user[columnKey as keyof User];
 
-        let d1 = new Date(user.start_time), 
+        const d1 = new Date(user.start_time), 
                     d2 = new Date();
         
         switch (columnKey) {

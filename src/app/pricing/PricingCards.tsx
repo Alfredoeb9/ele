@@ -20,7 +20,7 @@ export default function PricingCards() {
                         checkoutAction(card.credits).then(async (session) => {
                             const stripe = await getStripe();
                             if (stripe === null) return;
-                            await stripe!.redirectToCheckout({
+                            await stripe.redirectToCheckout({
                                 sessionId: session.id,
                             });
                         }).catch(() => {

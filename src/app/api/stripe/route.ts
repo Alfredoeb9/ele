@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
             const userEmail = completedEvent.metadata.email;
             const credits = completedEvent.metadata.credits;
 
-            await db.update(users).set({credits: sql`${parseInt(credits)} + ${users?.credits}`}).where(eq(users.email, userEmail as string))
+            await db.update(users).set({credits: sql`${parseInt(credits)} + ${users?.credits}`}).where(eq(users.email, userEmail))
 
             // await db.user.update({
             //     where: {

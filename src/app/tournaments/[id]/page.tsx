@@ -60,11 +60,6 @@ export default function Tournaments({
         }
     }, [tournamentId])
 
-    // if (!tournament.data) console.log("this is atest")
-    tournament.data?.map((tour: any) => {
-        console.log("tour", tour )
-    })
-
     // const tourney = tournament.data[0]
 
     // if (tournament?.data[0]?.start_time == undefined) throw new Error("this is a test")
@@ -73,12 +68,9 @@ export default function Tournaments({
     const t1 = new Date(`${tournament.data && tournament.data[0]?.start_time}`).valueOf() // end
         const t2 = new Date().valueOf()
 
-        console.log("rand", )
-
     useEffect(() => {
         const totalSeconds = (t1 - t2) / 1000;
-        console.log('totalSeconds', totalSeconds)
-        let i = setInterval(() => {
+        const i = setInterval(() => {
             setDays(formatTime(Math.floor(totalSeconds / 3600 / 24)));
             setHours(Math.floor(totalSeconds / 3600) % 24);
             setMinutes(Math.floor(totalSeconds / 60) % 60);
@@ -128,8 +120,6 @@ export default function Tournaments({
     const d1 = new Date(`${tournament.data && tournament.data[0]?.start_time}`), 
         d2 = new Date();
 
-        console.log("d1", d1)
-        console.log("d2", d2)
 
     const pstDate = d1.toLocaleString("en-US", {
             timeZone: "America/Los_Angeles"

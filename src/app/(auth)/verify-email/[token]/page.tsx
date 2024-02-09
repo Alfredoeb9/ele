@@ -6,7 +6,7 @@ import {useAppDispatch} from "@/redux/hooks"
 // import authAPI from "@/redux/api/authAPI";
 import { verifyEmail } from "@/redux/features/AuthContext";
 import { useQuery } from "@tanstack/react-query";
-import { useFetchVerify } from "@/app/hooks/fetchVerify";
+// import { useFetchVerify } from "@/app/hooks/fetchVerify";
 import { api } from "@/trpc/react";
 import { ToastContainer, toast } from "react-toastify";
 // import {handler} from "../../../../../lib/auth"
@@ -161,7 +161,7 @@ export default function VerifyEmail() {
   })
 
   useEffect(() => {
-    verifyUser.mutate({ token: params?.token!.toString() })
+    verifyUser.mutate({ token: params.token?.toString() })
   }, [params?.token])
 
   return (

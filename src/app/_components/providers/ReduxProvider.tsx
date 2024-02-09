@@ -19,7 +19,7 @@ export default function ReduxProvider({
     // Create the store instance the first time this renders
     storeRef.current = makeStore()
     
-    if (user && user["email"].length >= 0) storeRef.current.dispatch(updateUser(user))
+    if (user && user.email?.length >= 0) storeRef.current.dispatch(updateUser(user))
     
   }
 
