@@ -168,8 +168,18 @@ export const userRouter = createTRPCRouter({
         const currentUser = await ctx.db.select().from(users).where(eq(users.email, input.email))
 
         if (!currentUser[0]) throw new Error("No user with such credentials")
-
-        return currentUser;
+        console.log("server", currentUser[0])
+        return {
+          id: currentUser[0].id,
+          username: currentUser[0].username,
+          firstName: currentUser[0].firstName,
+          lastName: currentUser[0].lastName,
+          isVerified: currentUser[0].isVerified,
+          role: currentUser[0].role,
+          email: currentUser[0].email,
+          credits: currentUser[0].credits,
+          teamId: currentUser[0].teamId
+        }
       } catch (error) {
         throw new Error(error as string)
       }

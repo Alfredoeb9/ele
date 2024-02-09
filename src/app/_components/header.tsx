@@ -71,7 +71,7 @@ export default function Header() {
         }
     }, [session.data])
 
-    if (currentUser?.data && currentUser?.data[0]?.credits === undefined) {
+    if (currentUser?.data && currentUser?.data?.credits === undefined) {
         toast(`There was problem retrieving your credits, please refresh and try agian. If this problem presist please reach out to customer service`, {
             position: "bottom-right",
             autoClose: false,
@@ -81,7 +81,6 @@ export default function Header() {
             toastId: 3                             
         })
     }
-    // console.log("currentUser", currentUser?.data[0]?.credits)
 
     return (
         <header className="nav">
@@ -127,7 +126,7 @@ export default function Header() {
                                         <p className="font-semibold">Signed in as</p>
                                         <p className="font-semibold">{session?.data.user.email}</p>
                                     </DropdownItem>
-                                    <DropdownItem key="credits"><span className="font-black">Credits: </span> <span className="font-semibold">{ currentUser.data == undefined || currentUser.isError ? "Err" : (currentUser?.data as any)[0]?.credits}</span></DropdownItem>
+                                    <DropdownItem key="credits"><span className="font-black">Credits: </span> <span className="font-semibold">{ currentUser.data == undefined || currentUser.isError ? "Err" : (currentUser?.data as any).credits}</span></DropdownItem>
                                     <DropdownItem key="settings">My Settings</DropdownItem>
                                     
                                     <DropdownItem key="team_settings"><Link href="/team-settings">Team Settings</Link></DropdownItem>

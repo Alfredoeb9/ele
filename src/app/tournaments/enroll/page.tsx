@@ -146,7 +146,7 @@ export default function Enroll() {
     
     
     if ( currentUser?.data && tournament?.data ) {
-        if (Number(tournament?.data[0]?.entry.replace(/[^0-9]/g,"")) > Number(currentUser?.data[0]?.credits)) {
+        if (Number(tournament?.data[0]?.entry.replace(/[^0-9]/g,"")) > Number(currentUser?.data?.credits)) {
             router.push("/pricing")
         }
     }
