@@ -194,7 +194,9 @@ export const userRouter = createTRPCRouter({
       try { 
         const userWithSingleTeam = await ctx.db.query.users.findFirst({
           with: {
-            teams: true
+            teams: {
+              where: (teams, {eq}) => eq(teams.game, "mw3")
+            }
           }
         });
 
