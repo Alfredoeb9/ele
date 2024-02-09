@@ -19,7 +19,14 @@ export default function PricingCards() {
                     <Card key={card.id} isPressable onPress={() => {
                         checkoutAction(card.credits).then(async (session) => {
                             const stripe = await getStripe();
-                            if (stripe === null) return;
+                            if (stripe === null) return toast('Stripe service down, please reach out to customer support', {
+                                position: "bottom-right",
+                                autoClose: false,
+                                closeOnClick: true,
+                                draggable: false,
+                                type: "error",
+                                toastId: 5                          
+                            });
                             await stripe.redirectToCheckout({
                                 sessionId: session.id,
                             });

@@ -44,7 +44,7 @@ export const matchRouter = createTRPCRouter({
 
       return tournament;
     } catch (error) {
-      console.log("error", error)
+      throw new Error("Error retrieving tournament information")
     }
     
   }),
