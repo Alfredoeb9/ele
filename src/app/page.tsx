@@ -13,6 +13,7 @@ import { api } from "@/trpc/react";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { db } from "@/server/db";
 
 export default function Home() {
   noStore();
@@ -51,9 +52,7 @@ export default function Home() {
 
   const tournamentMatches = api.matches.getAllMatches.useQuery()
 
-  console.log("tour", tournamentMatches.data);
-
-
+  
   return (
     <main className=" bg-slate-950">
       

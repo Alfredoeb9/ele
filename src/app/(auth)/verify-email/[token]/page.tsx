@@ -140,16 +140,15 @@ export default function VerifyEmail() {
         toastId: 4 
       })
 
-      // setTimeout(() => {
-      //   router.push("/")
-      // }, 6000)
+      setTimeout(() => {
+        router.push("/")
+      }, 6000)
       
       
     },
 
     onError: (error) => {
-      console.log("User verify error", error)
-      toast('Thank you for verifying', {
+      toast('Error Verifying account please try again', {
         position: "bottom-right",
         autoClose: false,
         closeOnClick: true,

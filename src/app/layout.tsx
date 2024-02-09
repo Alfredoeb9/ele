@@ -8,6 +8,7 @@ import Header from "./_components/header";
 import ReduxProvider from "./_components/providers/ReduxProvider";
 import { getServerSession } from "next-auth/next";
 import { NextUiProvider } from "./_components/providers/NextUIProvider";
+import { db } from "@/server/db";
 
 
 const inter = Inter({
@@ -27,6 +28,15 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerSession()
+
+  const user = await db.query.users.findMany({
+    with: {
+      teams: true,
+      manyTeams: true
+    }
+  })
+
+  console.log("user🚀🚀", user[0])
 
   return (
     <html lang="en">

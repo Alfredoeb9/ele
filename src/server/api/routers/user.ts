@@ -175,6 +175,22 @@ export const userRouter = createTRPCRouter({
       }
     }),
 
+  getSingleUserWithTeams: publicProcedure
+    .input(z.object({
+      email: z.string().min(1),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const currentUser = await ctx.db.select().from(users).where(eq(users.email, input.email))
+
+        if (!currentUser[0]) throw new Error("No user with such credentials")
+
+        return currentUser;
+      } catch (error) {
+        throw new Error(error as string)
+      }
+    }),
+
   getLatest: publicProcedure.query(({ ctx }) => {
     return ctx.db.query.posts.findFirst({
       orderBy: (posts, { desc }) => [desc(posts.createdAt)],

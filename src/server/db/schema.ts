@@ -1,16 +1,19 @@
-import { relations, sql } from "drizzle-orm";
+import { InferModel, relations, sql } from "drizzle-orm";
 import {
   bigint,
   boolean,
   index,
   int,
   json,
+  mysqlEnum,
   mysqlTableCreator,
   primaryKey,
   text,
   timestamp,
+  uniqueIndex,
   varchar,
 } from "drizzle-orm/mysql-core";
+import { unique } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 
 /**
@@ -49,6 +52,7 @@ export const users = createTable("user", {
   role: varchar("role", { length: 35 }).default("user"),
   email: varchar("email", { length: 255 }).notNull(),
   credits: int("credits").default(15),
+  teamId: varchar('team_id', { length: 255 }),
   emailVerified: timestamp("emailVerified", {
     mode: "date",
     fsp: 3,
@@ -56,9 +60,12 @@ export const users = createTable("user", {
   image: varchar("image", { length: 255 }),
 });
 
-export const usersRelations = relations(users, ({ many }) => ({
+// a user can have many accounts, sessions, teams
+export const usersRelations = relations(users, ({ one, many }) => ({
   accounts: many(accounts),
   sessions: many(sessions),
+  teams: many(teams),
+  manyTeams: many(usersToTeams)
 }));
 
 export const accounts = createTable(
@@ -86,6 +93,7 @@ export const accounts = createTable(
   })
 );
 
+// A account can only have one user id
 export const accountsRelations = relations(accounts, ({ one }) => ({
   user: one(users, { fields: [accounts.userId], references: [users.id] }),
 }));
@@ -163,7 +171,122 @@ export const tournaments = createTable(
   })
 );
 
-// 
-export const tournamentRelations = relations(tournaments, ({ many }) => ({
-  gameCategory: many(tournaments)
+// A gameCategory can have many tournaments
+export const tournamentRelations = relations(gameCategory, ({ many }) => ({
+  tournaments: many(tournaments)
 }));
+
+export const teams = createTable(
+  "team",
+  {
+    id: varchar("id", { length: 255 }).notNull(),
+    game: varchar("game", { length: 255 }).notNull(),
+    team_name: varchar("team_name", { length: 255 }).notNull(),
+    createdAt: timestamp("created_at")
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updatedAt").onUpdateNow(),
+  },
+  (team) => ({
+    // userIdIdx: index("team_userId_idx").on(team.id),
+    // makes sure name coming in is unique
+    teamNameIdx: uniqueIndex("team_name_idx").on(team.team_name)
+  })
+)
+
+export const teamMembersTable = createTable(
+	'team_members',
+	{
+		userId: varchar('user_id', {
+			length: 42,
+		}).notNull(),
+		teamId: varchar('team_id', { length: 255 }).notNull(),
+		role: mysqlEnum('role', ['owner', 'admin', 'member']).default('member').notNull(),
+		createdAt: timestamp('created_at').defaultNow(),
+		updatedAt: timestamp('updated_at').onUpdateNow(),
+	}
+)
+
+export const usersToTeams = createTable(
+  'users_to_teams', 
+  {
+    userId: varchar('user_id', { length: 255 }).notNull(),
+    teamId: varchar('team_id', { length: 255 }).notNull(),
+    role: mysqlEnum('role', ['owner', 'admin', 'member']).default('member').notNull(),
+		createdAt: timestamp('created_at').defaultNow(),
+		updatedAt: timestamp('updated_at').onUpdateNow(),
+  }
+);
+
+export const usersToGroupsRelations = relations(usersToTeams, ({ one }) => ({
+  group: one(teams, {
+    fields: [usersToTeams.teamId],
+    references: [teams.id],
+  }),
+  user: one(users, {
+    fields: [usersToTeams.userId],
+    references: [users.id],
+  }),
+}));
+
+// export type Team = typeof teams.$inferSelect;
+// export type User = typeof users.$inferSelect;
+
+// // A team can have many team Members
+// export const teamsRelations = relations(teams, ({ many }) => ({
+// 	members: many(teamMembersTable),
+// }))
+
+// // A member can 
+// export const teamMembersRelations = relations(teamMembersTable, ({ one }) => ({
+// 	team: one(teams, {
+// 		fields: [teamMembersTable.teamId],
+// 		references: [teams.id],
+// 	}),
+// 	user: one(users, {
+// 		fields: [teamMembersTable.userId],
+// 		references: [users.id],
+// 	}),
+// }))
+
+// // A team can only have one user per id 
+export const teamssRelations = relations(teams, ({ one }) => ({
+  user: one(users, { 
+    fields: [teams.id], 
+    references: [users.id] 
+  }),
+}));
+
+// export const teamMembersRelations = relations(teams, ({ one }) => ({
+// 	team: one(teams, {
+// 		fields: [users.teamId as any],
+// 		references: [teams.id],
+// 	}),
+// 	user: one(users, { 
+//     fields: [teams.id], 
+//     references: [users.id] 
+//   }),
+// }))
+
+/*
+  SUBSCRIPTION SCHEMA
+
+export const subscription = mysqlTable("subscription", {
+  id: varchar("id", { length: 256 }).primaryKey(),
+  userId: varchar("userId", { length: 256 }).notNull(),
+  status: subscriptionStatus('status'),
+  metadata: jsonb('metadat'),
+  cancelAt:
+  updatedAt: timestamp("updated_at", { fsp: 3 }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' })default(sql`CURRENT_TIMESTAMP`).notNull(),
+});
+
+export const subscriptionRelations = relations(subscription, ({ one }) => ({
+  user: one(user, {
+    fields: [subscription.userId],
+    references: [user.id],
+  }),
+}));
+
+
+*/

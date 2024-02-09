@@ -52,12 +52,16 @@ export default function Header() {
     // });
 
     const currentUser = api.user.getSingleUser.useMutation({
-        onSuccess: () => {
-            console.log("user retrieved")
-        },
-
         onError: (error) => {
-            setError(error.message)
+            // setError(error.message)
+            toast(`There was a problem getting user data`, {
+                position: "bottom-right",
+                autoClose: false,
+                closeOnClick: true,
+                draggable: false,
+                type: "error",
+                toastId: 2                             
+            })
         }
     })
 
@@ -67,20 +71,16 @@ export default function Header() {
         }
     }, [session.data])
 
-
-    // if (isError) {
-    //     toast(`There was problem retrieving your credits, please refresh and try agian. If this problem presist please reach out to customer service`, {
-    //         position: "bottom-right",
-    //         autoClose: false,
-    //         closeOnClick: true,
-    //         draggable: false,
-    //         type: "error",
-    //         toastId: 0                             
-    //     })
-    // }
-
-    // if (!session.data) return null
-
+    if (currentUser?.data && currentUser?.data[0]?.credits === undefined) {
+        toast(`There was problem retrieving your credits, please refresh and try agian. If this problem presist please reach out to customer service`, {
+            position: "bottom-right",
+            autoClose: false,
+            closeOnClick: true,
+            draggable: false,
+            type: "error",
+            toastId: 3                             
+        })
+    }
     // console.log("currentUser", currentUser?.data[0]?.credits)
 
     return (
@@ -134,12 +134,16 @@ export default function Header() {
                                     <DropdownItem key="analytics">Stats</DropdownItem>
                                     <DropdownItem key="buy_credits"><Link href={"/pricing"}>Buy Credits</Link></DropdownItem>
                                     <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
-                                    <DropdownItem key="logout" color="danger" onClick={async (e) => {
-                                                e.preventDefault();
-                                                await signOut();
-                                                router.push("/");
-                                            }}>
-                                    Log Out
+                                    <DropdownItem 
+                                        key="logout" 
+                                        color="danger" 
+                                        onClick={async (e) => {
+                                            e.preventDefault();
+                                            await signOut();
+                                            router.push("/");
+                                        }}
+                                    >
+                                        Log Out
                                     </DropdownItem>
                                 </DropdownMenu>
                             </Dropdown>
@@ -148,7 +152,7 @@ export default function Header() {
                     )}
                 </div>
 			</div>
-            <ToastContainer limit={1} />
+            <ToastContainer />
             {/* {error && <ErrorComponent message="There was problem retrieving your credits, please refresh and try agian. If this problem presist please reach out to customer service"/>} */}
         </header>
     )

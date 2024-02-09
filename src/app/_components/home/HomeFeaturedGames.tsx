@@ -12,7 +12,6 @@ export default function HomeFeaturedGames({ data, error }: HomeDataProps) {
         <h2>Please refresh and try again!</h2>
     )
 
-    console.log("dat", data)
     return (
         <section className='flex flex-col items-center justify-center m-auto bg-black p-8'>
             <div className='flex flex-row justify-center m-auto'>
