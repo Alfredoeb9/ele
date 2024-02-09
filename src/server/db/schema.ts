@@ -1,4 +1,4 @@
-import { InferModel, relations, sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   bigint,
   boolean,
@@ -13,7 +13,6 @@ import {
   uniqueIndex,
   varchar,
 } from "drizzle-orm/mysql-core";
-import { unique } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 
 /**
@@ -65,7 +64,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   accounts: many(accounts),
   sessions: many(sessions),
   teams: many(teams),
-  manyTeams: many(usersToTeams)
+  teamMembers: many(teamMembersTable)
 }));
 
 export const accounts = createTable(
@@ -194,21 +193,21 @@ export const teams = createTable(
   })
 )
 
-export const teamMembersTable = createTable(
-	'team_members',
-	{
-		userId: varchar('user_id', {
-			length: 42,
-		}).notNull(),
-		teamId: varchar('team_id', { length: 255 }).notNull(),
-		role: mysqlEnum('role', ['owner', 'admin', 'member']).default('member').notNull(),
-		createdAt: timestamp('created_at').defaultNow(),
-		updatedAt: timestamp('updated_at').onUpdateNow(),
-	}
-)
+// export const teamMembersTable = createTable(
+// 	'team_members',
+// 	{
+// 		userId: varchar('user_id', {
+// 			length: 42,
+// 		}).notNull(),
+// 		teamId: varchar('team_id', { length: 255 }).notNull(),
+// 		role: mysqlEnum('role', ['owner', 'admin', 'member']).default('member').notNull(),
+// 		createdAt: timestamp('created_at').defaultNow(),
+// 		updatedAt: timestamp('updated_at').onUpdateNow(),
+// 	}
+// )
 
-export const usersToTeams = createTable(
-  'users_to_teams', 
+export const teamMembersTable = createTable(
+  'team_members', 
   {
     userId: varchar('user_id', { length: 255 }).notNull(),
     teamId: varchar('team_id', { length: 255 }).notNull(),
@@ -218,24 +217,26 @@ export const usersToTeams = createTable(
   }
 );
 
-export const usersToGroupsRelations = relations(usersToTeams, ({ one }) => ({
+export const usersToGroupsRelations = relations(teamMembersTable, ({ one }) => ({
   group: one(teams, {
-    fields: [usersToTeams.teamId],
+    fields: [teamMembersTable.teamId],
     references: [teams.id],
   }),
   user: one(users, {
-    fields: [usersToTeams.userId],
+    fields: [teamMembersTable.userId],
     references: [users.id],
   }),
 }));
 
-// export type Team = typeof teams.$inferSelect;
-// export type User = typeof users.$inferSelect;
+export type Team = typeof teams.$inferSelect;
+export type User = typeof users.$inferSelect;
+export type Tournament = typeof tournaments.$inferInsert;
 
 // // A team can have many team Members
-// export const teamsRelations = relations(teams, ({ many }) => ({
-// 	members: many(teamMembersTable),
-// }))
+export const teamsRelations = relations(teams, ({ many }) => ({
+	members: many(teamMembersTable),
+  invites: many(teamInvites)
+}))
 
 // // A member can 
 // export const teamMembersRelations = relations(teamMembersTable, ({ one }) => ({
@@ -256,6 +257,33 @@ export const teamssRelations = relations(teams, ({ one }) => ({
     references: [users.id] 
   }),
 }));
+
+export const teamInvites = createTable(
+  "team_invites", 
+  {
+    id: text("id").notNull(),
+    email: text("email").notNull(),
+    teamId: text("teamId")
+      .notNull(),
+    invitedAt: timestamp("invitedAt", { mode: "date" }).notNull(),
+    invitedById: text("invitedById")
+      .notNull(),
+    respondedAt: timestamp("respondedAt", { mode: "date" }),
+    accepted: boolean("accepted"),
+});
+
+export const teamInvitesRelations = relations(teamInvites, ({ one }) => ({
+  team: one(teams, {
+    fields: [teamInvites.teamId],
+    references: [teams.id],
+  }),
+  invitedBy: one(users, {
+    fields: [teamInvites.invitedById],
+    references: [users.id],
+    relationName: "invitedBy",
+  }),
+}));
+
 
 // export const teamMembersRelations = relations(teams, ({ one }) => ({
 // 	team: one(teams, {
