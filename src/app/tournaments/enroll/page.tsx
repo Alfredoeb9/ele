@@ -108,7 +108,7 @@ export default function Enroll() {
                 required
                 >
                     {currentUser.data?.teams?.map((match) => (
-                        <SelectItem key={match.id} value={match.game as string}>
+                        <SelectItem key={match.id} value={match.game}>
                             {match.game}
                         </SelectItem>
                     )) as []}

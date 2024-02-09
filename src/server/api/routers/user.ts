@@ -192,7 +192,7 @@ export const userRouter = createTRPCRouter({
     }))
     .mutation(async({ ctx, input }) => {
       try { 
-        const userWithSingleTeam = await ctx.db.query.users.findFirst({
+        const userWithSpecificTeam = await ctx.db.query.users.findFirst({
           with: {
             teams: {
               where: (teams, {eq}) => eq(teams.game, "mw3")
@@ -200,7 +200,7 @@ export const userRouter = createTRPCRouter({
           }
         });
 
-        return userWithSingleTeam
+        return userWithSpecificTeam
       } catch (error) {
         throw new Error(error as string)
       }
