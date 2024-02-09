@@ -29,14 +29,14 @@ export default async function RootLayout({
 }) {
   const session = await getServerSession()
 
-  const user = await db.query.users.findMany({
-    with: {
-      teams: true,
-      manyTeams: true
-    }
-  })
+  // const user = await db.query.users.findMany({
+  //   with: {
+  //     teams: true,
+  //     teamMembers: true
+  //   }
+  // })
 
-  console.log("user🚀🚀", user[0])
+  // console.log("user🚀🚀", user[0])
 
   return (
     <html lang="en">
