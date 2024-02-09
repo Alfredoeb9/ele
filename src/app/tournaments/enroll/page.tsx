@@ -30,7 +30,7 @@ export default function Enroll() {
 
         onError: (error) => {
             console.log("Error", error.message)
-        }
+        },
     })
 
     useEffect(() => {
@@ -102,19 +102,16 @@ export default function Enroll() {
             </div>
             <div>
                 <Select 
-                label="Select a Game" 
+                label="Select a Team" 
                 className="max-w-xs"
                 onSelectionChange={(e) => setSelectedGames(Object.values(e)[0]) }
                 required
                 >
-                    {/* <SelectItem key={""}>
-                        test
-                    </SelectItem> */}
-                    {tournament.data?.map((match: { id: string | number; game: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | PromiseLikeOfReactNode | null | undefined; }) => (
-                    <SelectItem key={match.id} value={match.game as string}>
-                        {match.game}
-                    </SelectItem>
-                    )) as any[]}
+                    {currentUser.data?.teams?.map((match) => (
+                        <SelectItem key={match.id} value={match.game as string}>
+                            {match.game}
+                        </SelectItem>
+                    )) as []}
               
                 </Select>
             </div>
