@@ -161,7 +161,7 @@ export const userRouter = createTRPCRouter({
     
   getSingleUser: publicProcedure
     .input(z.object({
-      email: z.string().min(1),
+      email: z.string().min(1)
     }))
     .mutation(async ({ ctx, input }) => {
       try {
@@ -180,6 +180,25 @@ export const userRouter = createTRPCRouter({
           credits: currentUser[0].credits,
           teamId: currentUser[0].teamId
         }
+      } catch (error) {
+        throw new Error(error as string)
+      }
+    }),
+  
+  getSingleUserByTeamId: publicProcedure
+    .input(z.object({
+      email: z.string().min(1),
+      gameId: z.string().min(1)
+    }))
+    .mutation(async({ ctx, input }) => {
+      try { 
+        const userWithSingleTeam = await ctx.db.query.users.findFirst({
+          with: {
+            teams: true
+          }
+        });
+
+        return userWithSingleTeam
       } catch (error) {
         throw new Error(error as string)
       }

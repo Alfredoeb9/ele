@@ -2,9 +2,8 @@
 import React, { JSXElementConstructor, PromiseLikeOfReactNode, ReactElement, ReactNode, useEffect, useState } from "react";
 import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
-import { CheckboxGroup, Checkbox, Select, SelectItem } from '@nextui-org/react';
+import { CheckboxGroup, Checkbox, Select, SelectItem, Spinner } from '@nextui-org/react';
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-// import ErrorComponent from "@/components/ErrorComponent";
 import { useGetUser } from "../../hooks/getUser";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.min.css';
@@ -24,12 +23,6 @@ export default function Enroll() {
 
     const search = searchParams.get('id')
 
-    // const {data: user} = useQuery<any>({
-    //     queryKey: ["user"],
-    //     queryFn: () => getuser(session?.data),
-    //     retry: 2
-    // })
-
     const tournament = api.matches.getSingleMatch.useMutation({
         onSuccess: () => {
             console.log("success")
@@ -46,110 +39,33 @@ export default function Enroll() {
         }
     }, [search])
 
-    const currentUser = api.user.getSingleUser.useMutation({
+    const currentUser = api.user.getSingleUserByTeamId.useMutation({
         onSuccess: () => {
             console.log("user retrieved")
         },
 
         onError: (error) => {
             setError(error.message)
+            console.log("no user")
         }
     })
 
     useEffect(() => {
-        if (session.data?.user) {
-            currentUser.mutate({ email: session.data?.user.email as string})
+        if (session.data?.user && tournament?.data) {
+            console.log("test", tournament?.data[0]?.id)
+            currentUser.mutate({ email: session.data?.user.email as string, gameId: tournament?.data[0]?.id})
         }
-    }, [session.data])
+    }, [session.data, tournament.data])
 
-    console.log("currentUser", currentUser.data)
-
-    // const { data: tournament } = useQuery<any>({
-    //     queryKey: ["tournament-finder"],
-    //     queryFn: () => 
-    //         fetch(`/api/match-finder/${search}`, {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify(search)
-    //         }).then((res) =>
-    //             res.json()
-    //         ).catch(() => {
-    //             console.log("catch ran up")
-    //         }),
-    //     retry: 3
-    // })
-
-    // const fetchEnroll = async () => {
-    //     let credits = tournament?.data.entry.replace(/[^0-9]/g,"")
-    //     try {
-    //         const res = await fetch(`/api/tournament`, {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify({search: search, credits, email: session?.data?.user.email })
-    //         })
-
-    //         const data = await res.json();
-
-    //         if (!res.ok) {
-    //             return setError(data?.error)
-    //         }
-
-    //         toast('Team has enrolled in Tournament, Good Luck!', {
-    //             position: "bottom-right",
-    //             autoClose: false,
-    //             closeOnClick: true,
-    //             draggable: false,
-    //             type: "success",
-    //             toastId: 3
-    //         })
-
-    //         return data;
-    //         // .then(async (res) => {
-
-    //         //     let data = await res.json()
-
-    //         //     if (res.status >= 500) return setError(data?.message)
-
-    //         //     if (res.status === 201) {
-    //         //         router.push(`/`)
-    //         //         return data;
-    //         //     };         
-    //         // }).catch((error) => {
-    //         //     console.error("error", error)
-    //         //     setError(true);
-    //         // })
-    //     } catch (error) {
-    //         setError(error)
-    //     }
-        
-    // };
-
-    // useMutation is what we can use to trigger a refetch on the useQuery hook
-    // const { mutateAsync: addTodoMutation } = useMutation({
-    //     mutationFn: fetchEnroll,
-    //     onSuccess: () => {
-            
-    //         // pass in the key that needs to get refetched
-    //         queryClient.invalidateQueries({ queryKey: ["get-user"]})
-
-    //         setTimeout(() => {
-    //             router.push('/')
-    //         }, 3000)
-            
-    //     }
-    // })
-
+    console.log("currentUser", currentUser.data) 
     
-    
-    if ( currentUser?.data && tournament?.data ) {
-        if (Number(tournament.data[0].entry.replace(/[^0-9]/g,"")) > Number(currentUser.data.credits)) {
-            router.push("/pricing")
-        }
-    }
+    // if ( currentUser?.data && tournament?.data ) {
+    //     if (Number(tournament.data[0].entry.replace(/[^0-9]/g,"")) > Number(currentUser.data.credits)) {
+    //         router.push("/pricing")
+    //     }
+    // }
+
+    // if(tournament.isLoading || currentUser.isLoading) return <Spinner label="Loading..." color="warning" />
 
     return (
         <div>
