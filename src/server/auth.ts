@@ -119,7 +119,7 @@ export const authOptions: NextAuthOptions = {
             return {
                 id: `${existingUserByEmail[0].id}`,
                 username: existingUserByEmail[0].username!,
-                email: existingUserByEmail[0].email!,
+                email: existingUserByEmail[0].email,
                 firstName: existingUserByEmail[0].firstName!,
                 role: existingUserByEmail[0].role!,
                 lastName: existingUserByEmail[0].lastName!
