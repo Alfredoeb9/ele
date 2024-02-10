@@ -1,14 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { usePathname, useRouter } from 'next/navigation';
-import { useQuery } from "@tanstack/react-query";
-import { Button, Card, CardBody, CardFooter, CardHeader, Spinner, Image } from "@nextui-org/react";
+import { Button, Card, CardFooter, CardHeader, Spinner, Image } from "@nextui-org/react";
 import { Divider } from "@nextui-org/react";
-// import ErrorComponent from "@/components/ErrorComponent";
 import Link from "next/link";
 import { api } from "@/trpc/react";
 import { useSession } from "next-auth/react";
-// import Image from "next/image";
 
 export default function Tournaments({
     params: { id },
@@ -20,7 +17,6 @@ export default function Tournaments({
     const pathname = usePathname();
     const router = useRouter();
     const [ tournamentId, setTournamentId ] = useState<string>(id);
-    const [ error, setError ] = useState<any>(null);
     const [days, setDays] = useState(0);
     const [hours, setHours] = useState(0);
     const [minutes, setMinutes] = useState(0);
@@ -113,7 +109,7 @@ export default function Tournaments({
         
     // }
     
-    // if ( isLoading ) return <Spinner label="Loading..." color="warning" />
+    if ( tournament.isLoading ) return <Spinner label="Loading..." color="warning" />
 
     // if ( isError || tournament == undefined || tournament == null || tournament.isError || tournament.message.includes("does not exist")) return <p>Error</p>
 
@@ -126,43 +122,33 @@ export default function Tournaments({
         })
 
     return (
-        <div className="">
+        <div>
             <div className="tournament_backgroundHeader h-24 bg-mw3 bg-no-repeat bg-cover bg-center bg-fixed" />
             <main className=" px-4">
                 <div id="tournament_info-block" className="bg-slate-400 rounded-xl">
                     <div className="flex">
-                        <Card isFooterBlurred className="w-56 h-[300px] col-span-12 sm:col-span-7">
+                        <Card isFooterBlurred className="w-56 h-[300px] col-span-12 sm:col-span-7 after:absolute after:top-0 after:left-0 after:w-full after:h-full after:bg-gradient-to-br from-white to-neutral-400 after:opacity-30">
                             <CardHeader className="absolute z-10 top-1 flex-col items-start">
-                                <p className="text-tiny text-white/60 uppercase font-bold">Your day your way</p>
-                                <h4 className="text-white/90 font-medium text-xl">Your checklist for better sleep</h4>
+                                {/* <p className="text-tiny text-white/60 uppercase font-bold">Your day your way</p>
+                                <h4 className="text-white/90 font-medium text-xl">Your checklist for better sleep</h4> */}
                             </CardHeader>
                             <Image
                                 removeWrapper
                                 alt="Relaxing app background"
-                                className="z-0 w-full h-full object-cover"
+                                className="z-0 w-full h-full object-cove"
                                 src={`/images/${tournament?.data && tournament?.data[0]?.game}.png`}
                                 width={400}
                             />
                             <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
                                 <div className="flex w-full justify-between items-center ">
-                                    {/* <Image
-                                        alt="Breathing app icon"
-                                        className="rounded-full w-10 h-11 bg-black"
-                                        src="/images/breathing-app-icon.jpeg"
-                                    /> */}
-                                    {/* <div className="flex flex-col"> */}
-                                        <p className="text-sm text-white/60">Prize: $200</p>
-                                        
-                                    {/* </div> */}
-
+                                    <p className="text-sm text-white/60">Prize: {tournament?.data && tournament?.data[0]?.prize}</p>
                                     <p className="text-sm text-white/60">NA + EU</p>
                                 </div>
-                                {/* <Button radius="full" size="sm">Get App</Button> */}
                             </CardFooter>
                         </Card>
 
                         <div className="tournament_info w-full ml-4">
-                            <h1 className="text-3xl font-bold">{tournament?.data &&  tournament.data[0]?.game}</h1>
+                            <h1 className="text-3xl font-bold">{tournament?.data &&  tournament.data[0]?.game.toUpperCase()}</h1>
                             <div className="flex mb-4 items-center justify-around w-1/2">
                                 <div>
                                     <p className="block font-bold">{tournament?.data &&  tournament.data[0]?.name}</p>
@@ -186,9 +172,6 @@ export default function Tournaments({
                                             <p>{d2.valueOf() <= d1.valueOf() ? "OPEN NOW" : "CLOSED"}</p>
                                         </div>
                                     </CardHeader>
-                                    {/* <CardBody>
-                                        <p></p>
-                                    </CardBody> */}
                                 </Card>
 
                                 <Card className="w-40 grow">
@@ -198,9 +181,6 @@ export default function Tournaments({
                                             <p>{pstDate} PST</p>
                                         </div>
                                     </CardHeader>
-                                    {/* <CardBody>
-                                        <p></p>
-                                    </CardBody> */}
                                 </Card>
                             </div>
                             
@@ -230,18 +210,17 @@ export default function Tournaments({
                     </div>
                     
                     <div className="flex px-3 py-5 gap-2">
-                        { d2.valueOf() <= d1.valueOf() ? (
-                            <div>
-                                <p className="text-lg un">
-                                    <span className="underline">Match Starts in: </span>
+                        <div>
+                            <p className="text-lg un">
+                                <span className="underline font-bold">Match Starts in: </span>
+                                { d2.valueOf() <= d1.valueOf() ? ( 
                                     <span className="text-2xl">{days > 0 && days + "D"} {hours > 0 && hours + "H"} {minutes > 0 && minutes + "M"} {seconds > 0 && seconds + "S"}</span>
-                                </p>            
-                            </div>
-                        ) : (
-                            <div>
-                                <p className="text-lg un"><span className="underline">Match Starts in: </span><span className="text-2xl">Match Started</span></p>
-                            </div>
-                        )}
+                                ) : (
+                                    <span className="text-2xl">Match Started</span>   
+                                )
+                                }
+                            </p>            
+                        </div>
                         <Button isDisabled={d2.valueOf() <= d1.valueOf() ? false : true} className="px-4 py-3 font-bold text-lg" color="success" variant="solid" size="lg" radius="md"><Link href={`/tournaments/enroll?id=${tournamentId}`}>Enroll Now</Link></Button>
                         <Button className="px-4 py-3 text-lg font-semibold" variant="bordered" size="lg" radius="md">Find Teammates</Button>
                     </div>
@@ -254,7 +233,7 @@ export default function Tournaments({
 
                 <div className="tournament_details_tab_prizes"></div>
 
-                {error && <p className="text-red-400 font-bold">{error}</p>}
+                {tournament.isError && <p className="text-red-400 font-bold">{tournament.error.message}</p>}
             </main>
         </div>
     )
