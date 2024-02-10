@@ -117,7 +117,7 @@ export default function Header() {
                                     as="button"
                                     className="transition-transform"
                                     color="secondary"
-                                    name={session.data.user.firstName + ' ' + session?.data.user.lastName}
+                                    name={session?.data?.user?.firstName + ' ' + session?.data?.user?.lastName}
                                     size="sm"
                                     />
                                 </DropdownTrigger>
