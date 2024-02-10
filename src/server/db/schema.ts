@@ -284,6 +284,22 @@ export const teamInvitesRelations = relations(teamInvites, ({ one }) => ({
   }),
 }));
 
+export const tournamentTeamsEnrolled = createTable(
+  'tournament_teams_enrolled', 
+  {
+    id: varchar("id", { length: 255 }).notNull(),
+    teamId: varchar("team_id", { length: 255 }).notNull(),
+    createdAt: timestamp("created_at")
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp('updated_at').onUpdateNow(),
+  },
+  (team) => ({
+    // makes sure name coming in is unique
+    teamNameIdx: uniqueIndex("team_name_idx").on(team.teamId)
+  })
+)
+
 
 // export const teamMembersRelations = relations(teams, ({ one }) => ({
 // 	team: one(teams, {

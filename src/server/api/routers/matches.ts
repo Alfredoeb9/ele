@@ -5,7 +5,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-import { posts, tournaments } from "@/server/db/schema";
+import { posts, tournamentTeamsEnrolled, tournaments } from "@/server/db/schema";
 
 export const matchRouter = createTRPCRouter({
 
@@ -64,4 +64,21 @@ export const matchRouter = createTRPCRouter({
   getSecretMessage: protectedProcedure.query(() => {
     return "you can now see this secret message!";
   }),
+
+  enrollTeamToTournament: publicProcedure
+    .input(z.object({ id: z.string(), teamId: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const teamEnrolled = await ctx.db.insert(tournamentTeamsEnrolled).values({
+          id: input.id,
+          teamId: input.teamId
+        })
+
+        if (!teamEnrolled) throw new Error("Teams is already Enrolled")
+
+        return true
+      } catch (error) {
+        throw new Error("Error cannot enroll team in tournament")
+      }
+    })
 });
