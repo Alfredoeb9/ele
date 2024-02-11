@@ -40,7 +40,7 @@ export default function SignUp() {
         },
 
         onError: (e) => {
-            console.log("error", e.message)
+            console.log("error", e)
             setError(e.message)
         }
     });
@@ -51,33 +51,17 @@ export default function SignUp() {
         }
     }, [session.data])
 
-    // const gameCategory = api.games.getOnlyGames.useQuery();
+    const gameCategory = api.games.getOnlyGames.useQuery();
 
     if (createTeam.isLoading) return <Spinner label="Loading..." color="warning" />
 
     return (
         <div className="flex bg-stone-900 min-h-screen flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
             <div className="flex min-h-full flex-1 flex-col justify-center w-96 px-6 py-12 lg:px-8">
-                <h1 className="text-white text-3xl font-bold">MY TEAMS</h1>
-                {currentUser.data && currentUser.data?.teams.length <= 0 ? (
-                    <div className="text-white text-lg">No teams found. Go ahead and create a team <Button className="text-white ml-2" href="/team-settings/create-team" color="success"><Link href="/team-settings/create-team">Create a Team</Link></Button></div>
-                ) : (
-                    <>
-                        {
-                            currentUser.data?.teams.map((team) => (
-                                <div key={team.id}>
-                                    {team.game}
-                                    {team.team_name}
-                                    
-                                </div>
-                            ))
-                        }
-                    </>  
-                )}
+                {/* <h1 className="text-white text-3xl font-bold">Create A Team</h1> */}
 
 
-                {/* RETURN A LIST OF USERS TEAMS */}
-                {/* <form className="create-team" onSubmit={(e) => {
+                <form className="create-team" onSubmit={(e) => {
                     e.preventDefault();
                         createTeam.mutate({
                             game: selectedGames,
@@ -128,8 +112,10 @@ export default function SignUp() {
                         Create
                     </button>
 
+                    {createTeam.isError && <div className="text-white">{createTeam.error.message}</div>}
+
                     <ToastContainer limit={1}/>
-                </form> */}
+                </form>
             </div>
         </div>
     )

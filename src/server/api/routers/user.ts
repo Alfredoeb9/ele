@@ -194,7 +194,7 @@ export const userRouter = createTRPCRouter({
         const userWithSpecificTeam = await ctx.db.query.users.findFirst({
           with: {
             teams: {
-              where: (teams, {eq}) => eq(teams.game, "mw3")
+              where: (teams, {eq}) => eq(teams.id, input.gameId)
             }
           }
         });
@@ -223,9 +223,13 @@ export const userRouter = createTRPCRouter({
     }))
     .mutation(async ({ ctx, input }) => {
       try {
-        const currentUser = await ctx.db.select().from(users).where(eq(users.email, input.email))
+        const currentUser = await ctx.db.query.users.findFirst({
+          with: {
+            teams: true
+          }
+        });
 
-        if (!currentUser[0]) throw new Error("No user with such credentials")
+        if (!currentUser) throw new Error("No user with such credentials")
 
         return currentUser;
       } catch (error) {
