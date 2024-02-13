@@ -237,6 +237,26 @@ export const userRouter = createTRPCRouter({
       }
     }),
 
+  getSingleUserWithTeamMembers: publicProcedure
+    .input(z.object({
+      email: z.string().min(1),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const currentUserWithTeamMembers = await ctx.db.query.users.findFirst({
+          with: {
+            teamMembers: true
+          }
+        })
+
+        if (!currentUserWithTeamMembers) throw new Error("Error occured getting user data")
+
+        return currentUserWithTeamMembers;
+      } catch (error) {
+        throw new Error(error as string)
+      }
+    }),
+
   getLatest: publicProcedure.query(({ ctx }) => {
     return ctx.db.query.posts.findFirst({
       orderBy: (posts, { desc }) => [desc(posts.createdAt)],

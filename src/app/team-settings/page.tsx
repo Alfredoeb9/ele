@@ -18,7 +18,7 @@ export default function SignUp() {
     const [error, setError] = useState<string>("");
     const [selectedGames, setSelectedGames] = useState<string>("");
 
-    const currentUser = api.user.getSingleUserWithTeams.useMutation({
+    const currentUser = api.user.getSingleUserWithTeamMembers.useMutation({
         onError: (error) => {
             // setError(error.message)
             toast(`There was a problem getting user data`, {
@@ -55,25 +55,27 @@ export default function SignUp() {
 
     if (createTeam.isLoading) return <Spinner label="Loading..." color="warning" />
 
+    console.log("currentuser", currentUser.data)
+
     return (
         <div className="flex bg-stone-900 min-h-screen flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
             <div className="flex min-h-full flex-1 flex-col justify-center w-96 px-6 py-12 lg:px-8">
                 <h1 className="text-white text-3xl font-bold">MY TEAMS</h1>
-                {currentUser.data && currentUser.data?.teams.length <= 0 ? (
-                    <div className="text-white text-lg">No teams found. Go ahead and create a team <Button className="text-white ml-2" href="/team-settings/create-team" color="success"><Link href="/team-settings/create-team">Create a Team</Link></Button></div>
+                {currentUser.data && currentUser.data?.teamMembers.length <= 0 ? (
+                    <div className="text-white text-lg">No teams found. Go ahead and create a team</div>
                 ) : (
                     <>
                         {
-                            currentUser.data?.teams.map((team) => (
-                                <div key={team.id}>
-                                    {team.game}
-                                    {team.team_name}
-                                    
+                            currentUser.data?.teamMembers.map((team) => (
+                                <div className="text-white" key={team.teamId}>
+                                    {team.game}                                    
                                 </div>
                             ))
                         }
                     </>  
                 )}
+
+                <Button className="text-white ml-2" href="/team-settings/create-team" color="success"><Link href="/team-settings/create-team">Create a Team</Link></Button>
 
 
                 {/* RETURN A LIST OF USERS TEAMS */}

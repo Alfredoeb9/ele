@@ -16,7 +16,8 @@ export default function SignUp() {
     const [teamName, setTeamName] = useState<string>("");
 
     const [error, setError] = useState<string>("");
-    const [selectedGames, setSelectedGames] = useState<string>("");
+    const [selectedGameId, setSelectedGameId] = useState<string>("");
+    const [selectedGame, setSelectedGame] = useState<string>("");
 
     const currentUser = api.user.getSingleUserWithTeams.useMutation({
         onError: (error) => {
@@ -64,8 +65,10 @@ export default function SignUp() {
                 <form className="create-team" onSubmit={(e) => {
                     e.preventDefault();
                         createTeam.mutate({
-                            game: selectedGames,
-                            teamName: teamName
+                            game: selectedGameId,
+                            gameText:selectedGame,
+                            teamName: teamName,
+                            email: session.data?.user.email as string
                         });
                     }}
                 >
@@ -86,11 +89,12 @@ export default function SignUp() {
                                 })
                             }
                         }}
-                        onSelectionChange={(e) => setSelectedGames(Object.values(e)[0]) }
+                        // onSelectionChange={(e) => console.log(e) }
+                        onSelectionChange={(e) => setSelectedGameId(Object.values(e)[0]) }
                         required
                         >
                             {gameCategory.data?.map((match) => (
-                                <SelectItem key={match.id} value={match.game}>
+                                <SelectItem key={match.id} onClick={(e) => setSelectedGame((e.target as any).outerText)} onSelect={(e) => console.log(e)} value={match.game}>
                                     {match.game}
                                 </SelectItem>
                             )) as []}

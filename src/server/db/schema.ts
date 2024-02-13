@@ -51,7 +51,7 @@ export const users = createTable("user", {
   role: varchar("role", { length: 35 }).default("user"),
   email: varchar("email", { length: 255 }).notNull(),
   credits: int("credits").default(15),
-  teamId: varchar('team_id', { length: 255 }),
+  teamId: json('team_id').$type<string[]>().default([]),
   emailVerified: timestamp("emailVerified", {
     mode: "date",
     fsp: 3,
@@ -211,6 +211,7 @@ export const teamMembersTable = createTable(
   {
     userId: varchar('user_id', { length: 255 }).notNull(),
     teamId: varchar('team_id', { length: 255 }).notNull(),
+    game: varchar('game', { length: 100 }).notNull(),
     role: mysqlEnum('role', ['owner', 'admin', 'member']).default('member').notNull(),
 		createdAt: timestamp('created_at').defaultNow(),
 		updatedAt: timestamp('updated_at').onUpdateNow(),
@@ -224,7 +225,7 @@ export const usersToGroupsRelations = relations(teamMembersTable, ({ one }) => (
   }),
   user: one(users, {
     fields: [teamMembersTable.userId],
-    references: [users.id],
+    references: [users.email],
   }),
 }));
 
@@ -254,7 +255,7 @@ export const teamsRelations = relations(teams, ({ many }) => ({
 export const teamssRelations = relations(teams, ({ one }) => ({
   user: one(users, { 
     fields: [teams.id], 
-    references: [users.id] 
+    references: [users.teamId] 
   }),
 }));
 
