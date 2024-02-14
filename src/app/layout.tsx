@@ -9,6 +9,9 @@ import ReduxProvider from "./_components/providers/ReduxProvider";
 import { getServerSession } from "next-auth/next";
 import { NextUiProvider } from "./_components/providers/NextUIProvider";
 import { db } from "@/server/db";
+import { ToastContainer } from "react-toastify";
+import { and, eq } from "drizzle-orm";
+import Footer from "./_components/Footer";
 
 
 const inter = Inter({
@@ -31,12 +34,25 @@ export default async function RootLayout({
 
   // const user = await db.query.users.findMany({
   //   with: {
-  //     teams: true,
-  //     teamMembers: true
+  //     teams: true
   //   }
   // })
 
-  // console.log("user🚀🚀", user[0])
+  const user2 = await db.query.users.findMany({
+    with: {
+      teamMembers: true
+    }
+  })
+
+  // const user = await db.query.users.findMany({
+  //   with: {
+  //     teams: {
+  //       where: (teams, {eq}) => eq(teams.game, "mw3")
+  //     }
+  //   }
+  // })
+
+  // console.log("user2", user[0])
 
   return (
     <html lang="en">
@@ -45,15 +61,18 @@ export default async function RootLayout({
           <ReduxProvider user={session?.user}>
             <TRPCReactProvider>
               <NextUiProvider>
-                <div>
+                <div className="bg-slate-950">
                   <Header />
                   {children}
+                  <ToastContainer />
+                  <Footer />
                 </div>
               </NextUiProvider>
             </TRPCReactProvider>
           </ReduxProvider>
           
         </Provider>
+
       </body>
     </html>
   );

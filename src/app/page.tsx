@@ -54,7 +54,7 @@ export default function Home() {
 
   
   return (
-    <main className=" bg-slate-950">
+    <main className=" ">
       
       <section className='flex min-h-128 flex-col items-start justify-center place-content-center m-auto max-w-7xl px-10'>
         <div className='flex flex-row place-content-start max-h-full'>
@@ -81,7 +81,6 @@ export default function Home() {
 
       <HomeMatchFinder />
 
-      <Footer />
     </main>
     // <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
     //   <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
