@@ -12,6 +12,9 @@ export default {
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
+      backgroundImage: {
+        'mw3_team_background': "url('/images/mw3_team_background.png')"
+      }
     },
   },
   darkMode: 'class',
