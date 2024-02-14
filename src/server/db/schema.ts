@@ -212,6 +212,7 @@ export const teamMembersTable = createTable(
     userId: varchar('user_id', { length: 255 }).notNull(),
     teamId: varchar('team_id', { length: 255 }).notNull(),
     game: varchar('game', { length: 100 }).notNull(),
+    teamName: varchar('team_name', { length: 100 }).notNull(),
     role: mysqlEnum('role', ['owner', 'admin', 'member']).default('member').notNull(),
 		createdAt: timestamp('created_at').defaultNow(),
 		updatedAt: timestamp('updated_at').onUpdateNow(),

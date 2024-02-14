@@ -1,6 +1,6 @@
 "use client";
 import { api } from "@/trpc/react";
-import { Button, Select, SelectItem, Spinner } from "@nextui-org/react";
+import { Button, Card, CardHeader, Divider, Select, SelectItem, Spinner } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -16,7 +16,6 @@ export default function SignUp() {
     const [teamName, setTeamName] = useState<string>("");
 
     const [error, setError] = useState<string>("");
-    const [selectedGames, setSelectedGames] = useState<string>("");
 
     const currentUser = api.user.getSingleUserWithTeamMembers.useMutation({
         onError: (error) => {
@@ -51,31 +50,47 @@ export default function SignUp() {
         }
     }, [session.data])
 
-    // const gameCategory = api.games.getOnlyGames.useQuery();
-
     if (createTeam.isLoading) return <Spinner label="Loading..." color="warning" />
 
-    console.log("currentuser", currentUser.data)
 
     return (
-        <div className="flex bg-stone-900 min-h-screen flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+        <div className="flex bg-stone-900 min-h-screen items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
             <div className="flex min-h-full flex-1 flex-col justify-center w-96 px-6 py-12 lg:px-8">
-                <h1 className="text-white text-3xl font-bold">MY TEAMS</h1>
-                {currentUser.data && currentUser.data?.teamMembers.length <= 0 ? (
-                    <div className="text-white text-lg">No teams found. Go ahead and create a team</div>
-                ) : (
-                    <>
-                        {
-                            currentUser.data?.teamMembers.map((team) => (
-                                <div className="text-white" key={team.teamId}>
-                                    {team.game}                                    
-                                </div>
-                            ))
-                        }
-                    </>  
-                )}
+                <h1 className="text-white text-3xl font-bold mb-2">MY TEAMS</h1>
+                <div className="flex gap-2 justify-between mb-4">
+                    {currentUser.data && currentUser.data?.teamMembers.length <= 0 ? (
+                        <div className="text-white text-lg">No teams found. Go ahead and create a team</div>
+                    ) : (
+                        <>
+                            {
+                                currentUser.data?.teamMembers.map((team) => (
+                                    <div className="text-white bg-slate-800 w-full p-2" key={team.teamId}>
+                                        
 
-                <Button className="text-white ml-2" href="/team-settings/create-team" color="success"><Link href="/team-settings/create-team">Create a Team</Link></Button>
+                                        <div className="tournament_info w-full ml-4">
+                                            <h1 className="text-3xl font-bold">{team.teamName}</h1>
+                                            <p>{team.game}</p>
+                                        
+                                            <div>
+                                                Ladder squads | 0W - 0L
+                                            </div>
+                                        
+                                        
+                                            <div className="flex flex-wrap justify-start mt-4 gap-2 md:gap-3 lg:gap-4">
+                                                <Button className="text-green-500" variant="bordered"><Link href={`/team/${team.teamId}`}>Manage</Link></Button>
+                                                <Button className="text-red-500" variant="bordered">Disband</Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            }
+                        </>  
+                    )}
+
+                </div>
+                
+
+                <button className="text-white w-64 bg-green-500 rounded-3xl p-4 hover:bg-green-600 transition-all"><Link href="/team-settings/create-team">Create a Team</Link></button>
 
 
                 {/* RETURN A LIST OF USERS TEAMS */}

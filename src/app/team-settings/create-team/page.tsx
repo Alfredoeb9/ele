@@ -19,10 +19,13 @@ export default function SignUp() {
     const [selectedGameId, setSelectedGameId] = useState<string>("");
     const [selectedGame, setSelectedGame] = useState<string>("");
 
+    if (!session.data) router.push("/sign-in")
+
     const currentUser = api.user.getSingleUserWithTeams.useMutation({
         onError: (error) => {
+            setError("Service is down, please refresh or submit a ticket")
             // setError(error.message)
-            toast(`There was a problem getting user data`, {
+            toast(`Service is down, please refresh or submit a ticket`, {
                 position: "bottom-right",
                 autoClose: false,
                 closeOnClick: true,
@@ -36,13 +39,14 @@ export default function SignUp() {
     const createTeam = api.create.createTeam.useMutation({
         
         onSuccess: () => {
-            router.refresh();
             setTeamName("");
+            router.push("/team-settings");
         },
 
         onError: (e) => {
-            console.log("error", e)
-            setError(e.message)
+            if (e.data?.stack?.includes("rpc error: code = AlreadyExists")) {
+                setError("Team name already exists")
+            }
         }
     });
 
@@ -59,11 +63,11 @@ export default function SignUp() {
     return (
         <div className="flex bg-stone-900 min-h-screen flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
             <div className="flex min-h-full flex-1 flex-col justify-center w-96 px-6 py-12 lg:px-8">
-                {/* <h1 className="text-white text-3xl font-bold">Create A Team</h1> */}
+                <h1 className="text-white text-3xl font-bold text-center mb-2">Create A Team</h1>
 
 
                 <form className="create-team" onSubmit={(e) => {
-                    e.preventDefault();
+                        e.preventDefault();
                         createTeam.mutate({
                             game: selectedGameId,
                             gameText:selectedGame,
@@ -72,11 +76,11 @@ export default function SignUp() {
                         });
                     }}
                 >
-                    <h3 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">Create a Team</h3>
 
                     <Select 
                         label="Select a Game" 
                         className="max-w-xs"
+                        disabled={gameCategory.isError}
                         onClick={() => {
                             if (gameCategory.isError) {
                                 toast('There was an error with this service.', {
@@ -89,12 +93,11 @@ export default function SignUp() {
                                 })
                             }
                         }}
-                        // onSelectionChange={(e) => console.log(e) }
                         onSelectionChange={(e) => setSelectedGameId(Object.values(e)[0]) }
                         required
                         >
                             {gameCategory.data?.map((match) => (
-                                <SelectItem key={match.id} onClick={(e) => setSelectedGame((e.target as any).outerText)} onSelect={(e) => console.log(e)} value={match.game}>
+                                <SelectItem key={match.id} onClick={(e) => setSelectedGame((e.target as any).outerText)} value={match.game}>
                                     {match.game}
                                 </SelectItem>
                             )) as []}
@@ -110,13 +113,13 @@ export default function SignUp() {
                         />
 
                     <button
-                        disabled={gameCategory.isError}
+                        disabled={ gameCategory.isError || selectedGame === "" || selectedGame.length <= 0 }
                         className="flex w-full justify-center rounded-md mt-4 bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-slate-500"
                     >
                         Create
                     </button>
 
-                    {createTeam.isError && <div className="text-white">{createTeam.error.message}</div>}
+                    {createTeam.isError && <div className="text-white">{error}</div>}
 
                     <ToastContainer limit={1}/>
                 </form>
