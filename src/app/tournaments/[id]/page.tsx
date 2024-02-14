@@ -128,14 +128,14 @@ export default function Tournaments({
                 <div id="tournament_info-block" className="bg-slate-400 rounded-xl">
                     <div className="flex">
                         <Card isFooterBlurred className="w-56 h-[300px] col-span-12 sm:col-span-7 after:absolute after:top-0 after:left-0 after:w-full after:h-full after:bg-gradient-to-br from-white to-neutral-400 after:opacity-30">
-                            <CardHeader className="absolute z-10 top-1 flex-col items-start">
-                                {/* <p className="text-tiny text-white/60 uppercase font-bold">Your day your way</p>
-                                <h4 className="text-white/90 font-medium text-xl">Your checklist for better sleep</h4> */}
-                            </CardHeader>
+                            {/* <CardHeader className="absolute z-10 top-1 flex-col items-start">
+                                <p className="text-tiny text-white/60 uppercase font-bold">Your day your way</p>
+                                <h4 className="text-white/90 font-medium text-xl">Your checklist for better sleep</h4>
+                            </CardHeader> */}
                             <Image
                                 removeWrapper
                                 alt="Relaxing app background"
-                                className="z-0 w-full h-full object-cove"
+                                className="z-0 w-full h-full object-cover"
                                 src={`/images/${tournament?.data && tournament?.data[0]?.game}.png`}
                                 width={400}
                             />
