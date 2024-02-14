@@ -38,11 +38,11 @@ export default async function RootLayout({
   //   }
   // })
 
-  const user2 = await db.query.users.findMany({
-    with: {
-      teamMembers: true
-    }
-  })
+  // const user2 = await db.query.users.findMany({
+  //   with: {
+  //     teamMembers: true
+  //   }
+  // })
 
   // const user = await db.query.users.findMany({
   //   with: {
