@@ -2,7 +2,7 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { posts, sessions, users, verificationTokens } from "@/server/db/schema";
+import { followsTables, notificationsTable, posts, sessions, users, verificationTokens } from "@/server/db/schema";
 import { db } from "@/server/db";
 import { createToken, emailRegx } from "@/lib/utils/utils";
 import { sentVerifyUserEmail } from "@/app/api/auth/[...nextauth]/mailer";
@@ -252,6 +252,56 @@ export const userRouter = createTRPCRouter({
         if (!currentUserWithTeamMembers) throw new Error("Error occured getting user data")
 
         return currentUserWithTeamMembers;
+      } catch (error) {
+        throw new Error(error as string)
+      }
+    }),
+  
+  sendFriendRequest: publicProcedure
+    .input(z.object({
+      userName: z.string().min(1),
+      id: z.string().min(1),
+      senderUserName: z.string().min(1),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        // grab all users friends
+        // const following = await ctx.db.query.followsTables.findMany({
+        //   where: eq(users.username, input.username)
+        // })
+
+        // check if user is already a friend
+        // const isFriend = await ctx.db.query.followsTables.findFirst({
+        //   where: eq(followsTables.targetUser, input.userName)
+        // })
+
+        const isUserActive = await ctx.db.select().from(users).where(eq(users.username, input.userName))
+
+        // if (isUserActive.length <= 0) throw new Error("No user found")
+        
+        const sentRequest = await ctx.db.insert(notificationsTable).values({
+          userId: input.id,
+          from: input.id,
+          isRead: false,
+          type: "invite",
+          id: crypto.randomUUID(),
+        })
+
+        return sentRequest;
+      } catch (error) {
+        throw new Error(error as string)
+      }
+    }),
+
+  getNotifications: publicProcedure
+    .input(z.object({
+      id: z.string().min(1),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const getNotification = await ctx.db.select().from(notificationsTable).where(eq(notificationsTable.userId, input.id))
+
+        return getNotification;
       } catch (error) {
         throw new Error(error as string)
       }

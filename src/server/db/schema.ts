@@ -64,7 +64,9 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   accounts: many(accounts),
   sessions: many(sessions),
   teams: many(teams),
-  teamMembers: many(teamMembersTable)
+  teamMembers: many(teamMembersTable),
+  follows: many(followsTables),
+  notifications: many(notificationsTable)
 }));
 
 export const accounts = createTable(
@@ -302,6 +304,36 @@ export const tournamentTeamsEnrolled = createTable(
   })
 )
 
+export const followsTables = createTable(
+  'follows', 
+  {
+    userId: varchar('user_id', { length: 255 }).notNull(),
+    targetUser: varchar('target_user', { length: 255 }).notNull()
+  }
+)
+
+export const notificationsTable = createTable(
+  'notifications', 
+  {
+    id: varchar('id', { length: 255 }).notNull(),
+    userId: varchar('user_id', { length: 255 }).notNull(),
+    type: mysqlEnum('type', ['invite']).notNull(),
+    from: varchar('from', { length: 255 }).notNull(),
+    resourceId: varchar('resource_id', { length: 255 }),
+    isRead: boolean('is_read').default(false)
+  }
+)
+
+export const usersToNotificationsRelations = relations(notificationsTable, ({ one }) => ({
+  group: one(followsTables, {
+    fields: [notificationsTable.userId],
+    references: [followsTables.userId],
+  }),
+  user: one(users, {
+    fields: [notificationsTable.userId],
+    references: [users.id],
+  }),
+}));
 
 // export const teamMembersRelations = relations(teams, ({ one }) => ({
 // 	team: one(teams, {

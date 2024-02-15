@@ -1,8 +1,7 @@
 "use client";
 import { api } from "@/trpc/react";
-import { Button, Select, SelectItem, Spinner } from "@nextui-org/react";
+import { Select, SelectItem, Spinner } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
@@ -24,7 +23,6 @@ export default function SignUp() {
     const currentUser = api.user.getSingleUserWithTeams.useMutation({
         onError: (error) => {
             setError("Service is down, please refresh or submit a ticket")
-            // setError(error.message)
             toast(`Service is down, please refresh or submit a ticket`, {
                 position: "bottom-right",
                 autoClose: false,

@@ -18,7 +18,7 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
         refetchOnMount: true,
         retryOnMount: true,
         refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
+        refetchOnReconnect: true,
         retry: false
       },
     },

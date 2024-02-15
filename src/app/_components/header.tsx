@@ -7,6 +7,8 @@ import { Avatar, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@
 import { useQuery } from "@tanstack/react-query";
 import { useGetUser } from "../hooks/getUser";
 import { ToastContainer, toast } from "react-toastify";
+import { FaBell } from "react-icons/fa";
+
 
 import 'react-toastify/dist/ReactToastify.css';
 import { api } from "@/trpc/react";
@@ -19,37 +21,6 @@ export default function Header() {
     const router = useRouter();
 
     console.log("session", session)
-
-    // const {data, isFetching, isError } = useQuery<any>({
-    //     queryKey: ["get-user"],
-    //     queryFn: 
-    //     () => getuser(session?.data as any),
-        
-    //     // async () => {
-    //     //     const data = await fetch('/api/user', {
-    //     //         method: 'POST', 
-    //     //         headers: {
-    //     //             'Content-Type': 'application/json',
-    //     //         },
-    //     //         body: JSON.stringify({email: session?.data?.user?.email})
-    //     //     });
-            
-    //     //     const json = await data.json();
-
-    //     //     if (data.status == 500) {
-    //     //         return setError(true)
-    //     //     }
-        
-    //     //     if (data.status === 201) {
-    //     //         return json;    
-    //     //     }
-              
-    //     // },
-
-    //     enabled: session.data?.user !== undefined ? true : false,
-    //     retry: 2,
-    //     refetchOnWindowFocus: false,
-    // });
 
     const currentUser = api.user.getSingleUser.useMutation({
         onError: (error) => {
@@ -65,9 +36,20 @@ export default function Header() {
         }
     })
 
+    const usersNotifications = api.user.getNotifications.useMutation({
+        onSuccess: () => {
+            console.log("notifications")
+        },
+
+        onError: () => {
+
+        }
+    })
+
     useEffect(() => {
         if (session.data?.user) {
             currentUser.mutate({ email: session.data?.user.email as string})
+            usersNotifications.mutate({ id: session.data.user.id })
         }
     }, [session.data])
 
@@ -81,6 +63,8 @@ export default function Header() {
             toastId: 3                             
         })
     }
+
+    console.log("usersNotifications", usersNotifications)
 
     return (
         <header className="nav">
@@ -109,6 +93,10 @@ export default function Header() {
                         </div>
                     ) : (
                         <div>
+                            <div>
+                                <FaBell />
+                                <span>{usersNotifications.data && usersNotifications.data.length}</span>
+                            </div>
                             
                             <Dropdown placement="bottom-end">
                                 <DropdownTrigger>

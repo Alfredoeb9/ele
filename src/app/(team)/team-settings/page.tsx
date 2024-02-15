@@ -1,5 +1,8 @@
 "use client";
+import Disband from "@/app/_components/Disband";
 import { api } from "@/trpc/react";
+import { useDisclosure } from "@nextui-org/react";
+
 import { Button, Card, CardHeader, Divider, Select, SelectItem, Spinner } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -11,6 +14,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 export default function SignUp() {
+    const {isOpen, onOpen, onOpenChange} = useDisclosure();
     const router = useRouter();
     const session = useSession();
     const [teamName, setTeamName] = useState<string>("");
@@ -65,8 +69,6 @@ export default function SignUp() {
                             {
                                 currentUser.data?.teamMembers.map((team) => (
                                     <div className="text-white bg-slate-800 w-full p-2" key={team.teamId}>
-                                        
-
                                         <div className="tournament_info w-full ml-4">
                                             <h1 className="text-3xl font-bold">{team.teamName}</h1>
                                             <p>{team.game}</p>
@@ -77,11 +79,26 @@ export default function SignUp() {
                                         
                                         
                                             <div className="flex flex-wrap justify-start mt-4 gap-2 md:gap-3 lg:gap-4">
-                                                <Button className="text-green-500" variant="bordered"><Link href={`/team/${team.teamId}`}>Manage</Link></Button>
-                                                <Button className="text-red-500" variant="bordered">Disband</Button>
+                                                <Button 
+                                                    className="text-green-500" 
+                                                    variant="bordered">
+                                                        <Link href={`/team/${team.teamId}`}>Manage</Link>
+                                                </Button>
+                                                <Button 
+                                                    className="text-red-500" 
+                                                    variant="bordered" 
+                                                    onPress={() => {
+                                                        onOpen(),
+                                                        setTeamName(team.teamName)
+                                            
+                                                    }}>
+                                                        Disband
+                                                </Button>
                                             </div>
                                         </div>
+                                        
                                     </div>
+                                    
                                 ))
                             }
                         </>  
@@ -92,7 +109,7 @@ export default function SignUp() {
 
                 <button className="text-white w-64 bg-green-500 rounded-3xl p-4 hover:bg-green-600 transition-all"><Link href="/team-settings/create-team">Create a Team</Link></button>
 
-
+                <Disband open={isOpen} onOpenChange={onOpenChange} teamName={teamName} />
                 {/* RETURN A LIST OF USERS TEAMS */}
                 {/* <form className="create-team" onSubmit={(e) => {
                     e.preventDefault();
@@ -147,6 +164,43 @@ export default function SignUp() {
 
                     <ToastContainer limit={1}/>
                 </form> */}
+                
+{/* <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
+              <ModalBody>
+                <p> 
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Nullam pulvinar risus non risus hendrerit venenatis.
+                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
+                </p>
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Nullam pulvinar risus non risus hendrerit venenatis.
+                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
+                </p>
+                <p>
+                  Magna exercitation reprehenderit magna aute tempor cupidatat consequat elit
+                  dolor adipisicing. Mollit dolor eiusmod sunt ex incididunt cillum quis. 
+                  Velit duis sit officia eiusmod Lorem aliqua enim laboris do dolor eiusmod. 
+                  Et mollit incididunt nisi consectetur esse laborum eiusmod pariatur 
+                  proident Lorem eiusmod et. Culpa deserunt nostrud ad veniam.
+                </p>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button color="primary" onPress={onClose}>
+                  Action
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal> */}
             </div>
         </div>
     )
