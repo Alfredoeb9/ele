@@ -15,10 +15,10 @@ export default function Pricing() {
     if (status === "unauthenticated") return router.push('/auth/sign-in')
 
     return (
-        <section className="flex justify-center items-center flex-col max-w-7xl w-full p-8">
-            <h1 className="text-3xl mb-2">Buy Credits!</h1>
+        <section className="flex justify-center items-center flex-col max-w-7xl w-full p-8 text-white">
+            <h1 className="text-3xl mb-2 text-bold">Buy Credits!</h1>
             <p className="mb-2">Purchase credits to enter into tournaments or cash matches</p>
-            <p className="mb-2">Please review our <Link href={"/refund-policy"}>Refund Policy</Link> before buying credits. We do not issue refunds at this time.</p>
+            <p className="mb-2">Please review our <Link className="text-blue-500 hover:text-blue-600 transition-all" href={"/refund-policy"}>Refund Policy</Link> before buying credits. We do not issue refunds at this time.</p>
             <PricingCards />
         </section>
     )
