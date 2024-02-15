@@ -3,19 +3,17 @@ import Disband from "@/app/_components/Disband";
 import { api } from "@/trpc/react";
 import { useDisclosure } from "@nextui-org/react";
 
-import { Button, Card, CardHeader, Divider, Select, SelectItem, Spinner } from "@nextui-org/react";
+import { Button, Spinner } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import React, { useState } from "react";
+import { toast } from "react-toastify";
 
 import 'react-toastify/dist/ReactToastify.css';
 
 
 export default function TeamSettings() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
-    const router = useRouter();
     const session = useSession();
     const [teamName, setTeamName] = useState<string>("");
 
@@ -41,7 +39,7 @@ export default function TeamSettings() {
             <div className="flex min-h-full flex-1 flex-col justify-center w-96 px-6 py-12 lg:px-8">
                 <h1 className="text-white text-3xl font-bold mb-2">MY TEAMS</h1>
                 <div className="flex gap-2 justify-between mb-4">
-                    {/* {currentUser.data && currentUser.data?.teamMembers.length <= 0 ? (
+                    {currentUser.data && currentUser.data?.teamMembers.length <= 0 ? (
                         <div className="text-white text-lg">No teams found. Go ahead and create a team</div>
                     ) : (
                         <>
@@ -81,7 +79,7 @@ export default function TeamSettings() {
                                 ))
                             }
                         </>  
-                    )} */}
+                    )}
 
                 </div>
                 

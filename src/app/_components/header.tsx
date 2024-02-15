@@ -1,11 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Avatar, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
-import { useQuery } from "@tanstack/react-query";
-import { useGetUser } from "../hooks/getUser";
 import { ToastContainer, toast } from "react-toastify";
 import { FaBell } from "react-icons/fa";
 
@@ -21,7 +19,6 @@ export default function Header() {
 
     const currentUser = api.user.getSingleUser.useQuery({ email: session.data && session?.data.user.email as string | any })
 
-    console.log("user", currentUser.error?.data)
     if (currentUser.isError) {
         toast(`There was a problem getting user data`, {
             position: "bottom-right",

@@ -1,19 +1,12 @@
 "use client";
 import { unstable_noStore as noStore } from "next/cache";
 import Link from "next/link";
-
-import { CreatePost } from "@/app/_components/create-post";
-// import { getServerAuthSession } from "@/server/auth";
-// import { api } from "@/trpc/server";
 import HomeFeaturedGames from "./_components/home/HomeFeaturedGames";
 import LoginBanner from "./_components/LoginBanner";
 import HomeMatchFinder from "./_components/home/HomeMatchFinder";
-import Footer from "./_components/Footer";
 import { api } from "@/trpc/react";
-import { toast } from "react-toastify";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { db } from "@/server/db";
 
 export default function Home() {
   noStore();
@@ -52,9 +45,12 @@ export default function Home() {
 
   const tournamentMatches = api.matches.getAllMatches.useQuery()
 
+  if (tournamentMatches.isError) {
+    setError("Match server is down, please reach out to admin")
+  }
   
   return (
-    <main className=" ">
+    <main>
       
       <section className='flex min-h-128 flex-col items-start justify-center place-content-center m-auto max-w-7xl px-10'>
         <div className='flex flex-row place-content-start max-h-full'>
