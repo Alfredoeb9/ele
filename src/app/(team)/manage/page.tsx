@@ -17,8 +17,8 @@ export default function ManageTeam() {
 
     const sendRequest = api.user.sendFriendRequest.useMutation({
     
-        onSuccess: () => {
-            utils.user.getNotifications.invalidate()
+        onSuccess: async () => {
+            await utils.user.getNotifications.invalidate()
             setUserName("")
         },
         onError: (e) => {
