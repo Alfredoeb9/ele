@@ -17,10 +17,7 @@ const SignIn = () => {
 	const user = useSession();
 	const dispatch = useAppDispatch()
     const [email, setEmail] = useState<string>("");
-	// const user = useAppSelector(state => state.authXReducer.user);
     const [loading, setLoading] = useState<boolean>(false);
-	// const { isSuccess, message } = useSelector((state: { user: any; }) => state.user);
-	const [isVerified, setIsVerified] = useState<boolean>(false);
 	const [spinnerLoading, setSpinnerLoading] = useState<boolean>(false);
 	const [verifyEmail, setVerifyEmail] = useState<boolean>(false);
 	const [password, setPassword] = useState<string>("");
@@ -29,25 +26,12 @@ const SignIn = () => {
 	const [show, setShow] = useState({ password: false });
 
 
-
-	// const handleSubmit = async(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-	// 	e.preventDefault();
-	// 	const signInData = await signIn("credentials", {email: email, password: password})
-
-	// 	console.log("sign", signInData)
-
-
-	// }
-
-	console.log("user", user)
-
 	if (user?.data !== null) {
 		redirect("/")
 	}
 	
 	useEffect(() => {
 		if (error2) {	
-			// setVerifyEmail(false)		
 			setError(error2)
 		}
 	}, [resend, error2])
