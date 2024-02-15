@@ -154,7 +154,7 @@ export default function VerifyEmail() {
         closeOnClick: true,
         draggable: false,
         type: "error",
-        toastId: 4 
+        toastId: 5 
       })
       setError(error.message)
     }

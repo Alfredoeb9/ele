@@ -25,7 +25,7 @@ export default function PricingCards() {
                                 closeOnClick: true,
                                 draggable: false,
                                 type: "error",
-                                toastId: 5                          
+                                toastId: 11                          
                             });
                             await stripe.redirectToCheckout({
                                 sessionId: session.id,

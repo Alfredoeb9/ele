@@ -29,7 +29,7 @@ export default function SignUp() {
                 closeOnClick: true,
                 draggable: false,
                 type: "error",
-                toastId: 2                             
+                toastId: 9                             
             })
         }
     })

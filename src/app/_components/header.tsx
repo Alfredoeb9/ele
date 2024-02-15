@@ -28,14 +28,21 @@ export default function Header() {
             closeOnClick: true,
             draggable: false,
             type: "error",
-            toastId: 2                             
+            toastId: 10                             
         })
     }
 
     const usersNotifications = api.user.getNotifications.useQuery({ id: session?.data && session.data?.user?.id as string | any }, { enabled: currentUser.isSuccess})
 
     if (usersNotifications.isError) {
-        toast('Notification Service is down, please reach out to admin')
+        toast('Notification Service is down, please reach out to admin', {
+            position: "bottom-right",
+            autoClose: false,
+            closeOnClick: true,
+            draggable: false,
+            type: "error",
+            toastId: 8  
+        })
     }
 
 
