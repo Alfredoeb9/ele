@@ -21,6 +21,7 @@ export default function Header() {
 
     const currentUser = api.user.getSingleUser.useQuery({ email: session.data && session?.data.user.email as string | any })
 
+    console.log("user", currentUser.error?.data)
     if (currentUser.isError) {
         toast(`There was a problem getting user data`, {
             position: "bottom-right",

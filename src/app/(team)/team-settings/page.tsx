@@ -13,7 +13,7 @@ import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 
-export default function SignUp() {
+export default function TeamSettings() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
     const router = useRouter();
     const session = useSession();
@@ -21,48 +21,27 @@ export default function SignUp() {
 
     const [error, setError] = useState<string>("");
 
-    const currentUser = api.user.getSingleUserWithTeamMembers.useMutation({
-        onError: (error) => {
-            // setError(error.message)
-            toast(`There was a problem getting user data`, {
-                position: "bottom-right",
-                autoClose: false,
-                closeOnClick: true,
-                draggable: false,
-                type: "error",
-                toastId: 2                             
-            })
-        }
-    })
+    const currentUser = api.user.getSingleUserWithTeamMembers.useQuery({ email: session?.data && session.data?.user?.email as string | any })
     
-    const createTeam = api.create.createTeam.useMutation({
-        
-        onSuccess: () => {
-            router.refresh();
-            setTeamName("");
-        },
+    if (currentUser.isError) {
+        toast(`There was a problem getting user data`, {
+            position: "bottom-right",
+            autoClose: false,
+            closeOnClick: true,
+            draggable: false,
+            type: "error",
+            toastId: 2                             
+        })
+    }
 
-        onError: (e) => {
-            console.log("error", e.message)
-            setError(e.message)
-        }
-    });
-
-    useEffect(() => {
-        if (session.data?.user) {
-            currentUser.mutate({ email: session.data?.user.email as string})
-        }
-    }, [session.data])
-
-    if (createTeam.isLoading) return <Spinner label="Loading..." color="warning" />
-
+    if (currentUser.isLoading) return <Spinner label="Loading..." color="warning" />
 
     return (
         <div className="flex bg-stone-900 min-h-screen items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
             <div className="flex min-h-full flex-1 flex-col justify-center w-96 px-6 py-12 lg:px-8">
                 <h1 className="text-white text-3xl font-bold mb-2">MY TEAMS</h1>
                 <div className="flex gap-2 justify-between mb-4">
-                    {currentUser.data && currentUser.data?.teamMembers.length <= 0 ? (
+                    {/* {currentUser.data && currentUser.data?.teamMembers.length <= 0 ? (
                         <div className="text-white text-lg">No teams found. Go ahead and create a team</div>
                     ) : (
                         <>
@@ -102,7 +81,7 @@ export default function SignUp() {
                                 ))
                             }
                         </>  
-                    )}
+                    )} */}
 
                 </div>
                 

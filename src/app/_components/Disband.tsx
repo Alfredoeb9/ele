@@ -31,8 +31,8 @@ export default function Disband({ open, onOpenChange, teamName }: DisbandProps) 
               <ModalHeader className="flex flex-col gap-1 text-red-600">DISBAND TEAM</ModalHeader>
               <ModalBody>
                 <p> 
-                Are you sure you want to delete the {teamName} team permanently? This action cannot be reverted.
-                Your team members will receive a loss for any scheduled/disputed matches.
+                  Are you sure you want to delete the <span className="text-red-500">{teamName}</span> team permanently? This action cannot be reverted.
+                  Your team members will receive a loss for any scheduled/disputed matches.
                 </p>
               </ModalBody>
               <ModalFooter>
