@@ -42,7 +42,7 @@ export default function Header() {
         },
 
         onError: () => {
-
+            console.log("error")
         }
     })
 
