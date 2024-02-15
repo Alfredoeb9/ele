@@ -3,6 +3,7 @@ import "@/styles/globals.css";
 import { Inter } from "next/font/google";
 
 import { TRPCReactProvider } from "@/trpc/react";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import Provider from "./_components/providers/SessionProvider";
 import Header from "./_components/header";
 import ReduxProvider from "./_components/providers/ReduxProvider";
@@ -67,6 +68,7 @@ export default async function RootLayout({
                   <ToastContainer />
                   <Footer />
                 </div>
+                <ReactQueryDevtools initialIsOpen={false} />
               </NextUiProvider>
             </TRPCReactProvider>
           </ReduxProvider>

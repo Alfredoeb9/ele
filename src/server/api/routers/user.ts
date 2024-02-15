@@ -163,7 +163,7 @@ export const userRouter = createTRPCRouter({
     .input(z.object({
       email: z.string().min(1)
     }))
-    .mutation(async ({ ctx, input }) => {
+    .query(async ({ ctx, input }) => {
       try {
         const currentUser = await ctx.db.select().from(users).where(eq(users.email, input.email))
 
@@ -297,7 +297,7 @@ export const userRouter = createTRPCRouter({
     .input(z.object({
       id: z.string().min(1),
     }))
-    .mutation(async ({ ctx, input }) => {
+    .query(async ({ ctx, input }) => {
       try {
         const getNotification = await ctx.db.select().from(notificationsTable).where(eq(notificationsTable.userId, input.id))
 

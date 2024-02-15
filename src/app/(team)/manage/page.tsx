@@ -2,15 +2,13 @@
 
 
 import { api } from "@/trpc/react";
-import { Button } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function ManageTeam() {
-    const router = useRouter()
     const [userName, setUserName] = useState<string>("");
     const [error, setError] = useState<string>("");
+    const utils = api.useUtils()
 
     const session = useSession();
 
@@ -20,18 +18,14 @@ export default function ManageTeam() {
     const sendRequest = api.user.sendFriendRequest.useMutation({
     
         onSuccess: () => {
-            console.log("sent")
+            utils.user.getNotifications.invalidate()
             setUserName("")
-            router.refresh()
         },
         onError: (e) => {
-          console.log("error", e.message)
           setError(e.message)
         }
     });
 
-
-    console.log("id", id)
     return (
         <div>
             <form onSubmit={(e) => {

@@ -14,44 +14,30 @@ import 'react-toastify/dist/ReactToastify.css';
 import { api } from "@/trpc/react";
 
 export default function Header() {
-    const { getuser, error2, isLoading2 } = useGetUser();
     const [error, setError] = useState("");
     const session = useSession();
 
     const router = useRouter();
 
-    console.log("session", session)
+    const currentUser = api.user.getSingleUser.useQuery({ email: session.data && session?.data.user.email as string | any })
 
-    const currentUser = api.user.getSingleUser.useMutation({
-        onError: (error) => {
-            // setError(error.message)
-            toast(`There was a problem getting user data`, {
-                position: "bottom-right",
-                autoClose: false,
-                closeOnClick: true,
-                draggable: false,
-                type: "error",
-                toastId: 2                             
-            })
-        }
-    })
+    if (currentUser.isError) {
+        toast(`There was a problem getting user data`, {
+            position: "bottom-right",
+            autoClose: false,
+            closeOnClick: true,
+            draggable: false,
+            type: "error",
+            toastId: 2                             
+        })
+    }
 
-    const usersNotifications = api.user.getNotifications.useMutation({
-        onSuccess: () => {
-            console.log("notifications")
-        },
+    const usersNotifications = api.user.getNotifications.useQuery({ id: session?.data && session.data?.user?.id as string | any }, { enabled: currentUser.isSuccess})
 
-        onError: () => {
-            console.log("error")
-        }
-    })
+    if (usersNotifications.isError) {
+        toast('Notification Service is down, please reach out to admin')
+    }
 
-    useEffect(() => {
-        if (session.data?.user) {
-            currentUser.mutate({ email: session.data?.user.email as string})
-            usersNotifications.mutate({ id: session.data.user.id })
-        }
-    }, [session.data])
 
     if (currentUser?.data && currentUser?.data?.credits === undefined) {
         toast(`There was problem retrieving your credits, please refresh and try agian. If this problem presist please reach out to customer service`, {
@@ -63,8 +49,6 @@ export default function Header() {
             toastId: 3                             
         })
     }
-
-    console.log("usersNotifications", usersNotifications)
 
     return (
         <header className="nav">
