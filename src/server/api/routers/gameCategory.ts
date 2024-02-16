@@ -11,7 +11,7 @@ export const gameCategoryRouter = createTRPCRouter({
     getOnlyGames: publicProcedure.query(async({ ctx }) => {
         const games = await ctx.db.select().from(gameCategory)
 
-        if (!games) throw new Error("Error occured, please refresh ")
+        if (games.length <= 0) throw new Error("Error occured, please refresh")
 
         return games
     })

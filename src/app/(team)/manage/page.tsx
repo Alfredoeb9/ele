@@ -3,7 +3,9 @@
 
 import { api } from "@/trpc/react";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function ManageTeam() {
     const [userName, setUserName] = useState<string>("");
@@ -23,6 +25,17 @@ export default function ManageTeam() {
         },
         onError: (e) => {
           setError(e.message)
+          
+          if (!toast.isActive(13, "friendRequest")) {
+            toast('User does not exist', {
+                position: "bottom-right",
+                autoClose: false,
+                closeOnClick: true,
+                draggable: false,
+                type: "error",
+                toastId: 13                      
+            })
+          }
         }
     });
 
@@ -46,7 +59,7 @@ export default function ManageTeam() {
 
                 <button>SEND</button>
             </form>
-            
+            <ToastContainer containerId={"friendRequest"} />
         </div>
     )
 }

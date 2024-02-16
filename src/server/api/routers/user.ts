@@ -278,10 +278,10 @@ export const userRouter = createTRPCRouter({
 
         const isUserActive = await ctx.db.select().from(users).where(eq(users.username, input.userName))
 
-        // if (isUserActive.length <= 0) throw new Error("No user found")
+        if (isUserActive.length <= 0) throw new Error("No user found")
         
         const sentRequest = await ctx.db.insert(notificationsTable).values({
-          userId: input.id,
+          userId: isUserActive[0].id, // target
           from: input.id,
           isRead: false,
           type: "invite",

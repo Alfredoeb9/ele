@@ -17,7 +17,7 @@ export default function Header() {
 
     const router = useRouter();
 
-    const currentUser = api.user.getSingleUser.useQuery({ email: session.data?.user.email as string })
+    const currentUser = api.user.getSingleUser.useQuery({ email: session.data?.user?.email as string }, { enabled: session.status === "authenticated" ? true : false })
 
     if (currentUser.isError) {
         toast(`There was a problem getting user data`, {
@@ -30,7 +30,7 @@ export default function Header() {
         })
     }
 
-    const usersNotifications = api.user.getNotifications.useQuery({ id: session.data?.user?.id as string }, { enabled: currentUser.isSuccess})
+    const usersNotifications = api.user.getNotifications.useQuery({ id: session.data?.user?.id as string }, { enabled: currentUser.isSuccess })
 
     if (usersNotifications.isError) {
         toast('Notification Service is down, please reach out to admin', {

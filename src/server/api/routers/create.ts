@@ -17,13 +17,11 @@ export const createRouter = createTRPCRouter({
                 const teamRandomId = crypto.randomUUID()
 
                 // create the team
-                const newTeam = await ctx.db.insert(teams).values({
+                await ctx.db.insert(teams).values({
                     game: input.game,
                     team_name: input.teamName,
                     id: teamRandomId
                 });
-
-                console.log("team", newTeam)
 
                 // creat user to the team Members table 
                 // this allows me to get multiple teams user is part of
@@ -34,7 +32,7 @@ export const createRouter = createTRPCRouter({
                     teamName: input.teamName,
                     role: "member"
                 })
-    
+                return true
                 // await ctx.db.update(users).set({ teamId: teamRandomId as unknown as string[]}).where(eq(users.email, input.email))
     
                 // this works to update the teamId but in single values ... not ideal
