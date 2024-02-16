@@ -221,7 +221,7 @@ export const userRouter = createTRPCRouter({
     .input(z.object({
       email: z.string().min(1),
     }))
-    .mutation(async ({ ctx, input }) => {
+    .query(async ({ ctx, input }) => {
       try {
         const currentUser = await ctx.db.query.users.findFirst({
           with: {

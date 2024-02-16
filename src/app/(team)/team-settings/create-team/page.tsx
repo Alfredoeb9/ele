@@ -9,7 +9,7 @@ import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 
-export default function SignUp() {
+export default function CreateTeam() {
     const router = useRouter();
     const session = useSession();
     const [teamName, setTeamName] = useState<string>("");
@@ -20,19 +20,19 @@ export default function SignUp() {
 
     if (!session.data) router.push("/sign-in")
 
-    const currentUser = api.user.getSingleUserWithTeams.useMutation({
-        onError: (error) => {
-            setError("Service is down, please refresh or submit a ticket")
-            toast(`Service is down, please refresh or submit a ticket`, {
-                position: "bottom-right",
-                autoClose: false,
-                closeOnClick: true,
-                draggable: false,
-                type: "error",
-                toastId: 9                             
-            })
-        }
-    })
+    const currentUser = api.user.getSingleUserWithTeams.useQuery({ email: session.data?.user.email as string })
+
+    if (currentUser.isError) {
+        setError("Service is down, please refresh or submit a ticket")
+        toast(`Service is down, please refresh or submit a ticket`, {
+            position: "bottom-right",
+            autoClose: false,
+            closeOnClick: true,
+            draggable: false,
+            type: "error",
+            toastId: 9                             
+        })
+    }
     
     const createTeam = api.create.createTeam.useMutation({
         
@@ -48,13 +48,19 @@ export default function SignUp() {
         }
     });
 
-    useEffect(() => {
-        if (session.data?.user) {
-            currentUser.mutate({ email: session.data?.user.email as string})
-        }
-    }, [session.data])
-
     const gameCategory = api.games.getOnlyGames.useQuery();
+
+    if (gameCategory.isError) {
+        setError("Service is down, please refresh or submit a ticket")
+        toast(`Service is down, please refresh or submit a ticket`, {
+            position: "bottom-right",
+            autoClose: false,
+            closeOnClick: true,
+            draggable: false,
+            type: "error",
+            toastId: 12                             
+        })
+    }
 
     if (createTeam.isLoading) return <Spinner label="Loading..." color="warning" />
 
