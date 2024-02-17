@@ -107,7 +107,7 @@ export default function Header() {
                                     <DropdownItem key="settings">My Settings</DropdownItem>
                                     
                                     <DropdownItem key="team_settings"><Link href="/team-settings">Team Settings</Link></DropdownItem>
-                                    <DropdownItem key="team_settings"><Link href="/friends">Friends</Link></DropdownItem>
+                                    <DropdownItem key="friends"><Link href="/friends">Friends</Link></DropdownItem>
                                     <DropdownItem key="analytics">Stats</DropdownItem>
                                     <DropdownItem key="buy_credits"><Link href={"/pricing"}>Buy Credits</Link></DropdownItem>
                                     <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
