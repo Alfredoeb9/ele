@@ -40,13 +40,15 @@ export const columns = [
 export const friendsColumns = [
   { key: "id", label: "ID",sortable: true },
   { key: "username", label: "USERNAME", sortable: true },
-  { key: "email", label: "EMAIL", sortable: true }
+  { key: "email", label: "EMAIL", sortable: true },
+  { key: "status", label: "STATUS", sortable: true },
+  { key: "actions", label: "ACTIONS" },
 ];
 
-export const friendsVisibleColumns = ["id", "username", "email"];
+export const friendsVisibleColumns = ["id", "username", "email", "actions", "status"];
 
 export const statusOptions = [
   {name: "Active", uid: "active"},
   {name: "Paused", uid: "paused"},
-  {name: "Vacation", uid: "vacation"},
+  {name: "Inactive", uid: "inactive"},
 ];

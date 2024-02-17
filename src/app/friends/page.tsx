@@ -175,11 +175,11 @@ import {
     DropdownMenu,
     DropdownItem,
     Chip,
-    User,
     Pagination,
     Selection,
     ChipProps,
-    SortDescriptor
+    SortDescriptor,
+    User
   } from "@nextui-org/react";
 //   import {PlusIcon} from "./PlusIcon";
 //   import {VerticalDotsIcon} from "./VerticalDotsIcon";
@@ -191,6 +191,10 @@ import { useCallback, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { api } from "@/trpc/react";
 import { friendsVisibleColumns, statusOptions, friendsColumns } from "@/lib/sharedData";
+import Link from "next/link";
+import { VerticalDotsIcon } from "./VerticalDotsIcon";
+import { SearchIcon } from "./SearchIcon";
+import type { Users } from "@/server/db/schema"
   
   const statusColorMap: Record<string, ChipProps["color"]> = {
     active: "success",
@@ -210,84 +214,64 @@ import { friendsVisibleColumns, statusOptions, friendsColumns } from "@/lib/shar
     const [statusFilter, setStatusFilter] = useState<Selection>("all");
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
-      column: "age",
+      column: "username",
       direction: "ascending",
     });
     const [page, setPage] = useState(1);
     const [error, setError] = useState("");
 
     const userFriendData = api.user.getUserWithFriends.useQuery({ id: session.data?.user.id as string }, { enabled: session.status === "authenticated" ? true : false})
-
-    console.log("user", userFriendData.data)
-    type User = typeof userFriendData[0][0];
   
     const pages = Math.ceil(userFriendData.data?.length as number / rowsPerPage);
   
     const hasSearchFilter = Boolean(filterValue);
 
     const filteredItems = useMemo(() => {
-        let filteredUsers = userFriendData.data;
-        
-        
-        if (hasSearchFilter) {
-          filteredUsers = filteredUsers?.filter((user) => {
-            let list = user.map((u) => {
-                return u.username?.toLowerCase().includes(filterValue.toLowerCase())
-            })
-            console.log("filtlister", list)
-            return list;
-          });
-          return filteredUsers
-        }
+      let filteredUsers = userFriendData.data;
+      
+      if (hasSearchFilter) {
+        filteredUsers = filteredUsers?.filter((user) => 
+          user[0].username?.toLowerCase().includes(filterValue.toLowerCase())
+        )
+      }
 
-        
-        // if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
-        //   filteredUsers = filteredUsers?.filter((user) =>
-        //     Array.from(statusFilter).includes(user?.status),
-        //   );
-        // }
-    
-        return filteredUsers;
-      }, [userFriendData.data, filterValue, statusFilter]);
-
-      const items = useMemo(() => {
-        const start = (page - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
-    
-        return filteredItems?.slice(start, end);
-      }, [page, filteredItems, rowsPerPage]);
-
-
-      const sortedItems = useMemo(() => {
-        return items?.sort((a: User, b: User) => {
-          const first = a[sortDescriptor.column as keyof User] as number;
-          const second = b[sortDescriptor.column as keyof User] as number;
-          const cmp = first < second ? -1 : first > second ? 1 : 0;
-    
-          return sortDescriptor.direction === "descending" ? -cmp : cmp;
-        });
-      }, [sortDescriptor, items]);
-
-    
+      
+      // if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
+      //   filteredUsers = filteredUsers?.filter((user) =>
+      //     Array.from(statusFilter).includes(user?.status),
+      //   );
+      // }
   
+      return filteredUsers;
+    }, [userFriendData.data, filterValue, statusFilter]);
+
+    const items = useMemo(() => {
+      const start = (page - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+  
+      return filteredItems?.slice(start, end);
+    }, [page, filteredItems, rowsPerPage]);
+
+
+    const sortedItems = useMemo(() => {
+      return items?.sort((a: Users | any, b: Users | any) => {
+        const first = a[sortDescriptor.column as keyof Users] as number;
+        const second = b[sortDescriptor.column as keyof Users] as number;
+        const cmp = first < second ? -1 : first > second ? 1 : 0;
+  
+        return sortDescriptor.direction === "descending" ? -cmp : cmp;
+      });
+    }, [sortDescriptor, items]);
+ 
     const headerColumns = useMemo(() => {
       if (visibleColumns === "all") return friendsColumns;
   
       return friendsColumns.filter((column) => Array.from(visibleColumns).includes(column.key));
     }, [visibleColumns, userFriendData.data]);
   
-    
-  
-    
-  
-    
-  
     const renderCell = useCallback((user: any, columnKey: React.Key) => {
-      const cellValue = user[columnKey as keyof User];
+      const cellValue = user[columnKey as keyof Users];
   
-      console.log("value", cellValue)
-      console.log("user123", user[columnKey as keyof User])
-      console.log("column", columnKey)
       switch (columnKey) {
         case "id":
           return (
@@ -296,24 +280,22 @@ import { friendsVisibleColumns, statusOptions, friendsColumns } from "@/lib/shar
               classNames={{
                 description: "text-default-500",
               }}
-              description={user.email}
-              name={cellValue}
-            >
-              {cellValue}
-            </User>
+              // description={user.email}
+              name={user.username}
+            />
+            
           );
         case "username":
           return (
             <div className="flex flex-col">
               <p className="text-bold text-small capitalize">{cellValue}</p>
-              <p className="text-bold text-tiny capitalize text-default-500">{user.team}</p>
+              {/* <p className="text-bold text-tiny capitalize text-default-500">{user.team}</p> */}
             </div>
           );
         case "email":
             return (
               <div className="flex flex-col">
                 <p className="text-bold text-small capitalize">{cellValue}</p>
-                <p className="text-bold text-tiny capitalize text-default-500">{user.email}</p>
               </div>
             );
         case "status":
@@ -333,12 +315,11 @@ import { friendsVisibleColumns, statusOptions, friendsColumns } from "@/lib/shar
               <Dropdown className="bg-background border-1 border-default-200">
                 <DropdownTrigger>
                   <Button isIconOnly radius="full" size="sm" variant="light">
-                    {/* <VerticalDotsIcon className="text-default-400" /> */}
+                    <VerticalDotsIcon className="text-default-400" />
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu>
-                  <DropdownItem>View</DropdownItem>
-                  <DropdownItem>Edit</DropdownItem>
+                  <DropdownItem><Link href={`/user/${user.id}`}>View</Link></DropdownItem>
                   <DropdownItem>Delete</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
@@ -376,9 +357,9 @@ import { friendsVisibleColumns, statusOptions, friendsColumns } from "@/lib/shar
                 base: "w-full sm:max-w-[44%]",
                 inputWrapper: "border-1",
               }}
-              placeholder="Search by name..."
+              placeholder="Search by username..."
               size="sm"
-            //   startContent={<SearchIcon className="text-default-300" />}
+              startContent={<SearchIcon className="text-default-300" />}
               value={filterValue}
               variant="bordered"
               onClear={() => setFilterValue("")}
@@ -440,7 +421,10 @@ import { friendsVisibleColumns, statusOptions, friendsColumns } from "@/lib/shar
                 // endContent={<PlusIcon />}
                 size="sm"
               >
-                Add New
+                <Link href={"/manage"}>
+                  Add New Friend
+                </Link>
+                
               </Button>
             </div>
           </div>
@@ -516,45 +500,49 @@ import { friendsVisibleColumns, statusOptions, friendsColumns } from "@/lib/shar
     if (userFriendData.data === undefined) return null
   
     return (
-      <Table
-        isCompact
-        removeWrapper
-        aria-label="Example table with custom cells, pagination and sorting"
-        bottomContent={bottomContent}
-        bottomContentPlacement="outside"
-        checkboxesProps={{
-          classNames: {
-            wrapper: "after:bg-foreground after:text-background text-background",
-          },
-        }}
-        classNames={classNames}
-        selectedKeys={selectedKeys}
-        selectionMode="multiple"
-        sortDescriptor={sortDescriptor}
-        topContent={topContent}
-        topContentPlacement="outside"
-        onSelectionChange={setSelectedKeys}
-        onSortChange={setSortDescriptor}
-      >
-        <TableHeader columns={headerColumns}>
-          {(column) => (
-            <TableColumn
-              key={column.key}
-              align={column.key === "actions" ? "center" : "start"}
-              allowsSorting={column.sortable}
-            >
-              {column.label}
-            </TableColumn>
-          )}
-        </TableHeader>
-        <TableBody emptyContent={"No users found"} items={sortedItems}>
-          {(item) => (
-            <TableRow key={item[0].id}>
-              {(columnKey) => <TableCell>{renderCell(item[0], columnKey)}</TableCell>}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+      <div className="flex h-full flex-col items-start justify-center place-content-center m-auto max-w-7xl px-10 mt-2">
+        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2">My Friends</h1>
+        <Table
+          isCompact
+          removeWrapper
+          aria-label="Example table with custom cells, pagination and sorting"
+          bottomContent={bottomContent}
+          bottomContentPlacement="outside"
+          checkboxesProps={{
+            classNames: {
+              wrapper: "after:bg-foreground after:text-background text-background",
+            },
+          }}
+          className="bg-white p-3"
+          classNames={classNames}
+          // selectedKeys={selectedKeys}
+          // selectionMode="multiple"
+          // sortDescriptor={sortDescriptor}
+          topContent={topContent}
+          topContentPlacement="outside"
+          onSelectionChange={setSelectedKeys}
+          onSortChange={setSortDescriptor}
+        >
+          <TableHeader columns={headerColumns}>
+            {(column) => (
+              <TableColumn
+                key={column.key}
+                align={column.key === "actions" ? "center" : "start"}
+                allowsSorting={column.sortable}
+              >
+                {column.label}
+              </TableColumn>
+            )}
+          </TableHeader>
+          <TableBody emptyContent={"No users found"} items={sortedItems}>
+            {(item) => (
+              <TableRow key={item[0].id}>
+                {(columnKey) => <TableCell>{renderCell(item[0], columnKey)}</TableCell>}
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
     );
   }
   
