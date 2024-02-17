@@ -146,7 +146,7 @@ export default function Profile() {
                 </div>
                 
             </div>
-            <ToastContainer />
+            <ToastContainer containerId={"profile-toast"} />
         </div>
     )
 }
