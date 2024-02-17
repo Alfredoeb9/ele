@@ -1,6 +1,8 @@
+import { api } from "@/trpc/react";
 import { Avatar, Button, Divider } from "@nextui-org/react";
 
 export default function Team() {
+
     return (
         <div className="bg-neutral-600">
             <div className="w-full h-[300px] object-cover bg-mw3_team_background bg-no-repeat bg-cover after:relative after:block after:top-0 after:left-0 after:w-full after:h-full after:bg-gradient-to-br from-white to-neutral-400 after:opacity-50 z-0 relative"></div>

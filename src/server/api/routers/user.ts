@@ -219,19 +219,37 @@ export const userRouter = createTRPCRouter({
 
   getSingleUserWithTeams: publicProcedure
     .input(z.object({
-      email: z.string().min(1),
+      email: z.string().min(1).optional(),
+      username: z.string().min(1).optional()
     }))
     .query(async ({ ctx, input }) => {
       try {
-        const currentUser = await ctx.db.query.users.findFirst({
-          with: {
-            teams: true
-          }
-        });
 
-        if (!currentUser) throw new Error("No user with such credentials")
+        if (input.username) {
 
-        return currentUser;
+          const currentUser = await ctx.db.query.users.findFirst({
+            where: eq(users.username, input.username),
+            with: {
+              teams: true
+            }
+          });
+  
+          if (!currentUser) throw new Error("No user with such credentials")
+  
+          return currentUser;
+        } else if (input.email) {
+
+          const currentUser = await ctx.db.query.users.findFirst({
+            where: eq(users.email, input.email),
+            with: {
+              teams: true
+            }
+          });
+  
+          if (!currentUser) throw new Error("No user with such credentials")
+  
+          return currentUser;
+        }
       } catch (error) {
         throw new Error(error as string)
       }

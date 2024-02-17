@@ -20,19 +20,19 @@ export default function CreateTeam() {
 
     if (!session.data) router.push("/sign-in")
 
-    const currentUser = api.user.getSingleUserWithTeams.useQuery({ email: session.data?.user.email as string })
+    // const currentUser = api.user.getSingleUserWithTeams.useQuery({ email: session.data?.user.email as string })
 
-    if (currentUser.isError) {
-        setError("Service is down, please refresh or submit a ticket")
-        toast(`Service is down, please refresh or submit a ticket`, {
-            position: "bottom-right",
-            autoClose: false,
-            closeOnClick: true,
-            draggable: false,
-            type: "error",
-            toastId: 9                             
-        })
-    }
+    // if (currentUser.isError) {
+    //     setError("Service is down, please refresh or submit a ticket")
+    //     toast(`Service is down, please refresh or submit a ticket`, {
+    //         position: "bottom-right",
+    //         autoClose: false,
+    //         closeOnClick: true,
+    //         draggable: false,
+    //         type: "error",
+    //         toastId: 9                             
+    //     })
+    // }
     
     const createTeam = api.create.createTeam.useMutation({
         

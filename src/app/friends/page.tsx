@@ -316,7 +316,7 @@ import RemoveFriendModal from "../_components/RemoveFriendModal";
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu>
-                  <DropdownItem><Link href={`/user/${user.id}`}>View</Link></DropdownItem>
+                  <DropdownItem><Link href={`/profile/${user.username}`}>View</Link></DropdownItem>
                   <DropdownItem 
                     onPress={ () => { 
                       onOpen()
