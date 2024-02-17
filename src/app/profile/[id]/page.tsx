@@ -33,12 +33,20 @@ export default function Profile() {
     
         onSuccess: async () => {
             await utils.user.getNotifications.invalidate()
+            toast('Friend request sent', {
+                position: "bottom-right",
+                autoClose: false,
+                closeOnClick: true,
+                draggable: false,
+                type: "success",
+                toastId: 14                      
+            })
         },
         onError: (e) => {
           setError(e.message)
           
           if (!toast.isActive(13, "friendRequest")) {
-            toast('User does not exist', {
+            toast('Error sending request user, please refresh and try again', {
                 position: "bottom-right",
                 autoClose: false,
                 closeOnClick: true,
@@ -93,7 +101,10 @@ export default function Profile() {
                                                 userName: user?.username as string,
                                                 id: userSession?.id as string,
                                                 senderUserName: user?.email as string
-                                            });
+                                            })
+                                            if (sendRequest.isSuccess) {
+
+                                            }
                                         }}>Send Friend Request</Button>
                                     )}
                                     
@@ -135,6 +146,7 @@ export default function Profile() {
                 </div>
                 
             </div>
+            <ToastContainer />
         </div>
     )
 }
