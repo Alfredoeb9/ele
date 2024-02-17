@@ -307,6 +307,30 @@ export const userRouter = createTRPCRouter({
         throw new Error(error as string)
       }
     }),
+  getUserWithFriends: publicProcedure
+    .input(z.object({
+      id: z.string().min(1),
+    }))
+    .query(async ({ ctx, input }) => {
+      try {
+        const userWithFriends = await ctx.db.select().from(followsTables).where(eq(followsTables.userId, input.id))
+
+        if (!userWithFriends) {
+          throw new Error("No friends found")
+        }
+
+        // get all users profiles
+        const allFriendsProfiles = await Promise.all(
+          userWithFriends.map(async (followingUser) => {
+            return await ctx.db.select().from(users).where(eq(users.id, followingUser.targetUser)) // change this to
+          })
+        )
+
+        return allFriendsProfiles
+      } catch (error) {
+        throw new Error(error as string)
+      }
+    }),
 
   getLatest: publicProcedure.query(({ ctx }) => {
     return ctx.db.query.posts.findFirst({

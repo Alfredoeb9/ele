@@ -28,7 +28,7 @@ export default function TeamSettings() {
             closeOnClick: true,
             draggable: false,
             type: "error",
-            toastId: 2                             
+            toastId: 2
         })
     }
 

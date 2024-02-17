@@ -37,3 +37,28 @@ export const columns = [
     },
 ];
   
+export const friendsColumns = [
+  {
+    key: "id",
+    label: "ID",
+    sortable: true
+  },
+  {
+    key: "username",
+    label: "USERNAME",
+    sortable: true
+  },
+  {
+    key: "email",
+    label: "EMAIL",
+    sortable: true
+  }
+];
+
+export const friendsVisibleColumns = ["id", "username", "email"];
+
+export const statusOptions = [
+  {name: "Active", uid: "active"},
+  {name: "Paused", uid: "paused"},
+  {name: "Vacation", uid: "vacation"},
+];
