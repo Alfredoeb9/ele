@@ -1,25 +1,11 @@
-
-// import { Users } from "@/lib/sharedData"
+import { Spinner } from "@nextui-org/react";
 import {MatchFinderTable} from "./MatchFinderTable"
-import { useQuery } from "@tanstack/react-query"
-import {Spinner} from "@nextui-org/react";
 import { api } from "@/trpc/react";
 
 export default function HomeMatchFinder() {
-    // const { data: matches, isLoading, isError, isSuccess} = useQuery<any>({
-    //     queryKey: ["match-finder"],
-    //     queryFn: () => 
-    //         fetch('/api/match-finder').then((res) =>
-    //             res.json()
-    //         ),
-    //     retry: 3
-    // })
-
     const tournamentMatches = api.matches.getAllMatches.useQuery()
 
-    console.log("tour", tournamentMatches.data);
-
-    // if (tournamentMatches.isLoading) return <Spinner label="Loading..." color="warning" />
+    if (tournamentMatches.isLoading) return <Spinner label="Loading..." color="warning" />
 
     return (
         <section className="flex flex-col items-center justify-center m-auto p-8 max-w-7xl w-full">
@@ -34,7 +20,6 @@ export default function HomeMatchFinder() {
                     { tournamentMatches.isError && <p>Please refresh again!</p>}
                     
                 </div>
-                
             </div>
         </section>
     )
