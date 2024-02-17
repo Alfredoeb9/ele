@@ -99,21 +99,22 @@ export default function Header() {
                                     />
                                 </DropdownTrigger>
                                 <DropdownMenu aria-label="Profile Actions" disabledKeys={["profile", "credits"]}>
-                                    <DropdownItem key="profile" className="h-14 gap-2">
+                                    <DropdownItem key="profile" textValue={session?.data?.user?.email as string} className="h-14 gap-2">
                                         <p className="font-semibold">Signed in as</p>
                                         <p className="font-semibold">{session?.data.user.email}</p>
                                     </DropdownItem>
-                                    <DropdownItem key="credits"><span className="font-black">Credits: </span> <span className="font-semibold">{ currentUser.data == undefined || currentUser.isError ? "Err" : (currentUser?.data as any).credits}</span></DropdownItem>
-                                    <DropdownItem key="settings">My Settings</DropdownItem>
+                                    <DropdownItem key="credits" textValue={currentUser.data !== undefined && currentUser.isSuccess && (currentUser?.data as any).credits}><span className="font-black">Credits: </span> <span className="font-semibold">{ currentUser.data == undefined || currentUser.isError ? "Err" : (currentUser?.data as any).credits}</span></DropdownItem>
+                                    <DropdownItem key="settings" textValue="my settings">My Settings</DropdownItem>
                                     
-                                    <DropdownItem key="team_settings"><Link href="/team-settings">Team Settings</Link></DropdownItem>
-                                    <DropdownItem key="friends"><Link href="/friends">Friends</Link></DropdownItem>
-                                    <DropdownItem key="analytics">Stats</DropdownItem>
-                                    <DropdownItem key="buy_credits"><Link href={"/pricing"}>Buy Credits</Link></DropdownItem>
-                                    <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
+                                    <DropdownItem key="team_settings" textValue="team-settings"><Link href="/team-settings">Team Settings</Link></DropdownItem>
+                                    <DropdownItem key="friends" textValue="friends"><Link href="/friends">Friends</Link></DropdownItem>
+                                    <DropdownItem key="analytics" textValue="stats">Stats</DropdownItem>
+                                    <DropdownItem key="buy_credits" textValue="pricing"><Link href={"/pricing"}>Buy Credits</Link></DropdownItem>
+                                    <DropdownItem key="help_and_feedback" textValue="help & feedback">Help & Feedback</DropdownItem>
                                     <DropdownItem 
                                         key="logout" 
-                                        color="danger" 
+                                        color="danger"
+                                        textValue="log out"
                                         onClick={async (e) => {
                                             e.preventDefault();
                                             await signOut();
