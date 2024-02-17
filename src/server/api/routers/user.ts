@@ -337,6 +337,26 @@ export const userRouter = createTRPCRouter({
       orderBy: (posts, { desc }) => [desc(posts.createdAt)],
     });
   }),
+
+  removeFriend: publicProcedure
+    .input(z.object({
+      email: z.string().min(1),
+      id: z.string().min(1)
+    }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+
+        const userExist = await ctx.db.select().from(users).where(eq(users.email, input.email))
+
+        if (!userExist) throw new Error("User does not exist")
+
+        const friendRemoved = ctx.db.delete(followsTables).where(eq(followsTables.targetUser, userExist[0].id))
+
+        return friendRemoved
+      } catch (error) {
+        throw new Error(error as string)
+      }
+    })
 });
 
 

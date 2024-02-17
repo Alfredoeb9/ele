@@ -179,14 +179,9 @@ import {
     Selection,
     ChipProps,
     SortDescriptor,
-    User
+    User,
+    useDisclosure
   } from "@nextui-org/react";
-//   import {PlusIcon} from "./PlusIcon";
-//   import {VerticalDotsIcon} from "./VerticalDotsIcon";
-//   import {ChevronDownIcon} from "./ChevronDownIcon";
-//   import {SearchIcon} from "./SearchIcon";
-  import {columns, users } from "./data";
-//   import {capitalize} from "./utils";
 import { useCallback, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { api } from "@/trpc/react";
@@ -195,18 +190,16 @@ import Link from "next/link";
 import { VerticalDotsIcon } from "./VerticalDotsIcon";
 import { SearchIcon } from "./SearchIcon";
 import type { Users } from "@/server/db/schema"
+import RemoveFriendModal from "../_components/RemoveFriendModal";
   
   const statusColorMap: Record<string, ChipProps["color"]> = {
     active: "success",
     paused: "danger",
     vacation: "warning",
-  };
-  
-  const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
-  
+  };  
  
-  
   export default function Friends() {
+    const {isOpen, onOpen, onOpenChange} = useDisclosure();
     const session = useSession();
     const [filterValue, setFilterValue] = useState("");
     const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
@@ -218,7 +211,11 @@ import type { Users } from "@/server/db/schema"
       direction: "ascending",
     });
     const [page, setPage] = useState(1);
+    const [usernameState, setUsername] = useState<string>("");
+    const [userId, setUserId] = useState<string>("");
+    const [email, setEmail] = useState<string>("");
     const [error, setError] = useState("");
+    const utils = api.useUtils()
 
     const userFriendData = api.user.getUserWithFriends.useQuery({ id: session.data?.user.id as string }, { enabled: session.status === "authenticated" ? true : false})
   
@@ -295,7 +292,7 @@ import type { Users } from "@/server/db/schema"
         case "email":
             return (
               <div className="flex flex-col">
-                <p className="text-bold text-small capitalize">{cellValue}</p>
+                <p className="text-bold text-small">{cellValue}</p>
               </div>
             );
         case "status":
@@ -320,7 +317,16 @@ import type { Users } from "@/server/db/schema"
                 </DropdownTrigger>
                 <DropdownMenu>
                   <DropdownItem><Link href={`/user/${user.id}`}>View</Link></DropdownItem>
-                  <DropdownItem>Delete</DropdownItem>
+                  <DropdownItem 
+                    onPress={ () => { 
+                      onOpen()
+                      setUsername(user.username)
+                      setEmail(user.email)
+                      setUserId(user.id)
+                    }}
+                  >
+                    Delete
+                  </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </div>
@@ -344,8 +350,6 @@ import type { Users } from "@/server/db/schema"
         setFilterValue("");
       }
     }, []);
-
-    console.log("searchValue", filterValue)
   
     const topContent = useMemo(() => {
       return (
@@ -429,7 +433,7 @@ import type { Users } from "@/server/db/schema"
             </div>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-default-400 text-small">Total {users.length} users</span>
+            <span className="text-default-400 text-small">Total {items?.length} users</span>
             <label className="flex items-center text-default-400 text-small">
               Rows per page:
               <select
@@ -542,6 +546,8 @@ import type { Users } from "@/server/db/schema"
             )}
           </TableBody>
         </Table>
+
+        <RemoveFriendModal open={isOpen} onOpenChange={onOpenChange} teamName={usernameState} email={email} id={userId} />
       </div>
     );
   }
