@@ -411,6 +411,8 @@ export const notificationsTable = createTable(
   }
 )
 
+export type NotificationType = typeof notificationsTable.$inferSelect;
+
 export const usersToFollowsRelations = relations(followsTables, ({ one }) => ({
   user: one(users, { 
     fields: [followsTables.targetUser], 

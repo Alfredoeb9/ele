@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Avatar, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
 import { ToastContainer, toast } from "react-toastify";
 import { FaBell } from "react-icons/fa";
+import type { NotificationType } from "@/server/db/schema"
 
 
 import 'react-toastify/dist/ReactToastify.css';
@@ -120,7 +121,7 @@ export default function Header() {
                                         </Button>
                                     </DropdownTrigger>
                                     <DropdownMenu aria-label="Notification Actions" closeOnSelect={false}>
-                                        {usersNotifications?.data?.map((notification, i) => (
+                                        {(usersNotifications?.data as NotificationType[]).map((notification: any, i: number) => (
                                             <DropdownItem key={i}>
                                                 user wants to be your friend
                                                 <Button color="success" onPress={() => {
@@ -134,30 +135,6 @@ export default function Header() {
                                                 <Button color="danger">Decline</Button>
                                             </DropdownItem>
                                         ))}
-                                    {/* <DropdownItem key="profile" textValue={session?.data?.user?.email as string} className="h-14 gap-2">
-                                        <p className="font-semibold">Signed in as</p>
-                                        <p className="font-semibold">{session?.data.user.email}</p>
-                                    </DropdownItem>
-                                    <DropdownItem key="credits" textValue={currentUser.data !== undefined && currentUser.isSuccess && (currentUser?.data as any).credits}><span className="font-black">Credits: </span> <span className="font-semibold">{ currentUser.data == undefined || currentUser.isError ? "Err" : (currentUser?.data as any).credits}</span></DropdownItem>
-                                    <DropdownItem key="settings" textValue="my settings">My Settings</DropdownItem>
-                                    
-                                    <DropdownItem key="team_settings" textValue="team-settings"><Link href="/team-settings">Team Settings</Link></DropdownItem>
-                                    <DropdownItem key="friends" textValue="friends"><Link href="/friends">Friends</Link></DropdownItem>
-                                    <DropdownItem key="analytics" textValue="stats">Stats</DropdownItem>
-                                    <DropdownItem key="buy_credits" textValue="pricing"><Link href={"/pricing"}>Buy Credits</Link></DropdownItem>
-                                    <DropdownItem key="help_and_feedback" textValue="help & feedback">Help & Feedback</DropdownItem>
-                                    <DropdownItem 
-                                        key="logout" 
-                                        color="danger"
-                                        textValue="log out"
-                                        onClick={async (e) => {
-                                            e.preventDefault();
-                                            await signOut();
-                                            router.push("/");
-                                        }}
-                                    >
-                                        Log Out
-                                    </DropdownItem> */}
                                 </DropdownMenu>
                             </Dropdown>
                             </div>
