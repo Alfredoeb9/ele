@@ -26,7 +26,7 @@ export default function RemoveFriendModal({ open, onOpenChange, teamName, email,
                 closeOnClick: true,
                 draggable: false,
                 type: "success",
-                toastId: 14                     
+                toastId: 16                     
             })
         }
     })

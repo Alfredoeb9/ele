@@ -2,7 +2,7 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { followsTables, notificationsTable, posts, sessions, users, verificationTokens } from "@/server/db/schema";
+import { followsTables, notificationsTable, posts, sessions, users, usersRecordTable, verificationTokens } from "@/server/db/schema";
 import { db } from "@/server/db";
 import { createToken, emailRegx } from "@/lib/utils/utils";
 import { sentVerifyUserEmail } from "@/app/api/auth/[...nextauth]/mailer";
@@ -86,8 +86,6 @@ export const userRouter = createTRPCRouter({
 
         const newUser = await ctx.db.select().from(users).where(eq(users.email, input.email))
 
-        console.log("newUser", newUser)
-
         if (newUser[0] === null || newUser[0] === undefined) throw new Error("Error occured signing up")
 
         const token = await createToken(newUser[0].id);
@@ -152,6 +150,12 @@ export const userRouter = createTRPCRouter({
           .set({updatedAt: new Date()})
           .where(eq(verificationTokens.token, input.token));
         
+        await ctx.db
+          .insert(usersRecordTable)
+          .values({
+            userId: dbUser[0].id,
+          })
+          
         return "success"
       } catch (error) {
         throw new Error(error as string)
