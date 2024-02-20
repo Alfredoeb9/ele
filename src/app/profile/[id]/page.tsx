@@ -3,8 +3,9 @@ import { api } from "@/trpc/react";
 import { usePathname } from 'next/navigation'
 import { Avatar, Button, Divider } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import type { Users, FollowsType } from '@/server/db/schema'
 
 export default function Profile() {
     const utils = api.useUtils()
@@ -23,7 +24,7 @@ export default function Profile() {
 
     const userSession = session.data?.user
 
-    const getUserData = api.user.getSingleUserWithTeams.useQuery({ username: userFromPath, path: path})
+    const getUserData = api.user.getSingleUserWithTeams.useQuery({ username: userFromPath, path: path}, { enabled: path.length <= 0 ? false : true})
 
     if (getUserData.isError) {
         setError("User does not exist")
@@ -31,17 +32,21 @@ export default function Profile() {
 
     const user = getUserData?.data
 
-    console.log("user", user?.follows)
     useEffect(() => {
         if (userSession?.id === user?.id) {
             setPath("profile")
         }
     }, [userSession, user])
 
-    const usersFriends =  user?.follows as any[]
+    // if (user?.follows == undefined || user?.follows == null) {
+    //     return null
+    // }
+
+    //@ts-expect-error follows table should be available
+    const usersFriends =  user?.follows
 
     useEffect(() => {
-      usersFriends?.map((friend) => {
+      usersFriends?.map((friend: { targetUser: string | undefined; }) => {
             if (friend?.targetUser === user?.id){
                 setAreFriends(true)
             }
@@ -61,7 +66,7 @@ export default function Profile() {
                 toastId: 14                      
             })
         },
-        onError: (e) => {
+        onError: (e: { message: SetStateAction<string>; }) => {
           setError(e.message)
           
           if (!toast.isActive(13, "friendRequest")) {
@@ -116,7 +121,7 @@ export default function Profile() {
                                             <Button color="danger" disabled={userSession?.id !== user?.id}>Disband Team</Button>
                                         </>
                                     ) : (
-                                        <Button color="success" disabled={userSession?.id === user?.id} onClick={(e) => {
+                                        <Button color="success" disabled={userSession?.id === user?.id} onClick={(e: { preventDefault: () => void; }) => {
                                             e.preventDefault();
                                             if (areFriends) {
                                                 toast('You are already friends with this user', {

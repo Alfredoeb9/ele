@@ -225,7 +225,7 @@ export const userRouter = createTRPCRouter({
     .input(z.object({
       email: z.string().min(1).optional(),
       username: z.string().min(1).optional(),
-      path: z.string().min(1)
+      path: z.string().min(1).optional()
     }))
     .query(async ({ ctx, input }) => {
       try {
@@ -238,7 +238,7 @@ export const userRouter = createTRPCRouter({
                 follows: true
               }
             });
-            
+
             if (!currentUser) throw new Error("No user with such credentials")
 
             return currentUser
@@ -254,9 +254,6 @@ export const userRouter = createTRPCRouter({
   
             return currentUser;
           }
-          
-  
-          
         } else if (input.email) {
 
           const currentUser = await ctx.db.query.users.findFirst({

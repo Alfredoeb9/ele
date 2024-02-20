@@ -397,6 +397,8 @@ export const followsTables = createTable(
   }
 )
 
+export type FollowsType = typeof followsTables.$inferSelect;
+
 export const notificationsTable = createTable(
   'notifications', 
   {
