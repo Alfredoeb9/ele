@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Avatar, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
+import { Avatar, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
 import { ToastContainer, toast } from "react-toastify";
 import { FaBell } from "react-icons/fa";
 
@@ -12,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { api } from "@/trpc/react";
 
 export default function Header() {
+    const utils = api.useUtils()
     const [error, setError] = useState("");
     const session = useSession();
 
@@ -55,6 +56,34 @@ export default function Header() {
         })
     }
 
+    const acceptRequest = api.user.acceptFriendRequest.useMutation({ 
+        onSuccess: async () => {
+            console.log("friend accepted")
+            await utils.user.getNotifications.invalidate()
+            await utils.user.getUserWithFriends.invalidate()
+            toast('Friend request accepted', {
+                position: "bottom-right",
+                autoClose: false,
+                closeOnClick: true,
+                draggable: false,
+                type: "success",
+                toastId: 18
+            })
+        },
+
+        onError: (error) => {
+            console.log("what is the error", error)
+            toast('Error on accepting friend request, please try again', {
+                position: "bottom-right",
+                autoClose: false,
+                closeOnClick: true,
+                draggable: false,
+                type: "error",
+                toastId: 20
+            })
+        }
+     })
+
     return (
         <header className="nav">
             <div className="w-full h-16 px-4 flex items-center justify-between bg-gray-200 dark:bg-gray-800 rounded-b-lg">
@@ -81,10 +110,56 @@ export default function Header() {
                             </Link>
                         </div>
                     ) : (
-                        <div>
+                        <div className="flex gap-2">
                             <div>
-                                <FaBell />
-                                <span>{usersNotifications.data && usersNotifications.data.length}</span>
+                                <Dropdown placement="bottom-end">
+                                    <DropdownTrigger>
+                                        <Button variant="bordered">
+                                            <FaBell />
+                                            {usersNotifications?.data?.length}
+                                        </Button>
+                                    </DropdownTrigger>
+                                    <DropdownMenu aria-label="Notification Actions" closeOnSelect={false}>
+                                        {usersNotifications?.data?.map((notification, i) => (
+                                            <DropdownItem key={i}>
+                                                user wants to be your friend
+                                                <Button color="success" onPress={() => {
+                                                    acceptRequest.mutate({
+                                                        userId: session?.data?.user?.id,
+                                                        targetId: notification.from
+                                                    })
+                                                    }}>
+                                                        Accept
+                                                </Button>
+                                                <Button color="danger">Decline</Button>
+                                            </DropdownItem>
+                                        ))}
+                                    {/* <DropdownItem key="profile" textValue={session?.data?.user?.email as string} className="h-14 gap-2">
+                                        <p className="font-semibold">Signed in as</p>
+                                        <p className="font-semibold">{session?.data.user.email}</p>
+                                    </DropdownItem>
+                                    <DropdownItem key="credits" textValue={currentUser.data !== undefined && currentUser.isSuccess && (currentUser?.data as any).credits}><span className="font-black">Credits: </span> <span className="font-semibold">{ currentUser.data == undefined || currentUser.isError ? "Err" : (currentUser?.data as any).credits}</span></DropdownItem>
+                                    <DropdownItem key="settings" textValue="my settings">My Settings</DropdownItem>
+                                    
+                                    <DropdownItem key="team_settings" textValue="team-settings"><Link href="/team-settings">Team Settings</Link></DropdownItem>
+                                    <DropdownItem key="friends" textValue="friends"><Link href="/friends">Friends</Link></DropdownItem>
+                                    <DropdownItem key="analytics" textValue="stats">Stats</DropdownItem>
+                                    <DropdownItem key="buy_credits" textValue="pricing"><Link href={"/pricing"}>Buy Credits</Link></DropdownItem>
+                                    <DropdownItem key="help_and_feedback" textValue="help & feedback">Help & Feedback</DropdownItem>
+                                    <DropdownItem 
+                                        key="logout" 
+                                        color="danger"
+                                        textValue="log out"
+                                        onClick={async (e) => {
+                                            e.preventDefault();
+                                            await signOut();
+                                            router.push("/");
+                                        }}
+                                    >
+                                        Log Out
+                                    </DropdownItem> */}
+                                </DropdownMenu>
+                            </Dropdown>
                             </div>
                             
                             <Dropdown placement="bottom-end">
@@ -130,7 +205,7 @@ export default function Header() {
                     )}
                 </div>
 			</div>
-            <ToastContainer />
+            <ToastContainer containerId={'header-toast'} />
             {/* {error && <ErrorComponent message="There was problem retrieving your credits, please refresh and try agian. If this problem presist please reach out to customer service"/>} */}
         </header>
     )
