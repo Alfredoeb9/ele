@@ -57,7 +57,7 @@ export default function Header() {
         })
     }
 
-    const acceptRequest = api.user.acceptFriendRequest.useMutation({ 
+    const acceptRequest = api.user.acceptFriendRequest.useMutation({
         onSuccess: async () => {
             console.log("friend accepted")
             await utils.user.getNotifications.invalidate()
@@ -83,7 +83,32 @@ export default function Header() {
                 toastId: 20
             })
         }
-     })
+    })
+
+    const declineFriendRequest = api.user.declineFriendRequest.useMutation({
+        onSuccess: async () => {
+            await utils.user.getNotifications.invalidate()
+            toast('Friend request declined', {
+                position: "bottom-right",
+                autoClose: false,
+                closeOnClick: true,
+                draggable: false,
+                type: "success",
+                toastId: 21
+            })
+        },
+
+        onError: (error) => {
+            toast('Error on declining friend request, please try again', {
+                position: "bottom-right",
+                autoClose: false,
+                closeOnClick: true,
+                draggable: false,
+                type: "error",
+                toastId: 22
+            })
+        }
+    })
 
     return (
         <header className="nav">
@@ -132,7 +157,12 @@ export default function Header() {
                                                     }}>
                                                         Accept
                                                 </Button>
-                                                <Button color="danger">Decline</Button>
+                                                <Button color="danger" onPress={() => {
+                                                    declineFriendRequest.mutate({
+                                                        userId: session?.data?.user?.id,
+                                                        targetId: notification.from
+                                                    })
+                                                }}>Decline</Button>
                                             </DropdownItem>
                                         ))}
                                 </DropdownMenu>
