@@ -3,7 +3,7 @@ import { api } from "@/trpc/react";
 import { usePathname } from 'next/navigation'
 import { Avatar, Button, Divider } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 
 export default function Profile() {
@@ -12,6 +12,8 @@ export default function Profile() {
     const session = useSession();
     const [error, setError] = useState<string>("");
     const [userName, setUserName] = useState<string>("");
+    const [path, setPath] = useState<string>("");
+    const [areFriends, setAreFriends] = useState<boolean>(false);
 
     const userFromPath = pathname.split("/")[2]
 
@@ -21,13 +23,30 @@ export default function Profile() {
 
     const userSession = session.data?.user
 
-    const getUserData = api.user.getSingleUserWithTeams.useQuery({ username: userFromPath})
+    const getUserData = api.user.getSingleUserWithTeams.useQuery({ username: userFromPath, path: path})
 
     if (getUserData.isError) {
         setError("User does not exist")
     }
 
     const user = getUserData?.data
+
+    console.log("user", user?.follows)
+    useEffect(() => {
+        if (userSession?.id === user?.id) {
+            setPath("profile")
+        }
+    }, [userSession, user])
+
+    const usersFriends =  user?.follows as any[]
+
+    useEffect(() => {
+      usersFriends?.map((friend) => {
+            if (friend?.targetUser === user?.id){
+                setAreFriends(true)
+            }
+      })
+    }, [usersFriends, user])
 
     const sendRequest = api.user.sendFriendRequest.useMutation({
     
@@ -57,6 +76,8 @@ export default function Profile() {
           }
         }
     });
+
+    console.log("areFriends", areFriends)
 
     return (
         <div className="bg-neutral-600">
@@ -97,13 +118,22 @@ export default function Profile() {
                                     ) : (
                                         <Button color="success" disabled={userSession?.id === user?.id} onClick={(e) => {
                                             e.preventDefault();
-                                            sendRequest.mutate({
-                                                userName: user?.username as string,
-                                                id: userSession?.id as string,
-                                                senderUserName: user?.email as string
-                                            })
-                                            if (sendRequest.isSuccess) {
-
+                                            if (areFriends) {
+                                                toast('You are already friends with this user', {
+                                                    position: "bottom-right",
+                                                    autoClose: 5000,
+                                                    closeOnClick: true,
+                                                    draggable: false,
+                                                    type: "error",
+                                                    toastId: 17
+                                                })
+                                                return null;
+                                            } else {
+                                                sendRequest.mutate({
+                                                    userName: user?.username as string,
+                                                    id: userSession?.id as string,
+                                                    senderUserName: user?.email as string
+                                                })
                                             }
                                         }}>Send Friend Request</Button>
                                     )}

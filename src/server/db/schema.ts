@@ -409,6 +409,13 @@ export const notificationsTable = createTable(
   }
 )
 
+export const usersToFollowsRelations = relations(followsTables, ({ one }) => ({
+  user: one(users, { 
+    fields: [followsTables.targetUser], 
+    references: [users.id] 
+  }),
+}))
+
 export const usersToNotificationsRelations = relations(notificationsTable, ({ one }) => ({
   group: one(followsTables, {
     fields: [notificationsTable.userId],
