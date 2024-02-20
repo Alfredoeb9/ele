@@ -66,8 +66,6 @@ export default function SignUp() {
     //     }
     // };
 
-    console.log("testing", user.data?.user)
-
     useEffect(() => {
         if (user.data !== null) {
             redirect("/")

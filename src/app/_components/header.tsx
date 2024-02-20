@@ -32,7 +32,7 @@ export default function Header() {
         })
     }
 
-    const usersNotifications = api.user.getNotifications.useQuery({ id: session.data?.user?.id as string }, { enabled: currentUser.isSuccess })
+    const usersNotifications = api.user.getNotifications.useQuery({ id: session.data?.user?.id as string }, { enabled: currentUser.isSuccess, refetchOnMount: true, refetchOnReconnect: true, refetchOnWindowFocus: true })
 
     if (usersNotifications.isError) {
         toast('Notification Service is down, please reach out to admin', {
@@ -121,7 +121,7 @@ export default function Header() {
                                         </Button>
                                     </DropdownTrigger>
                                     <DropdownMenu aria-label="Notification Actions" closeOnSelect={false}>
-                                        {(usersNotifications?.data as NotificationType[]).map((notification: any, i: number) => (
+                                        {(usersNotifications?.data as NotificationType[])?.map((notification: any, i: number) => (
                                             <DropdownItem key={i}>
                                                 user wants to be your friend
                                                 <Button color="success" onPress={() => {
