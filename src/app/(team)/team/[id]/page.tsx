@@ -1,13 +1,17 @@
 'use client';
 import { api } from "@/trpc/react";
 import { Avatar, Button, Divider } from "@nextui-org/react";
+import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import type { TeamMembersType } from "@/server/db/schema"
 
 export default function Team() {
+    const session = useSession();
     const pathname = usePathname()
     const [error, setError] = useState<string>("");
+    const [isUserAdmin, setIsUserAdmin] = useState(false)
     const teamIdFromPath = pathname.split("/")[2]
 
     if (!teamIdFromPath) {
@@ -30,6 +34,18 @@ export default function Team() {
     }
 
     const team = getTeamData?.data
+
+    useEffect(() => {
+        if ((team?.members as TeamMembersType[])?.length > 0) {
+            team?.members?.map((member: { userId: string | null | undefined; role: string; }) => {
+                if (member?.userId === session?.data?.user?.email) {
+                    if(member?.role === 'admin') {
+                        setIsUserAdmin(true)
+                    }
+                }
+            })
+        }
+    }, [team, session.data])
     
     return (
         <div className="bg-neutral-600">
@@ -56,7 +72,13 @@ export default function Team() {
                             <div className="flex flex-col gap-1">
                                 <Button color="success">Edit Background</Button>
                                 <Button>Find Match</Button>
-                                <Button color="danger">Disband Team</Button>
+                                { isUserAdmin 
+                                    ? 
+                                        <Button color="danger">Disband Team</Button> 
+                                    : 
+                                        <Button color="danger">Leave Team</Button> 
+                                }
+                                
                             </div>
                         </div>
                         

@@ -250,6 +250,7 @@ export const usersToGroupsRelations = relations(teamMembersTable, ({ one }) => (
 }));
 
 export type Team = typeof teams.$inferSelect;
+export type TeamMembersType = typeof teamMembersTable.$inferSelect;
 export type Users = typeof users.$inferSelect;
 export type Tournament = typeof tournaments.$inferInsert;
 

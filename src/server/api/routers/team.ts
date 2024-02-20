@@ -11,7 +11,10 @@ export const teamRouter = createTRPCRouter({
         .query(async ({ ctx, input }) => {
             try {
                 const team = await ctx.db.query.teams.findFirst({
-                    where: eq(teams.id, input.id)
+                    where: eq(teams.id, input.id),
+                    with: {
+                        members: true
+                    }
                 })
 
                 if (!team) throw new Error("Team does not exist")
