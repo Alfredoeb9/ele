@@ -25,8 +25,6 @@ export const userRouter = createTRPCRouter({
       lastName: z.string().min(1),
     }))
     .mutation(async ({ ctx, input }) => {
-      // simulate a slow db call
-      // await new Promise((resolve) => setTimeout(resolve, 1000));
 
       if (input.email.length <= 0) throw new Error("Please provide a proper email")
       if (input.password.length <= 0) throw new Error("Please provide a proper password");
@@ -42,38 +40,10 @@ export const userRouter = createTRPCRouter({
             throw new Error("Please provide a proper email")
         }
 
-        // const existingUserByEmail = await db.user.findUnique({
-        //     where: { email: input.email }
-        // });
-
-        // if (existingUserByEmail?.email === input.email) {
-        //     throw Error("Looks like an email is set up with us, try logging in!");            
-        // };
-
-        // const existingUserByUsername = await db.user.findUnique({
-        //     where: {
-        //         username: input.username
-        //     }
-        // })
-
-        // if (existingUserByUsername?.username === input.username) {
-        //     throw Error("Username is taken")
-        // }
-
         const salt = await bcrypt.genSalt();
         
         const hashedPassword = await bcrypt.hash(input.password, salt);
-        
-        // const newUser = await db.user.create({
-        //     data: {
-        //         firstName,
-        //         lastName,
-        //         username,
-        //         email,
-        //         password: hashedPassword,
-        //         isAdmin
-        //     }
-        // });
+      
 
         await ctx.db.insert(users).values({
           id: crypto.randomUUID(),
@@ -92,38 +62,14 @@ export const userRouter = createTRPCRouter({
 
         const link = `${process.env.REACT_APP_BASE_URL}/verify-email/${token}`;
         const fullName = newUser[0].firstName + " " + newUser[0].lastName;
-        // await ctx.db.insert(activateToken)
+
         await ctx.db.insert(verificationTokens).values({
           token: token,
           id: newUser[0].id,
         });
-        // await db.activateToken.create({
-        //     data: {
-        //         token: token,
-        //         userId: newUser.id
-        //     }
-        // })
+
         await sentVerifyUserEmail(newUser[0].email, fullName, link)
-        // return NextResponse.json({ firstName, lastName, username, email, isAdmin, message: "User created Successfully"}, { status: 201 });
-
-        // return newUser
-
-        // const awaitUser = await newUser;
-        // //@ts-ignore
-        // const token = await createToken(awaitUser.id, isAdmin);
-
-        // // send verification function
-
-        // const link = `${process.env.REACT_APP_BASE_URL}/auth/verify-email/${token}`;
-        // const fullName = awaitUser.firstName + " " + awaitUser.lastName;
-        // await db.activateToken.create({
-        //     data: {
-        //         token: token,
-        //         userId: awaitUser.id
-        //     }
-        // })
-        // await sentVerifyUserEmail(awaitUser.email, fullName, link)
-        // return NextResponse.json({ user: awaitUser, message: "User created Successfully"}, { status: 201 });
+        return 'success';
     } catch (error) {
       throw new Error(error as string)
         // return NextResponse.json({ message: `${error}`}, { status: 500 })
@@ -196,6 +142,9 @@ export const userRouter = createTRPCRouter({
     .mutation(async({ ctx, input }) => {
       try { 
         const userWithSpecificTeam = await ctx.db.query.users.findFirst({
+          columns: {
+            password: false,
+          },
           with: {
             teams: {
               where: (teams, {eq}) => eq(teams.id, input.gameId)
@@ -234,6 +183,9 @@ export const userRouter = createTRPCRouter({
           if (input.path === 'profile') {
             const currentUser = await ctx.db.query.users.findFirst({
               where: eq(users.username, input.username),
+              columns: {
+                password: false,
+              },
               with: {
                 follows: true
               }
@@ -258,6 +210,9 @@ export const userRouter = createTRPCRouter({
 
           const currentUser = await ctx.db.query.users.findFirst({
             where: eq(users.email, input.email),
+            columns: {
+              password: false,
+            },
             with: {
               teams: true
             }
@@ -280,6 +235,9 @@ export const userRouter = createTRPCRouter({
       try {
         const currentUserWithTeamMembers = await ctx.db.query.users.findFirst({
           where: eq(users.email, input.email),
+          columns: {
+            password: false,
+          },
           with: {
             teamMembers: true
           }
