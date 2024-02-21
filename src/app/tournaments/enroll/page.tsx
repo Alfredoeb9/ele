@@ -11,16 +11,16 @@ import { api } from "@/trpc/react";
 import Link from "next/link";
 
 export default function Enroll() {
-    const queryClient = useQueryClient();
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const router = useRouter();
     const session = useSession();
     const [error, setError] = useState<any>(null);
     const [selectedGames, setSelectedGames] = useState<string>("");
+    const [teamName, setTeamName] = useState<string>("");
     const { getuser, error2, isLoading2 } = useGetUser();
 
-    if (!session?.data) return router.push("/sign-in")
+    if (session?.data === null) return router.push("/sign-in")
 
     const search = searchParams.get('id')
 
@@ -40,6 +40,8 @@ export default function Enroll() {
         }
     }, [search])
 
+    console.log("tournament", tournament)
+
     const currentUser = api.user.getSingleUserByTeamId.useMutation({
         onSuccess: (data) => {
             return true
@@ -52,19 +54,32 @@ export default function Enroll() {
     })
 
     useEffect(() => {
-        if (session.data?.user && tournament?.data) {
-            console.log("test", tournament?.data[0]?.id)
-            currentUser.mutate({ email: session.data?.user.email as string, gameId: tournament?.data[0]?.id})
+        if (session?.data?.user && tournament?.data) {
+            currentUser.mutate({ email: session?.data?.user.email as string, gameId: tournament?.data[0]?.id})
         }
     }, [session.data, tournament.data])
 
     const enrollTeam = api.matches.enrollTeamToTournament.useMutation({
         onSuccess: () => {
-            return true
+            toast(`${teamName} has been enrolled into ${tournament?.data![0]?.name} tournament`, {
+                position: "bottom-right",
+                autoClose: 5000,
+                closeOnClick: true,
+                draggable: false,
+                type: "success",
+                toastId: 23
+            })
         },
 
         onError: () => {
-            return console.log("error")
+            toast(`${teamName} has been enrolled into ${tournament?.data![0]?.name} tournament`, {
+                position: "bottom-right",
+                autoClose: 5000,
+                closeOnClick: true,
+                draggable: false,
+                type: "error",
+                toastId: 24
+            })
         }
     })
 
@@ -81,19 +96,20 @@ export default function Enroll() {
     }
 
     if(tournament.isLoading || currentUser.isLoading) return <Spinner label="Loading..." color="warning" />
-
     
     return (
-        <div>
-            <h1>Match Confirmation</h1>
-            <p>Attention: Before accepting match read our refund policy, as well as the current match/tournament rules.</p>
+        <div className="container m-auto pt-2">
+            <h1 className="text-white text-2xl md:text-3xl lg:text-4xl font-bold">Match Confirmation</h1>
+            <p className="text-white mb-2">Attention: Before accepting match read our <Link href={"/refund-policy"} className="text-blue-500">refund policy</Link>, we are currently not accepting any refunds at this time.</p>
+            <p>Current match/tournament rules.</p>
 
-            <p>This Match/ Tournament will cost {tournament?.data && tournament?.data[0]?.entry}</p>
+            <p className="text-white mb-2">This Match/ Tournament will cost {tournament?.data && tournament?.data[0]?.entry}</p>
             <form onSubmit={(e) => {
                 e.preventDefault();
                 enrollTeam.mutate({
-                    id: tournament.data && tournament.data[0]?.id as string | any,
-                    teamId: selectedGames
+                    tournamentId: tournament.data && tournament.data[0]?.id as string | any,
+                    teamId: selectedGames,
+                    teamName: teamName
                 });
             }}>
                 <div>
@@ -116,8 +132,8 @@ export default function Enroll() {
                     required
                     >
                         {currentUser.data?.teams?.map((match) => (
-                            <SelectItem key={match.id} value={match.game}>
-                                {match.game}
+                            <SelectItem key={match.teamId} onClick={() => setTeamName(match.teamName)} value={match.teamName}>
+                                {match.teamName}
                             </SelectItem>
                         )) as []}
                 
@@ -125,7 +141,7 @@ export default function Enroll() {
                 </div>
 
                 <button
-                    className='mt-4 flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-slate-500'
+                    className='mt-4 flex w-64 justify-center rounded-md m-auto bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-slate-500'
                     disabled={
                         currentUser.data &&  currentUser.data.teams && currentUser.data.teams.length <= 0
                     }
