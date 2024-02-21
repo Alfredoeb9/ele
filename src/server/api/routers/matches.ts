@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -66,19 +66,30 @@ export const matchRouter = createTRPCRouter({
   }),
 
   enrollTeamToTournament: publicProcedure
-    .input(z.object({ id: z.string(), teamId: z.string().min(1) }))
+    .input(z.object({ tournamentId: z.string(), teamId: z.string().min(1), teamName: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
-      try {
-        const teamEnrolled = await ctx.db.insert(tournamentTeamsEnrolled).values({
-          id: input.id,
-          teamId: input.teamId
-        })
-
-        if (!teamEnrolled) throw new Error("Teams is already Enrolled")
-
-        return true
-      } catch (error) {
-        throw new Error("Error cannot enroll team in tournament")
-      }
+      await ctx.db.transaction(async (tx) => {
+        try {
+          // check if team is already enrolled and if not then allow them to enroll
+  
+          const teamEnrolled = await tx.insert(tournamentTeamsEnrolled).values({
+            id: input.tournamentId,
+            teamId: input.teamId,
+            teamName: input.teamName
+          })
+  
+          if (!teamEnrolled) throw new Error("Teams is already Enrolled")
+  
+          // update enroll number for tournament
+          await tx
+            .update(tournaments)
+            .set({ enrolled: sql`${tournaments.enrolled} + 1`})
+            .where(eq(tournaments.id, input.tournamentId))
+  
+          return true
+        } catch (error) {
+          throw new Error("Error cannot enroll team in tournament")
+        }
+      })
     })
 });
