@@ -142,12 +142,10 @@ export const userRouter = createTRPCRouter({
     .mutation(async({ ctx, input }) => {
       try { 
         const userWithSpecificTeam = await ctx.db.query.users.findFirst({
-          columns: {
-            password: false,
-          },
+          where: eq(users.email, input.email),
           with: {
-            teams: {
-              where: (teams, {eq}) => eq(teams.id, input.gameId)
+            teamMembers: {
+              where: (teamMembers, {eq}) => eq(teamMembers.game, 'mw3')
             }
           }
         });
@@ -163,7 +161,7 @@ export const userRouter = createTRPCRouter({
           email: userWithSpecificTeam?.email,
           credits: userWithSpecificTeam?.credits,
           teamId: userWithSpecificTeam?.teamId,
-          teams: userWithSpecificTeam?.teams       
+          teams: userWithSpecificTeam?.teamMembers       
         }
       } catch (error) {
         throw new Error(error as string)

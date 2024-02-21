@@ -11,7 +11,8 @@ export default function Team() {
     const session = useSession();
     const pathname = usePathname()
     const [error, setError] = useState<string>("");
-    const [isUserAdmin, setIsUserAdmin] = useState(false)
+    const [isUserOwner, setIsUserOwner] = useState(false)
+    const [isUserMember, setIsUserMember] = useState(false)
     const teamIdFromPath = pathname.split("/")[2]
 
     if (!teamIdFromPath) {
@@ -36,11 +37,13 @@ export default function Team() {
     const team = getTeamData?.data
 
     useEffect(() => {
-        if ((team?.members as TeamMembersType[])?.length > 0) {
+        if ((team?.members && team?.members as TeamMembersType[])?.length > 0) {
             team?.members?.map((member: { userId: string | null | undefined; role: string; }) => {
                 if (member?.userId === session?.data?.user?.email) {
-                    if(member?.role === 'admin') {
-                        setIsUserAdmin(true)
+                    if( member?.role === 'owner' ) {
+                        setIsUserOwner(true)
+                    } else if (member?.role === 'member')  {
+                        setIsUserMember(true)
                     }
                 }
             })
@@ -70,14 +73,16 @@ export default function Team() {
                             
 
                             <div className="flex flex-col gap-1">
-                                <Button color="success">Edit Background</Button>
-                                <Button>Find Match</Button>
-                                { isUserAdmin 
-                                    ? 
+                                
+                                { isUserOwner &&
+                                    <>
+                                        <Button color="success">Edit Background</Button>
+                                        <Button>Find Match</Button>
                                         <Button color="danger">Disband Team</Button> 
-                                    : 
-                                        <Button color="danger">Leave Team</Button> 
+                                    </>
                                 }
+                                
+                                { isUserMember && <Button color="danger">Leave Team</Button> }                                             
                                 
                             </div>
                         </div>
