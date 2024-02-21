@@ -37,7 +37,9 @@ export default function Team() {
     const team = getTeamData?.data
 
     useEffect(() => {
+        //@ts-expect-error members is expected
         if ((team?.members && team?.members as TeamMembersType[])?.length > 0) {
+            //@ts-expect-error members is expected
             team?.members?.map((member: { userId: string | null | undefined; role: string; }) => {
                 if (member?.userId === session?.data?.user?.email) {
                     if( member?.role === 'owner' ) {
