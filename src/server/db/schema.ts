@@ -317,6 +317,7 @@ export const tournamentTeamsEnrolled = createTable(
   {
     id: varchar("id", { length: 255 }).notNull(),
     teamId: varchar("team_id", { length: 255 }).notNull(),
+    teamName: varchar("team_name", { length: 255 }).notNull(),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
