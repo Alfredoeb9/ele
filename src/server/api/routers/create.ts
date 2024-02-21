@@ -17,7 +17,7 @@ export const createRouter = createTRPCRouter({
                 const teamRandomId = crypto.randomUUID()
 
                 // create the team
-                await ctx.db
+                await tx
                     .insert(teams)
                     .values({
                         game: input.game,
@@ -27,7 +27,7 @@ export const createRouter = createTRPCRouter({
 
                 // creat user to the team Members table 
                 // this allows me to get multiple teams user is part of
-                await ctx.db
+                await tx
                     .insert(teamMembersTable)
                     .values({
                         teamId: teamRandomId,
@@ -37,7 +37,7 @@ export const createRouter = createTRPCRouter({
                         role: "member"
                     })
 
-                await ctx.db
+                await tx
                     .insert(teamRecordTable)
                     .values({
                         teamId: teamRandomId
