@@ -101,7 +101,7 @@ export default function Profile() {
                                     <Avatar />
                                     <div className="text-white pl-2">
                                         <h2 className="text-3xl mb-2 font-bold">{user?.username}</h2>
-                                        <p className="font-semibold">PROFILE VIEWS: </p>
+                                        <p className="font-semibold">PROFILE VIEWS: {user?.profileViews}</p>
                                         <p className="font-semibold">JOINED: 02/12/24</p>
                                         <div className="flex">
                                             <h4 className="pr-1 font-semibold">Game ID:</h4>
