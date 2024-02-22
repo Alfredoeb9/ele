@@ -18,6 +18,7 @@ export default function Enroll() {
     const [error, setError] = useState<any>(null);
     const [selectedGames, setSelectedGames] = useState<string>("");
     const [teamName, setTeamName] = useState<string>("");
+    const [teamIsEnrolled, setTeamIsEnrolled] = useState<boolean>(false);
     const { getuser, error2, isLoading2 } = useGetUser();
 
     if (session?.data === null) return router.push("/sign-in")
@@ -69,17 +70,21 @@ export default function Enroll() {
                 type: "success",
                 toastId: 23
             })
+            setSelectedGames("")
+            setTeamName("")
         },
 
-        onError: () => {
-            toast(`${teamName} has been enrolled into ${tournament?.data![0]?.name} tournament`, {
-                position: "bottom-right",
-                autoClose: 5000,
-                closeOnClick: true,
-                draggable: false,
-                type: "error",
-                toastId: 24
-            })
+        onError:(error) => {
+            if (error.message.includes("cannot enroll team in tournament")) {
+                toast(`${teamName} is already enrolled into ${tournament?.data![0]?.name} tournament`, {
+                    position: "bottom-right",
+                    autoClose: 5000,
+                    closeOnClick: true,
+                    draggable: false,
+                    type: "error",
+                    toastId: 24
+                })
+            }
         }
     })
 
@@ -96,14 +101,17 @@ export default function Enroll() {
     }
 
     if(tournament.isLoading || currentUser.isLoading) return <Spinner label="Loading..." color="warning" />
-    
+
     return (
         <div className="container m-auto pt-2">
             <h1 className="text-white text-2xl md:text-3xl lg:text-4xl font-bold">Match Confirmation</h1>
-            <p className="text-white mb-2">Attention: Before accepting match read our <Link href={"/refund-policy"} className="text-blue-500">refund policy</Link>, we are currently not accepting any refunds at this time.</p>
-            <p>Current match/tournament rules.</p>
+            <p className="text-white mb-2">Attention: Before accepting match read our 
+                <Link href={"/refund-policy"} className="text-blue-500"> refund policy</Link>, 
+                we are currently not accepting any refunds at this time and
+                current match/tournament rules.
+            </p>
 
-            <p className="text-white mb-2">This Match/ Tournament will cost {tournament?.data && tournament?.data[0]?.entry}</p>
+            <p className="text-white mb-2">This Match/ Tournament will cost <span className="text-blue-500">{tournament?.data && tournament?.data[0]?.entry}</span></p>
             <form onSubmit={(e) => {
                 e.preventDefault();
                 enrollTeam.mutate({
@@ -142,9 +150,7 @@ export default function Enroll() {
 
                 <button
                     className='mt-4 flex w-64 justify-center rounded-md m-auto bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-slate-500'
-                    disabled={
-                        currentUser.data &&  currentUser.data.teams && currentUser.data.teams.length <= 0
-                    }
+                    disabled={currentUser.data &&  currentUser.data.teams && currentUser.data.teams.length <= 0 || selectedGames.length <= 0}
                 >
                     Enroll 
                 </button>
