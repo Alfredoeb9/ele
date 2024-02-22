@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { followsTables, notificationsTable, posts, sessions, users, usersRecordTable, verificationTokens } from "@/server/db/schema";
@@ -191,6 +191,10 @@ export const userRouter = createTRPCRouter({
             });
 
             if (!currentUser) throw new Error("No user with such credentials")
+
+            await ctx.db.update(users).set({
+              profileViews: sql`${users.profileViews} + 1`
+            })
 
             return currentUser
           } else {
