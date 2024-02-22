@@ -164,7 +164,7 @@ export default function Profile() {
                                 <div className="text-white text-center">
                                     <h3 className="font-bold">CAREER RECORD</h3>
                                     <p>{usersRecord ? usersRecord?.wins : 0}W - {usersRecord ? usersRecord?.losses : 0}L</p>
-                                    <p>{usersRecord.wins && usersRecord.losses ? ((usersRecord?.wins / (usersRecord?.wins + usersRecord?.losses)) * 100).toFixed(2) : 0 }% WIN RATE</p>
+                                    <p>{usersRecord?.wins && usersRecord?.losses ? ((usersRecord?.wins / (usersRecord?.wins + usersRecord?.losses)) * 100).toFixed(2) : 0 }% WIN RATE</p>
                                 </div>
 
                                 <Divider orientation="vertical" className="w-0.5 h-20 text-white bg-white mx-1" />
