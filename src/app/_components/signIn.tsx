@@ -85,7 +85,6 @@ const SignIn = () => {
 
 		} catch (error) {
 			setError(error as string)
-			console.log("error signin", error)
 		}
 	};
 

@@ -59,7 +59,6 @@ export default function Header() {
 
     const acceptRequest = api.user.acceptFriendRequest.useMutation({
         onSuccess: async () => {
-            console.log("friend accepted")
             await utils.user.getNotifications.invalidate()
             await utils.user.getUserWithFriends.invalidate()
             toast('Friend request accepted', {
@@ -73,7 +72,6 @@ export default function Header() {
         },
 
         onError: (error) => {
-            console.log("what is the error", error)
             toast('Error on accepting friend request, please try again', {
                 position: "bottom-right",
                 autoClose: false,

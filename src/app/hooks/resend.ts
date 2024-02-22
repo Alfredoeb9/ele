@@ -25,7 +25,6 @@ export const useResend = () => {
     const json = await response.json();
 
     if (!response.ok) {
-      console.log("error33", json.error)
       setIsLoading(false);
       setError(json.error);
     }

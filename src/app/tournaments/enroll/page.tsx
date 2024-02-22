@@ -18,7 +18,6 @@ export default function Enroll() {
     const [error, setError] = useState<any>(null);
     const [selectedGames, setSelectedGames] = useState<string>("");
     const [teamName, setTeamName] = useState<string>("");
-    const [teamIsEnrolled, setTeamIsEnrolled] = useState<boolean>(false);
     const { getuser, error2, isLoading2 } = useGetUser();
 
     if (session?.data === null) return router.push("/sign-in")
@@ -41,8 +40,6 @@ export default function Enroll() {
         }
     }, [search])
 
-    console.log("tournament", tournament)
-
     const currentUser = api.user.getSingleUserByTeamId.useMutation({
         onSuccess: (data) => {
             return true
@@ -50,7 +47,6 @@ export default function Enroll() {
 
         onError: (error) => {
             setError(error.message)
-            console.log("no user")
         }
     })
 
