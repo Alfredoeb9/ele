@@ -350,12 +350,15 @@ export const tournamentTeamsEnrolled = createTable(
   })
 );
 
-export const tournamentStagesToTeams = createTable("tournament_stages_teams", {
-  tournament_stage_id: varchar("tournament_stage_id", { length: 255 })
-    .notNull(),
-  team_id: varchar("team_id", { length: 255 })
-    .notNull()
-});
+export const tournamentStagesToTeams = createTable(
+  "tournament_stages_teams", 
+  {
+    tournament_stage_id: varchar("tournament_stage_id", { length: 255 })
+      .notNull(),
+    team_id: varchar("team_id", { length: 255 })
+      .notNull()
+  }
+);
 
 export const tournamentStagesToTeamsRelations = relations(
   tournamentStagesToTeams,
@@ -376,10 +379,13 @@ export type TournamentStagesToTeams =
 export type TournamentStagesToTeamsInsert =
   typeof tournamentStagesToTeams.$inferInsert;
 
-export const tournamentsToTeams = createTable("tournaments_teams", {
-  tournament_id: varchar("tournament_id", { length: 255 }).notNull(),
-  team_id: varchar("team_id", { length: 255 }).notNull()
-});
+export const tournamentsToTeams = createTable(
+  "tournaments_teams", 
+  {
+    tournament_id: varchar("tournament_id", { length: 255 }).notNull(),
+    team_id: varchar("team_id", { length: 255 }).notNull()
+  }
+);
 
 export const tournamentsToTeamsRelations = relations(
   tournamentsToTeams,
@@ -398,9 +404,12 @@ export const tournamentsToTeamsRelations = relations(
 export type TournamentsToTeams = typeof tournamentsToTeams.$inferSelect;
 export type TournamentsToTeamsInsert = typeof tournamentsToTeams.$inferInsert;
 
-export const tournamentStages = createTable("tournament_stages", {
-  id: varchar("id", { length: 255 }).primaryKey(),
-});
+export const tournamentStages = createTable(
+  "tournament_stages", 
+  {
+    id: varchar("id", { length: 255 }).primaryKey(),
+  }
+);
 
 export const tournamentStagesRelations = relations(
   tournamentStages,
@@ -454,9 +463,12 @@ export const usersToNotificationsRelations = relations(notificationsTable, ({ on
   }),
 }));
 
-export const matches = createTable("matches", {
-  id: varchar("id", { length: 255 }).primaryKey(),
-});
+export const matches = createTable(
+  "matches", 
+  {
+    id: varchar("id", { length: 255 }).primaryKey(),
+  }
+);
 
 export const matchesRelations = relations(matches, ({ many }) => ({
   teams: many(teamsToMatches),

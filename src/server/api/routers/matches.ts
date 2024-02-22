@@ -5,7 +5,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-import { posts, tournamentTeamsEnrolled, tournaments } from "@/server/db/schema";
+import { matches, posts, teamsToMatches, tournamentTeamsEnrolled, tournaments, tournamentsToTeams } from "@/server/db/schema";
 
 export const matchRouter = createTRPCRouter({
 
@@ -85,6 +85,30 @@ export const matchRouter = createTRPCRouter({
             .update(tournaments)
             .set({ enrolled: sql`${tournaments.enrolled} + 1`})
             .where(eq(tournaments.id, input.tournamentId))
+          
+          const tournamentId = crypto.randomUUID()
+
+          await tx
+            .insert(tournamentsToTeams)
+            .values({
+              tournament_id: tournamentId,
+              team_id: input.teamId
+            })
+          
+          // insert new enrolled team into respectable team tables
+          const matchId = crypto.randomUUID()
+          await tx
+            .insert(matches)
+            .values({
+              id: matchId
+            })
+          
+          await tx
+            .insert(teamsToMatches)
+            .values({
+              match_id: matchId,
+              team_id: input.teamId
+            })
   
           return true
         } catch (error) {
