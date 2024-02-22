@@ -41,23 +41,26 @@ export const posts = createTable(
   })
 );
 
-export const users = createTable("user", {
-  id: varchar("id", { length: 255 }).notNull().primaryKey(),
-  username: varchar("username", { length: 255 }).unique().default(`anon${crypto.randomUUID()}`),
-  firstName: varchar("firstName", { length: 255 }),
-  lastName: varchar("lastName", { length: 255 }),
-  password: varchar("password", { length: 255 }).notNull(),
-  isVerified: boolean("isVerified").default(false),
-  isAdmin: varchar("isAdmin", { length: 25 }).default("user"),
-  role: varchar("role", { length: 35 }).default("user"),
-  email: varchar("email", { length: 255 }).notNull(),
-  credits: int("credits").default(15),
-  teamId: json('team_id').$type<string[]>().default([]),
-  emailVerified: timestamp("emailVerified", {
-    mode: "date",
-    fsp: 3,
-  }).default(sql`CURRENT_TIMESTAMP(3)`),
-  image: varchar("image", { length: 255 }),
+export const users = createTable(
+  "user", 
+  {
+    id: varchar("id", { length: 255 }).notNull().primaryKey(),
+    username: varchar("username", { length: 255 }).unique().default(`anon${crypto.randomUUID()}`),
+    firstName: varchar("firstName", { length: 255 }),
+    lastName: varchar("lastName", { length: 255 }),
+    password: varchar("password", { length: 255 }).notNull(),
+    isVerified: boolean("isVerified").default(false),
+    isAdmin: varchar("isAdmin", { length: 25 }).default("user"),
+    role: varchar("role", { length: 35 }).default("user"),
+    profileViews: int("profile_views").default(0),
+    email: varchar("email", { length: 255 }).notNull(),
+    credits: int("credits").default(15),
+    teamId: json('team_id').$type<string[]>().default([]),
+    emailVerified: timestamp("emailVerified", {
+      mode: "date",
+      fsp: 3,
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    image: varchar("image", { length: 255 }),
 });
 
 // a user can have many accounts, sessions, teams
@@ -67,7 +70,8 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   teams: many(teams),
   teamMembers: many(teamMembersTable),
   follows: many(followsTables),
-  notifications: many(notificationsTable)
+  notifications: many(notificationsTable),
+  userRecord: one(usersRecordTable)
 }));
 
 export const accounts = createTable(
@@ -97,7 +101,12 @@ export const accounts = createTable(
 
 // A account can only have one user id
 export const accountsRelations = relations(accounts, ({ one }) => ({
-  user: one(users, { fields: [accounts.userId], references: [users.id] }),
+  user: one(users, 
+    { 
+      fields: [accounts.userId], 
+      references: [users.id] 
+    }
+  ),
 }));
 
 export const sessions = createTable(
@@ -207,6 +216,18 @@ export const usersRecordTable = createTable(
     compoundKey: primaryKey({ columns: [team.userId] }),
   })
 )
+
+export type UsersRecordType = typeof usersRecordTable.$inferSelect
+
+// This is needed for a one-one realtion
+export const usersRecordRelations = relations(usersRecordTable, ({ one }) => ({
+  user: one(users, 
+    { 
+      fields: [usersRecordTable.userId], 
+      references: [users.id] 
+    }
+  ),
+}));
 
 export const teamRecordTable = createTable(
   'team_record', 

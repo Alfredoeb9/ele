@@ -185,7 +185,8 @@ export const userRouter = createTRPCRouter({
                 password: false,
               },
               with: {
-                follows: true
+                follows: true,
+                userRecord: true
               }
             });
 

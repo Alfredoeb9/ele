@@ -5,7 +5,7 @@ import { Avatar, Button, Divider } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import { SetStateAction, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import type { Users, FollowsType } from '@/server/db/schema'
+import type { Users, FollowsType, UsersRecordType } from '@/server/db/schema'
 
 export default function Profile() {
     const utils = api.useUtils()
@@ -44,6 +44,8 @@ export default function Profile() {
 
     //@ts-expect-error follows table should be available
     const usersFriends =  user?.follows
+    //@ts-expect-error user record table should be available
+    const usersRecord: UsersRecordType = user?.userRecord
 
     useEffect(() => {
       usersFriends?.map((friend: { targetUser: string | undefined; }) => {
@@ -81,6 +83,8 @@ export default function Profile() {
           }
         }
     });
+
+    console.log("user", user)
 
     return (
         <div className="bg-neutral-600">
@@ -151,7 +155,7 @@ export default function Profile() {
                                         {/* Image */}
                                     </div>
                                     <div className="flex flex-col">
-                                        <h3>Rank</h3>
+                                        <h3 className="font-bold">Rank</h3>
                                         <p>0 | 0 XP</p>
                                     </div>
                                     
@@ -160,15 +164,15 @@ export default function Profile() {
                                 <Divider orientation="vertical" className="w-0.5 h-20 text-white bg-white mx-1" />
 
                                 <div className="text-white text-center">
-                                    <h3>CAREER RECORD</h3>
-                                    <p>0W - 0L</p>
-                                    <p>0% WIN RATE</p>
+                                    <h3 className="font-bold">CAREER RECORD</h3>
+                                    <p>{usersRecord ? usersRecord?.wins : 0}W - {usersRecord ? usersRecord?.losses : 0}L</p>
+                                    <p>{usersRecord ? ((usersRecord?.wins! / (usersRecord?.wins! + usersRecord?.losses!)) * 100).toFixed(2) : 0 }% WIN RATE</p>
                                 </div>
 
                                 <Divider orientation="vertical" className="w-0.5 h-20 text-white bg-white mx-1" />
 
                                 <div className="text-white text-center">
-                                    <h3>RECENT MATCHES</h3>
+                                    <h3 className="font-bold">RECENT MATCHES</h3>
                                     <p>No Matches</p>
                                 </div>
                             </div>
