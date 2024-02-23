@@ -68,22 +68,16 @@ export const matchRouter = createTRPCRouter({
     }))
     .query(async ({ ctx, input }) => {
 
-      console.log("input", input.tournamentId[0].id)
-
-      // return await ctx.db.query.tournaments.findMany({
-      //   where: eq()
-      // })
       const data: any[] | PromiseLike<any[]> = []
 
        input.tournamentId.map(async (id: any) => {
         
-        let house =  ctx.db.query.tournaments.findMany({
+        const house =  ctx.db.query.tournaments.findMany({
           where: eq(tournaments.id, id.id)
         })
         return data.push(house)
       })
 
-      console.log("data", data )
       return data
   }),
 
