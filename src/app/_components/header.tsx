@@ -112,10 +112,10 @@ export default function Header() {
         <header className="nav">
             <div className="w-full h-16 px-4 flex items-center justify-between bg-gray-200 dark:bg-gray-800 rounded-b-lg">
                 <nav className="h-12 flex gap-x-4 items-center">
-                    <Link className="text-md font-semibold text-zinc-100" href={"/"}>MLG</Link>
+                    <Link className="text-md font-semibold text-zinc-300" href={"/"}>ELE</Link>
                     <Link className="text-md font-bold text-zinc-900" href="/">Home</Link>
                     <Link className="text-md font-bold text-zinc-900" href={`/profile/${session.data?.user.username}`}>Profile</Link>
-                    <Link className="text-md font-bold text-zinc-900" href="/protected">Protected</Link>
+                    {/* <Link className="text-md font-bold text-zinc-900" href="/protected">Protected</Link> */}
                 </nav>
                 <div>
                     {session.status !== "authenticated" ? (
