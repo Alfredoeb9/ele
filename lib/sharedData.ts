@@ -52,3 +52,18 @@ export const statusOptions = [
   {name: "Paused", uid: "paused"},
   {name: "Inactive", uid: "inactive"},
 ];
+
+export const tabs = [
+  {
+    id: "community tournaments",
+    label: "Community Tournaments"
+  },
+  {
+    id: "cash matches",
+    label: "Cash Matches"
+  },
+  {
+    id: "xp matches",
+    label: "XP Matches"
+  }
+];
