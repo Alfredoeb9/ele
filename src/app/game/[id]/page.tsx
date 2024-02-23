@@ -45,8 +45,8 @@ export default function Game() {
                                 <li key={tab.id}><button type="button" onClick={() => setValue(tab.label)}>{tab.label}</button></li>
                             ))}
 
-                            {renderData?.map((data: { id: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | PromiseLikeOfReactNode | null | undefined; }) => (
-                                <div>
+                            {renderData?.map((data: { id: string }) => (
+                                <div key={data.id}>
                                     {data.id}
                                 </div>
                             ))}
