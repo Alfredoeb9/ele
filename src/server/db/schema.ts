@@ -152,6 +152,8 @@ export const gameCategory = createTable(
   }
 )
 
+export type GameCategoryType = typeof gameCategory.$inferSelect
+
 export const tournaments = createTable(
   "tournaments",
   {
