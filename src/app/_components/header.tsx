@@ -114,7 +114,7 @@ export default function Header() {
                 <nav className="h-12 flex gap-x-4 items-center">
                     <Link className="text-md font-semibold text-zinc-100" href={"/"}>MLG</Link>
                     <Link className="text-md font-bold text-zinc-900" href="/">Home</Link>
-                    <Link className="text-md font-bold text-zinc-900" href="/profile">Profile</Link>
+                    <Link className="text-md font-bold text-zinc-900" href={`/profile/${session.data?.user.username}`}>Profile</Link>
                     <Link className="text-md font-bold text-zinc-900" href="/protected">Protected</Link>
                 </nav>
                 <div>

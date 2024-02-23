@@ -71,6 +71,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   teamMembers: many(teamMembersTable),
   follows: many(followsTables),
   notifications: many(notificationsTable),
+  matches: many(matches),
   userRecord: one(usersRecordTable)
 }));
 
@@ -346,7 +347,7 @@ export const tournamentTeamsEnrolled = createTable(
   },
   (team) => ({
     // makes sure name coming in is unique
-    teamNameIdx: uniqueIndex("team_name_idx").on(team.teamId)
+    // teamNameIdx: uniqueIndex("team_name_idx").on(team.teamId)
   })
 );
 
@@ -467,15 +468,47 @@ export const matches = createTable(
   "matches", 
   {
     id: varchar("id", { length: 255 }).primaryKey(),
+    teamId: varchar("team_id", { length: 255 })
   }
 );
 
-export const matchesRelations = relations(matches, ({ many }) => ({
+export const matchesRelations = relations(matches, ({ one, many }) => ({
   teams: many(teamsToMatches),
+  users: many(usersToMatches),
+  author: one(users, {
+    fields: [matches.teamId],
+    references: [users.id],
+  }),
 }));
 
 export type Match = typeof matches.$inferSelect;
 export type MatchInsert = typeof matches.$inferInsert;
+
+export const usersToMatches = createTable(
+  "users_matches",
+  {
+    user_id: varchar("user_id", { length: 255 })
+      .notNull(),
+    match_id: varchar("match_id", { length: 255 })
+      .notNull()
+  },
+  (t) => ({
+    pk: primaryKey({
+      columns: [t.match_id],
+    }),
+  })
+);
+
+export const usersToMatchesRelations = relations(usersToMatches, ({ one }) => ({
+  usersMatches: one(users, {
+    fields: [usersToMatches.user_id],
+    references: [users.id],
+  }),
+  match: one(matches, {
+    fields: [usersToMatches.match_id],
+    references: [matches.id],
+  }),
+}));
 
 export const teamsToMatches = createTable(
   "teams_matches",
@@ -487,15 +520,15 @@ export const teamsToMatches = createTable(
   },
   (t) => ({
     pk: primaryKey({
-      columns: [t.team_id, t.match_id],
+      columns: [t.match_id],
     }),
   })
 );
 
 export const teamsToMatchesRelations = relations(teamsToMatches, ({ one }) => ({
-  team: one(teams, {
+  users: one(users, {
     fields: [teamsToMatches.team_id],
-    references: [teams.id],
+    references: [users.id],
   }),
   match: one(matches, {
     fields: [teamsToMatches.match_id],

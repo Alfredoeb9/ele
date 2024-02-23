@@ -5,7 +5,8 @@ import { Avatar, Button, Divider } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import { SetStateAction, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import type { Users, FollowsType, UsersRecordType } from '@/server/db/schema'
+import type { Users, FollowsType, UsersRecordType, Match } from '@/server/db/schema'
+import Link from "next/link";
 
 export default function Profile() {
     const utils = api.useUtils()
@@ -13,7 +14,7 @@ export default function Profile() {
     const session = useSession();
     const [error, setError] = useState<string>("");
     const [userName, setUserName] = useState<string>("");
-    const [path, setPath] = useState<string>("");
+    const [path, setPath] = useState<string>("profile");
     const [areFriends, setAreFriends] = useState<boolean>(false);
 
     const userFromPath = pathname.split("/")[2]
@@ -32,20 +33,12 @@ export default function Profile() {
 
     const user = getUserData?.data
 
-    useEffect(() => {
-        if (userSession?.id === user?.id) {
-            setPath("profile")
-        }
-    }, [userSession, user])
-
-    // if (user?.follows == undefined || user?.follows == null) {
-    //     return null
-    // }
-
     //@ts-expect-error follows table should be available
     const usersFriends =  user?.follows
     //@ts-expect-error user record table should be available
     const usersRecord: UsersRecordType = user?.userRecord
+    //@ts-expect-error user matches table should be available
+    const usersUpcomingMatches: Match[] = user?.matches
 
     useEffect(() => {
       usersFriends?.map((friend: { targetUser: string | undefined; }) => {
@@ -83,6 +76,11 @@ export default function Profile() {
           }
         }
     });
+
+    // finalize how i want to grab recent matches, if on profile path (which means viewing users) 
+    //then we can grab only solo games or find a way to get all teams users is assigned to (solo, duos, teams, etc...)
+    // and then display upcoming matches
+    const getUpcomingGames = api.matches.getLatestUsersMatches.useQuery({userId: userSession?.id as string, tournamentId: usersUpcomingMatches}, { enabled: usersUpcomingMatches?.length > 0 })
 
     return (
         <div className="bg-neutral-600">
@@ -170,8 +168,27 @@ export default function Profile() {
                                 <Divider orientation="vertical" className="w-0.5 h-20 text-white bg-white mx-1" />
 
                                 <div className="text-white text-center">
-                                    <h3 className="font-bold">RECENT MATCHES</h3>
-                                    <p>No Matches</p>
+                                    <h3 className="font-bold">UPCOMING MATCHES</h3>
+                                    
+
+                                    { userSession?.id === user?.id ? (
+                                        <div className="flex flex-col">
+                                            {usersUpcomingMatches?.map((match: {id: string, teamId: string | null}) => (
+                                                <>
+                                                    <Link href={`/tournaments/${match.id}`} key={match.id}>
+                                                        View Tournament 
+                                                    </Link>
+                                                </>
+                                            ))}
+                                        </div>
+                                        
+                                    ) : (
+                                        <>
+                                            {usersUpcomingMatches?.length}
+                                        </>
+                                        
+                                    )}
+                                    
                                 </div>
                             </div>
                         </div>

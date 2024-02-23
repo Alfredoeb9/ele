@@ -175,8 +175,7 @@ export const userRouter = createTRPCRouter({
       path: z.string().min(1).optional()
     }))
     .query(async ({ ctx, input }) => {
-      try {
-
+      try {        
         if (input.username) {
           if (input.path === 'profile') {
             const currentUser = await ctx.db.query.users.findFirst({
@@ -186,15 +185,19 @@ export const userRouter = createTRPCRouter({
               },
               with: {
                 follows: true,
-                userRecord: true
+                userRecord: true,
+                matches: true
               }
             });
 
             if (!currentUser) throw new Error("No user with such credentials")
 
-            await ctx.db.update(users).set({
-              profileViews: sql`${users.profileViews} + 1`
-            })
+            await ctx.db
+              .update(users)
+              .set({
+                profileViews: sql`${users.profileViews} + 1`
+              })
+              .where(eq(users.username, input.username))
 
             return currentUser
           } else {

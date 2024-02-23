@@ -5,7 +5,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-import { matches, posts, teamsToMatches, tournamentTeamsEnrolled, tournaments, tournamentsToTeams } from "@/server/db/schema";
+import { matches, posts, teamsToMatches, tournamentTeamsEnrolled, tournaments, tournamentsToTeams, usersToMatches } from "@/server/db/schema";
 
 export const matchRouter = createTRPCRouter({
 
@@ -61,6 +61,32 @@ export const matchRouter = createTRPCRouter({
     });
   }),
 
+  getLatestUsersMatches: publicProcedure
+    .input(z.object({
+      userId: z.string().min(1),
+      tournamentId: z.any()
+    }))
+    .query(async ({ ctx, input }) => {
+
+      console.log("input", input.tournamentId[0].id)
+
+      // return await ctx.db.query.tournaments.findMany({
+      //   where: eq()
+      // })
+      const data: any[] | PromiseLike<any[]> = []
+
+       input.tournamentId.map(async (id: any) => {
+        
+        let house =  ctx.db.query.tournaments.findMany({
+          where: eq(tournaments.id, id.id)
+        })
+        return data.push(house)
+      })
+
+      console.log("data", data )
+      return data
+  }),
+
   getSecretMessage: protectedProcedure.query(() => {
     return "you can now see this secret message!";
   }),
@@ -91,7 +117,7 @@ export const matchRouter = createTRPCRouter({
           await tx
             .insert(tournamentsToTeams)
             .values({
-              tournament_id: tournamentId,
+              tournament_id: input.tournamentId,
               team_id: input.teamId
             })
           
@@ -100,7 +126,8 @@ export const matchRouter = createTRPCRouter({
           await tx
             .insert(matches)
             .values({
-              id: matchId
+              id: matchId,
+              teamId: input.teamId
             })
           
           await tx

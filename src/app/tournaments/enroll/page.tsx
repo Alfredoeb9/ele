@@ -68,7 +68,7 @@ export default function Enroll() {
             })
             setSelectedGames("")
             setTeamName("")
-            router.push("/")
+            // router.push("/")
         },
 
         onError:(error) => {
