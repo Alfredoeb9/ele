@@ -45,6 +45,8 @@ export default function Home() {
 
   const tournamentMatches = api.matches.getAllMatches.useQuery()
 
+  const getGames = api.games.getAllGames.useQuery()
+
   if (tournamentMatches.isError) {
     setError("Match server is down, please reach out to admin")
   }
@@ -71,7 +73,7 @@ export default function Home() {
       </section>
       
       
-      <HomeFeaturedGames data={tournamentMatches?.isSuccess && tournamentMatches?.data} error={error} />
+      <HomeFeaturedGames data={getGames?.isSuccess && getGames?.data} error={error} />
 
       <LoginBanner />
 
