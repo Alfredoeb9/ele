@@ -77,6 +77,9 @@ export default function Profile() {
         }
     });
 
+    console.log("userSessioh", userSession)
+    console.log("user", user)
+
     // finalize how i want to grab recent matches, if on profile path (which means viewing users) 
     //then we can grab only solo games or find a way to get all teams users is assigned to (solo, duos, teams, etc...)
     // and then display upcoming matches
