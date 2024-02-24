@@ -77,9 +77,6 @@ export default function Profile() {
         }
     });
 
-    console.log("userSessioh", userSession)
-    console.log("user", user)
-
     // finalize how i want to grab recent matches, if on profile path (which means viewing users) 
     //then we can grab only solo games or find a way to get all teams users is assigned to (solo, duos, teams, etc...)
     // and then display upcoming matches
@@ -174,7 +171,7 @@ export default function Profile() {
                                     <h3 className="font-bold">UPCOMING MATCHES</h3>
                                     
 
-                                    { userSession?.id === user?.id ? (
+                                    { userSession?.username === user?.username ? (
                                         <div className="flex flex-col">
                                             {usersUpcomingMatches?.map((match: {id: string, teamId: string | null}) => (
                                                 <>
