@@ -1,4 +1,4 @@
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
+import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input} from "@nextui-org/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/trpc/react";
@@ -9,9 +9,6 @@ interface SendFriendProps {
     open: boolean;
     onOpenChange: () => void;
     handleModalPath: (path: string) => void;
-    // teamName?: string;
-    // email: string;
-    // id: string;
 }
 
 export default function SendFriendRequest({ open, onOpenChange, handleModalPath }: SendFriendProps) {
@@ -26,20 +23,6 @@ export default function SendFriendRequest({ open, onOpenChange, handleModalPath 
 
     const id = session.data?.user.id
     const senderUser = session.data?.user.email
-
-    const removeFriend = api.user.removeFriend.useMutation({
-        onSuccess: async () => {
-            await utils.user.getUserWithFriends.invalidate()
-            toast('User has been removed as a friend', {
-                position: "bottom-right",
-                autoClose: false,
-                closeOnClick: true,
-                draggable: false,
-                type: "success",
-                toastId: 16                     
-            })
-        }
-    })
 
     const sendRequest = api.user.sendFriendRequest.useMutation({
     
@@ -70,6 +53,7 @@ export default function SendFriendRequest({ open, onOpenChange, handleModalPath 
                 isOpen={open} 
                 onClose={() => {
                     handleModalPath("")
+                    setUserName("")
                     onClose()
                 }} 
                 onOpenChange={onOpenChange}
@@ -79,45 +63,41 @@ export default function SendFriendRequest({ open, onOpenChange, handleModalPath 
                         <>
                             <ModalHeader className="flex flex-col gap-1 text-red-600">Send Friend Request </ModalHeader>
                             <ModalBody>
-                            <form onSubmit={(e) => {
-                                e.preventDefault();
-                                    sendRequest.mutate({
-                                        userName,
-                                        id: id as string,
-                                        senderUserName: senderUser as string
-                                    });
-                                }}>
-                                <label>Invite User</label>
-                                <input 
-                                    type="text" 
-                                    placeholder="username" 
-                                    onChange={(e) => setUserName(e.target.value)}
-                                    value={userName}
-                                />
+                                <form onSubmit={(e) => {
+                                    e.preventDefault();
+                                        sendRequest.mutate({
+                                            userName,
+                                            id: id as string,
+                                            senderUserName: senderUser as string
+                                        });
+                                    }}>
+                                    <Input
+                                        variant="bordered"
+                                        autoFocus
+                                        type="text" 
+                                        placeholder="username" 
+                                        onChange={(e) => setUserName(e.target.value)}
+                                        value={userName}
+                                    />
 
-                                <button>SEND</button>
-                            </form>
-            <ToastContainer containerId={"friendRequest"} />
+                                    <div id="modal-footer" className="mt-2 flex gap-2 justify-end">
+                                        <Button color="danger" variant="light" onPress={() => {
+                                            handleModalPath("")
+                                            setUserName("")
+                                            onClose()
+                                        }}>
+                                            Close
+                                        </Button>
+                                        <Button type="button" variant="bordered" color="success">Send Request</Button>
+                                    </div>
+                                </form>
                             </ModalBody>
-                            {/* <ModalFooter>
-                                <Button color="danger" variant="light" onPress={onClose}>
-                                Close
-                                </Button>
-                                <Button color="primary" 
-                                    onClick={() => { 
-                                        removeFriend.mutate({ id: id, email: email})
-                                        onClose()
-                                    }}
-                                >
-                                    Action
-                                </Button>
-                            </ModalFooter> */}
                         </>
                     )}
                 </ModalContent>
             </Modal>
 
-            <ToastContainer />
+            <ToastContainer containerId={"friendRequest"}/>
         </>
     );
 }
