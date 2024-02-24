@@ -191,6 +191,7 @@ import { VerticalDotsIcon } from "./VerticalDotsIcon";
 import { SearchIcon } from "./SearchIcon";
 import type { Users } from "@/server/db/schema"
 import RemoveFriendModal from "../_components/RemoveFriendModal";
+import SendFriendRequest from "../_components/SendFriendRequest";
   
   const statusColorMap: Record<string, ChipProps["color"]> = {
     active: "success",
@@ -200,6 +201,7 @@ import RemoveFriendModal from "../_components/RemoveFriendModal";
  
   export default function Friends() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
+    // const {isOpen, onOpen, onOpenChange} = useDisclosure();
     const session = useSession();
     const [filterValue, setFilterValue] = useState("");
     const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
@@ -214,6 +216,7 @@ import RemoveFriendModal from "../_components/RemoveFriendModal";
     const [usernameState, setUsername] = useState<string>("");
     const [userId, setUserId] = useState<string>("");
     const [email, setEmail] = useState<string>("");
+    const [modalPath, setModalPath] = useState<string>("");
     const [error, setError] = useState("");
     const utils = api.useUtils()
 
@@ -424,10 +427,12 @@ import RemoveFriendModal from "../_components/RemoveFriendModal";
                 className="bg-foreground text-background"
                 // endContent={<PlusIcon />}
                 size="sm"
+                onPress={() => {
+                  setModalPath("friend")
+                  onOpen()
+                }}
               >
-                <Link href={"/manage"}>
                   Add New Friend
-                </Link>
                 
               </Button>
             </div>
@@ -501,6 +506,20 @@ import RemoveFriendModal from "../_components/RemoveFriendModal";
       [],
     );
 
+    const handleModalPath = useCallback((path: string) => {
+      switch (path) {
+        case "friend":
+          setModalPath("friend")
+          break;
+        case "remove friend":
+          setModalPath("remove friend")
+          break;
+        default:
+          setModalPath("")
+          break;
+      }
+    }, [modalPath])
+
     if (userFriendData.data === undefined) return null
   
     return (
@@ -547,7 +566,15 @@ import RemoveFriendModal from "../_components/RemoveFriendModal";
           </TableBody>
         </Table>
 
-        <RemoveFriendModal open={isOpen} onOpenChange={onOpenChange} teamName={usernameState} email={email} id={userId} />
+        {modalPath === "friend" ? (
+          <SendFriendRequest  open={isOpen} onOpenChange={onOpenChange} handleModalPath={handleModalPath}/>
+        ) : (
+          <RemoveFriendModal open={isOpen} onOpenChange={onOpenChange} handleModalPath={handleModalPath} teamName={usernameState} email={email} id={userId} />
+        )}
+
+        
+
+        
       </div>
     );
   }

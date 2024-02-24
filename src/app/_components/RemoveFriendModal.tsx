@@ -7,12 +7,13 @@ import { ToastContainer, toast } from "react-toastify";
 interface RemoveFriendProps {
     open: boolean;
     onOpenChange: () => void;
+    handleModalPath: (path: string) => void;
     teamName?: string;
     email: string;
     id: string;
 }
 
-export default function RemoveFriendModal({ open, onOpenChange, teamName, email, id }: RemoveFriendProps) {
+export default function RemoveFriendModal({ open, onOpenChange, handleModalPath, teamName, email, id }: RemoveFriendProps) {
     const { onClose } = useDisclosure();
     const [size, setSize] = useState<string>('md')
     const utils = api.useUtils()
@@ -36,7 +37,10 @@ export default function RemoveFriendModal({ open, onOpenChange, teamName, email,
             <Modal 
                 size={size as 'md'} 
                 isOpen={open} 
-                onClose={onClose} 
+                onClose={() => {
+                    onClose() 
+                    handleModalPath("")
+                }}
                 onOpenChange={onOpenChange}
             >
                 <ModalContent>
