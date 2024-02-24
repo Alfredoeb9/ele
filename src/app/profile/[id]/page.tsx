@@ -115,14 +115,14 @@ export default function Profile() {
                                 </div>
 
                                 <div className="flex flex-col gap-1">
-                                    { userSession?.id === user?.id ? (
+                                    { userSession?.username === user?.username ? (
                                         <>
                                             <Button color="success" disabled={userSession?.id !== user?.id}>Edit Background</Button>
                                             <Button disabled={userSession?.id !== user?.id}>Find Match</Button>
                                             <Button color="danger" disabled={userSession?.id !== user?.id}>Disband Team</Button>
                                         </>
                                     ) : (
-                                        <Button color="success" disabled={userSession?.id === user?.id} onClick={(e: { preventDefault: () => void; }) => {
+                                        <Button color="success" disabled={userSession?.username === user?.username} onClick={(e: { preventDefault: () => void; }) => {
                                             e.preventDefault();
                                             if (areFriends) {
                                                 toast('You are already friends with this user', {
