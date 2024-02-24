@@ -25,7 +25,6 @@ export default function SendFriendRequest({ open, onOpenChange, handleModalPath 
     const senderUser = session.data?.user.email
 
     const sendRequest = api.user.sendFriendRequest.useMutation({
-    
         onSuccess: async () => {
             await utils.user.getNotifications.invalidate()
             setUserName("")
@@ -33,14 +32,14 @@ export default function SendFriendRequest({ open, onOpenChange, handleModalPath 
         onError: (e) => {
           setError(e.message)
           
-          if (!toast.isActive(13, "friendRequest")) {
-            toast('User does not exist', {
+          if (!toast.isActive(25, "friendRequest")) {
+            toast(`User ${userName} does not exist`, {
                 position: "bottom-right",
                 autoClose: false,
                 closeOnClick: true,
                 draggable: false,
                 type: "error",
-                toastId: 19           
+                toastId: 25          
             })
           }
         }
@@ -65,39 +64,36 @@ export default function SendFriendRequest({ open, onOpenChange, handleModalPath 
                             <ModalBody>
                                 <form onSubmit={(e) => {
                                     e.preventDefault();
-                                        sendRequest.mutate({
-                                            userName,
-                                            id: id as string,
-                                            senderUserName: senderUser as string
-                                        });
-                                    }}>
-                                    <Input
-                                        variant="bordered"
-                                        autoFocus
-                                        type="text" 
-                                        placeholder="username" 
-                                        onChange={(e) => setUserName(e.target.value)}
-                                        value={userName}
-                                    />
 
-                                    <div id="modal-footer" className="mt-2 flex gap-2 justify-end">
-                                        <Button color="danger" variant="light" onPress={() => {
-                                            handleModalPath("")
-                                            setUserName("")
-                                            onClose()
-                                        }}>
-                                            Close
-                                        </Button>
-                                        <Button type="button" variant="bordered" color="success">Send Request</Button>
-                                    </div>
-                                </form>
+                                    sendRequest.mutate({
+                                        userName,
+                                        id: id as string,
+                                        senderUserName: senderUser as string
+                                    });
+                                }}>
+                                <Input 
+                                    type="text" 
+                                    placeholder="username" 
+                                    onChange={(e) => setUserName(e.target.value)}
+                                    value={userName}
+                                />
+
+                                <div className="flex gap-2 md:gap-3 xl:gap-4 justify-end mt-2">
+                                    <button className="text-red-500">Cancel</button>
+                                    <button className="bg-green-500 p-3 rounded-2xl text-white">Send Request</button>
+                                </div>
+                                
+                            </form>
                             </ModalBody>
+                            <ToastContainer/>
                         </>
                     )}
+                    
                 </ModalContent>
+                
             </Modal>
 
-            <ToastContainer containerId={"friendRequest"}/>
+            
         </>
     );
 }
