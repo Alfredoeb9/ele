@@ -10,7 +10,7 @@ This is a ELE Main App
 - [] - Implement users able to invite players to teams
   - [] - Let users accept incoming invite
 - [x] - Implement users able to invite players as friends
-  - [] - Let users accept incoming friend invite
+  - [x] - Let users accept incoming friend invite
 - [x] - let user create teams in teams settings
   - [] - Get all games user can create teams in 
   - [] - Check if team name is taken for that game
