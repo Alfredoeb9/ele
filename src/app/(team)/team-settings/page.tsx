@@ -50,8 +50,6 @@ export default function TeamSettings() {
 
     if (currentUser.isLoading) return <Spinner label="Loading..." color="warning" />
 
-    console.log("user", currentUser.data)
-
     return (
         <div className="flex bg-stone-900 min-h-screen items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
             <div className="flex min-h-full flex-1 flex-col justify-center w-96 px-6 py-12 lg:px-8">
