@@ -8,10 +8,11 @@ import { JSXElementConstructor, PromiseLikeOfReactNode, ReactElement, ReactNode,
 import { tabs } from "@/lib/sharedData"
 import GameTabs from "./GameTabs";
 import Link from "next/link";
+import Image from "next/image";
   
 export default function Game() {
     const [value, setValue] = useState("Community Tournaments")
-    const [renderData, setRenderData] = useState<any>([])
+    const [renderData, setRenderData] = useState<any[]>([])
     const pathname = usePathname()
     const gameFromPath = pathname.split("/")[2]
     const [active, setActive] = useState<string>("community tournaments");
@@ -112,28 +113,33 @@ export default function Game() {
                         
                         <div className="pt-4">
                             <h2 className="text-white text-xl md:text-2xl lg:text-3xl font-bold">UPCOMING {value.toUpperCase()}</h2>
-                            <div className="flex gap-2">
-                                {renderData?.map((data: { id: string, name: string, start_time: string }) => (
-                                    <div key={data.id} className="bg-slate-800 w-[32.3%] flex-wrap p-2 h-[200px]">
-                                        <div className="text-white">
-                                            <h2 className="text-base md:text-lg"><span className="text-white font-semibold pr-1">Name:</span>{data.name}</h2>
-                                            <p className="text-slate-200"><span className="text-white font-semibold">Date: </span>{new Date(data.start_time).toDateString()}</p>
-                                            <p className="text-slate-200 pb-4"><span className="text-white font-semibold">Time:</span> {new Date(data.start_time).toTimeString()}</p>
-                                            <Link href={`/tournaments/${data.id}`} className="bg-green-500 p-3 rounded-xl">View {value.split(" ")[1]}</Link>
-                                            {/* <>{new Date(data.start_time).getDay() + " D " + new Date(data.start_time).getHours() + " H " + new Date(data.start_time).getMinutes() + " M " + new Date(data.start_time).getSeconds() + " S "}</> */}
+                            <div className="flex gap-2 pt-4">
+                                {renderData.length <= 0 ? (
+                                    <p>There are no {value.split(" ")[1]} at this time. Please check back later</p>
+                                ) : (
+                                    <>
+                                        {renderData?.map((data: { id: string, name: string, start_time: string, game: string }) => (
+                                            <div key={data.id} className="flex bg-slate-800 w-[32.3%] p-2 h-[200px] rounded-xl m-auto">
+                                                <Image src={`/images/${data.game}.png`} alt={`${data.game} placeholder image`} width={50} height={50} className="w-[25%] mr-2 object-contain" />
+                                                <div className="w-[84%] text-white m-auto">
+                                                    <h2 className="text-base md:text-lg"><span className="text-white font-semibold pr-1">Name:</span>{data.name}</h2>
+                                                    <p className="text-slate-200"><span className="text-white font-semibold">Date: </span>{new Date(data.start_time).toDateString()}</p>
+                                                    <p className="text-slate-200 pb-4"><span className="text-white font-semibold">Time:</span> {new Date(data.start_time).toLocaleTimeString()}</p>
+                                                    <Link href={`/tournaments/${data.id}`} className="bg-green-500 p-2 rounded-xl text-xs md:text-base xl:text-xl">View {value.split(" ")[1]}</Link>
+                                                    {/* <>{new Date(data.start_time).getDay() + " D " + new Date(data.start_time).getHours() + " H " + new Date(data.start_time).getMinutes() + " M " + new Date(data.start_time).getSeconds() + " S "}</> */}
 
-                                            {/* { d2.valueOf() <= d1.valueOf() ? ( 
-                                                    <span className="text-2xl">{days > 0 && days + "D"} {hours > 0 && hours + "H"} {minutes > 0 && minutes + "M"} {seconds > 0 && seconds + "S"}</span>
-                                                ) : (
-                                                    <span className="text-2xl">Match Started</span>   
-                                                )
-                                            } */}
-                                        </div>
-                                    </div>
-                                ))}
-
+                                                    {/* { d2.valueOf() <= d1.valueOf() ? ( 
+                                                            <span className="text-2xl">{days > 0 && days + "D"} {hours > 0 && hours + "H"} {minutes > 0 && minutes + "M"} {seconds > 0 && seconds + "S"}</span>
+                                                        ) : (
+                                                            <span className="text-2xl">Match Started</span>   
+                                                        )
+                                                    } */}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </>
+                                )}
                             </div>
-                            
                         </div>
                     </div>
                 </div>
