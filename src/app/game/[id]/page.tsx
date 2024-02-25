@@ -102,7 +102,7 @@ export default function Game() {
         <main className="bg-neutral-600">
             <div className="w-full h-[300px] object-cover bg-mw3_team_background bg-no-repeat bg-cover after:relative after:block after:top-0 after:left-0 after:w-full after:h-full after:bg-gradient-to-br from-white to-neutral-400 after:opacity-50 z-0 relative"></div>
 
-            <div className="relative mt-[-150px]">
+            <div className="relative mt-[-150px] py-3">
                 <div className="container m-auto relative z-20">
                     <div>
                         <ul className="flex flex-row gap-3 justify-center">
@@ -118,13 +118,14 @@ export default function Game() {
                                     <p>There are no {value.split(" ")[1]} at this time. Please check back later</p>
                                 ) : (
                                     <>
-                                        {renderData?.map((data: { id: string, name: string, start_time: string, game: string }) => (
+                                        {renderData?.map((data: { id: string, name: string, start_time: string, game: string, prize: string }) => (
                                             <div key={data.id} className="flex bg-slate-800 w-[32.3%] p-2 h-[200px] rounded-xl m-auto">
                                                 <Image src={`/images/${data.game}.png`} alt={`${data.game} placeholder image`} width={50} height={50} className="w-[25%] mr-2 object-contain rounded-md" />
                                                 <div className="w-[84%] text-white m-auto">
                                                     <h2 className="text-base "><span className="text-white font-semibold pr-1">Name:</span>{data.name}</h2>
                                                     <p className="text-slate-200"><span className="text-white font-semibold">Date: </span>{new Date(data.start_time).toDateString()}</p>
-                                                    <p className="text-slate-200 pb-4"><span className="text-white font-semibold">Time:</span> {new Date(data.start_time).toLocaleTimeString()}</p>
+                                                    <p className="text-slate-200"><span className="text-white font-semibold">Time:</span> {new Date(data.start_time).toLocaleTimeString()}</p>
+                                                    <p className="text-slate-200 pb-4"><span className="text-white font-semibold">Prize:</span> ${data.prize || 0}</p>
                                                     <Link href={`/tournaments/${data.id}`} className="bg-green-500 p-2 rounded-xl text-xs md:text-base xl:text-lg">View {value.split(" ")[1]}</Link>
                                                     {/* <>{new Date(data.start_time).getDay() + " D " + new Date(data.start_time).getHours() + " H " + new Date(data.start_time).getMinutes() + " M " + new Date(data.start_time).getSeconds() + " S "}</> */}
 
