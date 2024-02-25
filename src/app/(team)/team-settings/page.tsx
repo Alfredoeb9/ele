@@ -69,7 +69,7 @@ export default function TeamSettings() {
                                             <p>{team.game}</p>
                                         
                                             <div>
-                                                Ladder squads | {team?.record?.wins || 0} W - {team?.record?.losses || 0} L
+                                                Ladder squads | {team?.record?.wins ?? 0} W - {team?.record?.losses ?? 0} L
                                             </div>
                                         
                                         
