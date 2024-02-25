@@ -244,6 +244,16 @@ export const teamRecordTable = createTable(
   })
 )
 
+// This is needed for a one-one realtion
+export const teamRecordRelations = relations(teamRecordTable, ({ one }) => ({
+  user: one(teamMembersTable, 
+    { 
+      fields: [teamRecordTable.teamId], 
+      references: [teamMembersTable.teamId] 
+    }
+  ),
+}));
+
 export const teamMembersTable = createTable(
   'team_members', 
   {
@@ -271,6 +281,10 @@ export const usersToGroupsRelations = relations(teamMembersTable, ({ one }) => (
     fields: [teamMembersTable.inviteId],
     references: [teamInvites.id],
   }),
+  record: one(teamRecordTable, {
+    fields: [teamMembersTable.teamId],
+    references: [teamRecordTable.teamId]
+  })
 }));
 
 export type Team = typeof teams.$inferSelect;

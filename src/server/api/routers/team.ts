@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { teams } from "@/server/db/schema";
+import { teamMembersTable, teams } from "@/server/db/schema";
 
 export const teamRouter = createTRPCRouter({
     getSingleTeam: publicProcedure
@@ -21,7 +21,23 @@ export const teamRouter = createTRPCRouter({
 
                 return team
             } catch (error) {
-                throw new Error()
+                throw new Error(error as string)
             }
+        }),
+
+    leaveTeam: publicProcedure
+        .input(z.object({
+            userEmail: z.string().min(1)
+        }))
+        .mutation(async ({ ctx, input}) => {
+            try {
+                await ctx.db.delete(teamMembersTable).where(eq(teamMembersTable.userId, input.userEmail));
+
+                return "User has left team"
+            } catch (error) {
+                throw new Error(error as string)
+            }
+            
         })
+
 })

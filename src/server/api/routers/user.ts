@@ -245,7 +245,11 @@ export const userRouter = createTRPCRouter({
             password: false,
           },
           with: {
-            teamMembers: true
+            teamMembers: {
+              with: {
+                record: true
+              }
+            }
           }
         })
 
