@@ -1,12 +1,13 @@
 "use client";
-import Disband from "@/app/_components/Disband";
+import Disband from "@/app/_components/modals/Disband";
+import LeaveTeamModal from "@/app/_components/modals/LeaveTeamModal";
 import { api } from "@/trpc/react";
 import { useDisclosure } from "@nextui-org/react";
 
 import { Button, Spinner } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 
 import 'react-toastify/dist/ReactToastify.css';
@@ -16,6 +17,7 @@ export default function TeamSettings() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
     const session = useSession();
     const [teamName, setTeamName] = useState<string>("");
+    const [modalPath, setModalPath] = useState<string>("");
 
     const [error, setError] = useState<string>("");
 
@@ -32,7 +34,23 @@ export default function TeamSettings() {
         })
     }
 
+    const handleModalPath = useCallback((path: string) => {
+        switch (path) {
+          case "friend":
+            setModalPath("friend")
+            break;
+          case "remove friend":
+            setModalPath("remove friend")
+            break;
+          default:
+            setModalPath("")
+            break;
+        }
+      }, [modalPath])
+
     if (currentUser.isLoading) return <Spinner label="Loading..." color="warning" />
+
+    console.log("user", currentUser.data)
 
     return (
         <div className="flex bg-stone-900 min-h-screen items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -45,32 +63,58 @@ export default function TeamSettings() {
                         <>
                             {
                                 currentUser.data?.teamMembers.map((team) => (
-                                    <div className="text-white bg-slate-800 w-[32.2%] p-2" key={team.teamId}>
+                                    <div className="text-white bg-slate-800 w-[32.2%] p-2 rounded-xl" key={team.teamId}>
                                         <div className="tournament_info w-full ml-4">
-                                            <h1 className="text-3xl font-bold">{team.teamName}</h1>
+                                            <h1 className="text-lg md:text-xl lg:text-2xl font-bold">{team.teamName}</h1>
                                             <p>{team.game}</p>
                                         
                                             <div>
-                                                Ladder squads | 0W - 0L
+                                                Ladder squads | {team?.record?.wins || 0} W - {team?.record?.losses || 0} L
                                             </div>
                                         
                                         
                                             <div className="flex flex-wrap justify-start mt-4 gap-2 md:gap-3 lg:gap-4">
-                                                <Button 
-                                                    className="text-green-500" 
-                                                    variant="bordered">
-                                                        <Link href={`/team/${team.teamId}`}>Manage</Link>
-                                                </Button>
-                                                <Button 
-                                                    className="text-red-500" 
-                                                    variant="bordered" 
-                                                    onPress={() => {
-                                                        onOpen(),
-                                                        setTeamName(team.teamName)
-                                            
-                                                    }}>
-                                                        Disband
-                                                </Button>
+                                                { team.role === 'member' && (
+                                                    <>
+                                                    <Button 
+                                                        className="text-green-500" 
+                                                        variant="bordered">
+                                                        <Link href={`/team/${team.teamId}`}>View</Link>
+                                                    </Button>
+                                                    <Button 
+                                                        className="text-red-500" 
+                                                        variant="bordered" 
+                                                        onPress={() => {
+                                                            onOpen(),
+                                                            setModalPath("member")
+                                                            setTeamName(team.teamName)
+                                                        }}>
+                                                            Leave Team
+                                                    </Button>
+                                                    </>
+                                                )}
+
+                                                { team.role === 'owner' && (
+                                                    <>
+                                                        <Button 
+                                                            className="text-green-500" 
+                                                            variant="bordered">
+                                                                <Link href={`/team/${team.teamId}`}>Manage</Link>
+                                                        </Button>
+                                                        <Button 
+                                                            className="text-red-500" 
+                                                            variant="bordered" 
+                                                            onPress={() => {
+                                                                onOpen(),
+                                                                setModalPath("owner")
+                                                                setTeamName(team.teamName)
+                                                    
+                                                            }}>
+                                                                Disband
+                                                        </Button>
+                                                    </>
+                                                )}
+                                                
                                             </div>
                                         </div>
                                         
@@ -85,8 +129,15 @@ export default function TeamSettings() {
                 
 
                 <button className="text-white w-64 bg-green-500 rounded-3xl p-4 hover:bg-green-600 transition-all"><Link href="/team-settings/create-team">Create a Team</Link></button>
+                
+                { modalPath === "member" && (
+                    <LeaveTeamModal  open={isOpen} onOpenChange={onOpenChange} handleModalPath={handleModalPath} userEmail={session.data?.user.email as string} teamName={teamName} />
+                )}
 
-                <Disband open={isOpen} onOpenChange={onOpenChange} teamName={teamName} />
+                { modalPath === "owner" && (
+                    <Disband open={isOpen} onOpenChange={onOpenChange} teamName={teamName} />
+                )}
+                
                 {/* RETURN A LIST OF USERS TEAMS */}
                 {/* <form className="create-team" onSubmit={(e) => {
                     e.preventDefault();

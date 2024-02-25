@@ -190,8 +190,8 @@ import Link from "next/link";
 import { VerticalDotsIcon } from "./VerticalDotsIcon";
 import { SearchIcon } from "./SearchIcon";
 import type { Users } from "@/server/db/schema"
-import RemoveFriendModal from "../_components/RemoveFriendModal";
-import SendFriendRequest from "../_components/SendFriendRequest";
+import RemoveFriendModal from "../_components/modals/RemoveFriendModal";
+import SendFriendRequest from "../_components/modals/SendFriendRequest";
   
   const statusColorMap: Record<string, ChipProps["color"]> = {
     active: "success",
