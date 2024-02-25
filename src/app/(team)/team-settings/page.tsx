@@ -38,14 +38,14 @@ export default function TeamSettings() {
         <div className="flex bg-stone-900 min-h-screen items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
             <div className="flex min-h-full flex-1 flex-col justify-center w-96 px-6 py-12 lg:px-8">
                 <h1 className="text-white text-3xl font-bold mb-2">MY TEAMS</h1>
-                <div className="flex gap-2 justify-between mb-4">
+                <div className="flex flex-wrap gap-2 justify-between mb-4">
                     {currentUser.data && currentUser.data?.teamMembers.length <= 0 ? (
                         <div className="text-white text-lg">No teams found. Go ahead and create a team</div>
                     ) : (
                         <>
                             {
                                 currentUser.data?.teamMembers.map((team) => (
-                                    <div className="text-white bg-slate-800 w-full p-2" key={team.teamId}>
+                                    <div className="text-white bg-slate-800 w-[32.2%] p-2" key={team.teamId}>
                                         <div className="tournament_info w-full ml-4">
                                             <h1 className="text-3xl font-bold">{team.teamName}</h1>
                                             <p>{team.game}</p>
