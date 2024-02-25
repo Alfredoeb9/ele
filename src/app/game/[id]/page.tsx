@@ -122,7 +122,7 @@ export default function Game() {
                                             <div key={data.id} className="flex bg-slate-800 w-[32.3%] p-2 h-[200px] rounded-xl m-auto">
                                                 <Image src={`/images/${data.game}.png`} alt={`${data.game} placeholder image`} width={50} height={50} className="w-[25%] mr-2 object-contain rounded-md" />
                                                 <div className="w-[84%] text-white m-auto">
-                                                    <h2 className="text-base md:text-lg"><span className="text-white font-semibold pr-1">Name:</span>{data.name}</h2>
+                                                    <h2 className="text-base "><span className="text-white font-semibold pr-1">Name:</span>{data.name}</h2>
                                                     <p className="text-slate-200"><span className="text-white font-semibold">Date: </span>{new Date(data.start_time).toDateString()}</p>
                                                     <p className="text-slate-200 pb-4"><span className="text-white font-semibold">Time:</span> {new Date(data.start_time).toLocaleTimeString()}</p>
                                                     <Link href={`/tournaments/${data.id}`} className="bg-green-500 p-2 rounded-xl text-xs md:text-base xl:text-lg">View {value.split(" ")[1]}</Link>
