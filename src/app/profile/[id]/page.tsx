@@ -1,7 +1,7 @@
 'use client';
 import { api } from "@/trpc/react";
-import { usePathname } from 'next/navigation'
-import { Avatar, Button, Divider } from "@nextui-org/react";
+import { usePathname, useRouter } from 'next/navigation'
+import { Avatar, Button, Divider, Spinner } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import { SetStateAction, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
@@ -9,6 +9,7 @@ import type { Users, FollowsType, UsersRecordType, Match } from '@/server/db/sch
 import Link from "next/link";
 
 export default function Profile() {
+    const router = useRouter()
     const utils = api.useUtils()
     const pathname = usePathname()
     const session = useSession();
@@ -19,17 +20,47 @@ export default function Profile() {
 
     const userFromPath = pathname.split("/")[2]
 
-    if (!userFromPath) {
-        return setError("Please provide a user")
-    }
+    console.log("un", userFromPath)
+
+    
+
+    useEffect(() => {
+        if (!userFromPath || userFromPath === 'undefined') {
+            toast('User does not exist', {
+                position: "bottom-right",
+                autoClose: 4500,
+                closeOnClick: true,
+                draggable: false,
+                type: "error",
+                toastId: 26                     
+            })
+            setTimeout(() => {
+                router.push("/")
+            }, 5000);
+            return setError("User does not exist")
+        }
+    }, [userFromPath])
 
     const userSession = session.data?.user
 
-    const getUserData = api.user.getSingleUserWithTeams.useQuery({ username: userFromPath, path: path}, { enabled: path.length <= 0 ? false : true})
+    const getUserData = api.user.getSingleUserWithTeams.useQuery({ username: userFromPath, path: path}, { enabled: path.length <= 0 && path === 'undefined' ? false : true})
 
-    if (getUserData.isError) {
-        setError("User does not exist")
-    }
+    useEffect(() => {
+        if (getUserData.isError) {
+            toast('User does not exist', {
+                position: "bottom-right",
+                autoClose: false,
+                closeOnClick: true,
+                draggable: false,
+                type: "success",
+                toastId: 26                     
+            })
+            setTimeout(() => {
+                router.push("/")
+            }, 5000);
+            return setError("User does not exist")
+        }
+    }, [getUserData])
 
     const user = getUserData?.data
 
