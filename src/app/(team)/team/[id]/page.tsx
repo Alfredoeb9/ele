@@ -2,14 +2,20 @@
 import { api } from "@/trpc/react";
 import { Avatar, Button, Divider } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import type { TeamMembersType } from "@/server/db/schema"
 
+const statusColorMap: Record<string, any["color"]>  = {
+    "mw3": "Call of Duty: Modern Warare 3",
+    "fornite": "Fornite"
+};
+
 export default function Team() {
     const session = useSession();
-    const pathname = usePathname()
+    const pathname = usePathname();
+    const router = useRouter();
     const [error, setError] = useState<string>("");
     const [isUserOwner, setIsUserOwner] = useState(false)
     const [isUserMember, setIsUserMember] = useState(false)
@@ -28,10 +34,22 @@ export default function Team() {
         return null
     }
 
-    const getTeamData = api.team.getSingleTeam.useQuery({ id: teamIdFromPath})
+    const getTeamData = api.team.getSingleTeam.useQuery({ id: teamIdFromPath}, { enabled: teamIdFromPath.length > 0})
 
-    if (getTeamData.isError) {
-        setError("Team does not exist")
+    if (getTeamData?.isError) {
+        toast('Error retreving team data', {
+            position: "bottom-right",
+            autoClose: 2400,
+            closeOnClick: true,
+            draggable: false,
+            type: "error",
+            toastId: 28                          
+        })
+
+        setTimeout(() => [
+            router.push("/")
+        ], 2500)
+        
     }
 
     const team = getTeamData?.data
@@ -67,7 +85,10 @@ export default function Team() {
                                 <div className="text-white">
                                     <h2 className="text-3xl mb-2 font-bold">{team?.team_name}</h2>
                                     <p className="font-semibold">EST. {team?.createdAt.toLocaleDateString()}</p>
-                                    <p>Call of Duty: Modern Warare 3 | Global SQUAD Ladder</p><h2 className="mb-2">{team?.team_name}</h2>
+                                    { team?.gameTitle === 'mw3' ?  statusColorMap[team?.gameTitle] : "Call of Duty: Modern Warare 3" }
+                                    {/* {team.} */}
+                                    {/* <p>Call of Duty: Modern Warare 3 | Global SQUAD Ladder</p> */}
+                                    <h2 className="mb-2">{team?.team_name}</h2>
                                 </div>
                                 
 
