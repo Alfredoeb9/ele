@@ -180,9 +180,7 @@ export default function Header() {
                                                     {notification.userName} wants to be your friend
 
                                                     <div className="flex gap-2 justify-end">
-                                                        <button  onClick={(id) => {
-                                                            console.log("id", id)
-                                                            // if (notification.)
+                                                        <Button variant="solid" size="sm" color="success" onPress={() => {
                                                             acceptRequest.mutate({
                                                                 userId: session?.data?.user?.id,
                                                                 targetId: notification.from,
@@ -190,13 +188,13 @@ export default function Header() {
                                                             })
                                                             }}>
                                                                 Accept
-                                                        </button>
-                                                        <button onClick={() => {
+                                                        </Button>
+                                                        <Button variant="solid" size="sm" color="danger" onPress={() => {
                                                             declineFriendRequest.mutate({
                                                                 userId: session?.data?.user?.id,
                                                                 targetId: notification.from
                                                             })
-                                                        }}>Decline</button>
+                                                        }}>Decline</Button>
 
                                                     </div>
 
