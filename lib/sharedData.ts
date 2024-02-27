@@ -67,3 +67,8 @@ export const tabs = [
     label: "XP Matches"
   }
 ];
+
+export const statusGameMap: Record<string, any["name"]>  = {
+  "mw3": "Call of Duty: Modern Warare 3",
+  "fornite": "Fornite"
+};

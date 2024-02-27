@@ -1,21 +1,46 @@
+import { api } from "@/trpc/react";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
 import { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+
 
 interface DisbandProps {
     open: boolean;
     onOpenChange: () => void;
     teamName?: string;
+    teamId?: string;
 }
 
-export default function Disband({ open, onOpenChange, teamName }: DisbandProps) {
+export default function Disband({ open, onOpenChange, teamName, teamId }: DisbandProps) {
   const { onClose } = useDisclosure();
   const [size, setSize] = useState<string>('md')
 
+  const utils = api.useUtils()
 
-
-    function disBandTeam() {
-        console.log("team is disbanded")
+  const disbandTeam = api.team.disbandTeam.useMutation({
+    onSuccess: async () => {
+        await utils.user.getSingleUserWithTeamMembers.invalidate()
+        toast(`Team ${teamName} has been deleted.`, {
+          position: "bottom-right",
+          autoClose: false,
+          closeOnClick: true,
+          draggable: false,
+          type: "success",
+          toastId: 31
+      })
+      
+    },
+    onError: () => {      
+      toast(`Error occured before team ${teamName} could be disbanded.`, {
+          position: "bottom-right",
+          autoClose: false,
+          closeOnClick: true,
+          draggable: false,
+          type: "error",
+          toastId: 30          
+      })
     }
+  });
 
   return (
     <>
@@ -39,10 +64,19 @@ export default function Disband({ open, onOpenChange, teamName }: DisbandProps) 
                 <Button color="danger" variant="light" onPress={onClose}>
                   Close
                 </Button>
-                <Button color="primary" onPress={() => disBandTeam()}>
+                <Button color="primary" 
+                  onPress={() => {
+                    disbandTeam.mutate({
+                      teamId: teamId as string
+                    })
+                    onClose()
+                  }}
+                  >
                   Action
                 </Button>
               </ModalFooter>
+
+              <ToastContainer containerId={"disband-team-modal"} />
             </>
           )}
         </ModalContent>

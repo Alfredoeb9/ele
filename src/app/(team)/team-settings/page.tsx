@@ -1,6 +1,7 @@
 "use client";
 import Disband from "@/app/_components/modals/Disband";
 import LeaveTeamModal from "@/app/_components/modals/LeaveTeamModal";
+import { statusGameMap } from "@/lib/sharedData";
 import { api } from "@/trpc/react";
 import { useDisclosure } from "@nextui-org/react";
 
@@ -17,6 +18,7 @@ export default function TeamSettings() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
     const session = useSession();
     const [teamName, setTeamName] = useState<string>("");
+    const [teamId, setTeamId] = useState<string>("");
     const [modalPath, setModalPath] = useState<string>("");
 
     const [error, setError] = useState<string>("");
@@ -64,7 +66,7 @@ export default function TeamSettings() {
                                     <div className="text-white bg-slate-800 w-[100%] sm:w-[32.2%] p-2 rounded-xl" key={team.teamId}>
                                         <div className="tournament_info w-full ml-4">
                                             <h1 className="text-lg md:text-xl lg:text-2xl font-bold">{team.teamName}</h1>
-                                            <p>{team.game}</p>
+                                            <p className="font-semibold">{team.game === 'mw3' && statusGameMap[team?.game]}</p>
                                         
                                             <div>
                                                 Ladder squads | {team?.record?.wins ?? 0} W - {team?.record?.losses ?? 0} L
@@ -106,7 +108,7 @@ export default function TeamSettings() {
                                                                 onOpen(),
                                                                 setModalPath("owner")
                                                                 setTeamName(team.teamName)
-                                                    
+                                                                setTeamId(team.teamId)
                                                             }}>
                                                                 Disband
                                                         </Button>
@@ -133,7 +135,7 @@ export default function TeamSettings() {
                 )}
 
                 { modalPath === "owner" && (
-                    <Disband open={isOpen} onOpenChange={onOpenChange} teamName={teamName} />
+                    <Disband open={isOpen} onOpenChange={onOpenChange} teamName={teamName} teamId={teamId} />
                 )}
             </div>
         </div>

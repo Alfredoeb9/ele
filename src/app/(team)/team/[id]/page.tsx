@@ -6,11 +6,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import type { TeamMembersType } from "@/server/db/schema"
+import { statusGameMap } from "@/lib/sharedData";
 
-const statusColorMap: Record<string, any["color"]>  = {
-    "mw3": "Call of Duty: Modern Warare 3",
-    "fornite": "Fornite"
-};
+// const statusColorMap: Record<string, any["name"]>  = {
+//     "mw3": "Call of Duty: Modern Warare 3",
+//     "fornite": "Fornite"
+// };
 
 export default function Team() {
     const session = useSession();
@@ -85,9 +86,8 @@ export default function Team() {
                                 <div className="text-white">
                                     <h2 className="text-3xl mb-2 font-bold">{team?.team_name}</h2>
                                     <p className="font-semibold">EST. {team?.createdAt.toLocaleDateString()}</p>
-                                    { team?.gameTitle === 'mw3' ?  statusColorMap[team?.gameTitle] : "Call of Duty: Modern Warare 3" }
-                                    {/* {team.} */}
-                                    {/* <p>Call of Duty: Modern Warare 3 | Global SQUAD Ladder</p> */}
+                                    { team?.gameTitle === 'mw3' ?  statusGameMap[team?.gameTitle] : "Call of Duty: Modern Warare 3" }
+                                    { team?.gameTitle === 'fornite' ?  statusGameMap[team?.gameTitle] : "Fornite" }
                                     <h2 className="mb-2">{team?.team_name}</h2>
                                 </div>
                                 
