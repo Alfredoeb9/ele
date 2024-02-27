@@ -205,7 +205,7 @@ export default function Header() {
                             </Dropdown>
                             </div>
                             
-                            <Dropdown placement="bottom-end" closeOnSelect={false}>
+                            <Dropdown placement="bottom-end">
                                 <DropdownTrigger>
                                     <Avatar
                                     isBordered
@@ -216,7 +216,7 @@ export default function Header() {
                                     size="sm"
                                     />
                                 </DropdownTrigger>
-                                <DropdownMenu aria-label="Profile Actions" disabledKeys={["profile", "credits"]}>
+                                <DropdownMenu aria-label="Profile Actions" closeOnSelect={false} disabledKeys={["profile", "credits"]}>
                                     <DropdownItem key="profile" textValue={session?.data?.user?.email as string} className="h-14 gap-2">
                                         <p className="font-semibold">Signed in as</p>
                                         <p className="font-semibold">{session?.data.user.email}</p>
