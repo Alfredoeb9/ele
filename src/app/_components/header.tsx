@@ -125,8 +125,6 @@ export default function Header() {
         }
     })
 
-    console.log("notification", usersNotifications.data)
-
     return (
         <header className="nav">
             <nav className="w-full h-16 px-4 flex items-center justify-between bg-gray-200 dark:bg-gray-800 rounded-b-lg">

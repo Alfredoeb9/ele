@@ -20,10 +20,6 @@ export default function Profile() {
 
     const userFromPath = pathname.split("/")[2]
 
-    console.log("un", userFromPath)
-
-    
-
     useEffect(() => {
         if (!userFromPath || userFromPath === 'undefined') {
             toast('User does not exist', {

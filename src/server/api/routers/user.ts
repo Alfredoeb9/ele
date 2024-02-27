@@ -268,7 +268,6 @@ export const userRouter = createTRPCRouter({
       senderUserName: z.string().min(1),
     }))
     .mutation(async ({ ctx, input }) => {
-      console.log("iput", input.userName)
       try {
         // grab all users friends
         // const following = await ctx.db.query.followsTables.findMany({

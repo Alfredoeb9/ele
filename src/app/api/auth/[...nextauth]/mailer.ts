@@ -29,7 +29,6 @@ const sendEmail = async (mailOptions: Options) => {
 };
 
 export async function sentVerifyUserEmail (toEmail: string, fullName: string, url: string) {
-  console.log("verify")
   const content = `We're excited to have you get started. Please verify you email by clicking on the link below.`;
   const title = "Welcome!";
   const button = "Verify Email";
