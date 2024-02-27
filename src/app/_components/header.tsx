@@ -216,7 +216,7 @@ export default function Header() {
                                     size="sm"
                                     />
                                 </DropdownTrigger>
-                                <DropdownMenu aria-label="Profile Actions" disabledKeys={["profile", "credits"]}>
+                                <DropdownMenu aria-label="Profile Actions" disabledKeys={["profile", "credits", "settings", "stats", "help_and_feedback"]}>
                                     <DropdownItem key="profile" textValue={session?.data?.user?.email as string} className="h-14 gap-2">
                                         <p className="font-semibold">Signed in as</p>
                                         <p className="font-semibold">{session?.data.user.email}</p>
@@ -226,7 +226,7 @@ export default function Header() {
                                     
                                     <DropdownItem key="team_settings" textValue="team-settings" href="/team-settings">Team Settings</DropdownItem>
                                     <DropdownItem key="friends" textValue="friends" href="/friends">Friends</DropdownItem>
-                                    <DropdownItem key="analytics" textValue="stats">Stats</DropdownItem>
+                                    <DropdownItem key="stats" textValue="stats">Stats</DropdownItem>
                                     <DropdownItem key="buy_credits" textValue="pricing" href="/pricing">Buy Credits</DropdownItem>
                                     <DropdownItem key="help_and_feedback" textValue="help & feedback">Help & Feedback</DropdownItem>                                    
                                     <DropdownItem 
