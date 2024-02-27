@@ -233,8 +233,7 @@ export default function Header() {
                                         key="logout" 
                                         color="danger"
                                         textValue="log out"
-                                        onClick={async (e) => {
-                                            e.preventDefault();
+                                        onPress={async () => {
                                             await signOut();
                                             router.push("/");
                                         }}
