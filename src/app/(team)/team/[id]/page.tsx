@@ -22,7 +22,7 @@ export default function Team() {
     const teamIdFromPath = pathname.split("/")[2]
 
     if (!teamIdFromPath) {
-        setError("Please provide a user")
+        // setError("Please provide a user")
         toast('Please provide a user', {
             position: "bottom-right",
             autoClose: 5000,
