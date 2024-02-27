@@ -102,7 +102,9 @@ export default function Team() {
                                 { isUserOwner &&
                                     <>
                                         <Button color="success">Edit Background</Button>
-                                        <Button>Find Match</Button>
+                                        <Button onPress={() => [
+                                            router.push(`/game/${team?.gameTitle.toLowerCase()}`)
+                                        ]}>Find Match</Button>
                                         <Button color="danger" onPress={() => {
                                             onOpen()
                                         }}>Disband Team</Button> 
