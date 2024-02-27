@@ -18,7 +18,7 @@ export default function CreateTeam() {
     const [selectedGameId, setSelectedGameId] = useState<string>("");
     const [selectedGame, setSelectedGame] = useState<string>("");
 
-    if (!session.data) router.push("/sign-in")
+    if (session.status === 'unauthenticated') router.push("/sign-in")
 
     // const currentUser = api.user.getSingleUserWithTeams.useQuery({ email: session.data?.user.email as string })
 
@@ -73,7 +73,7 @@ export default function CreateTeam() {
                 <form className="create-team" onSubmit={(e) => {
                         e.preventDefault();
                         createTeam.mutate({
-                            game: selectedGameId,
+                            gameId: selectedGameId,
                             gameText:selectedGame,
                             teamName: teamName,
                             email: session.data?.user.email as string

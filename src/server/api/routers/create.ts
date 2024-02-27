@@ -7,7 +7,7 @@ import { db } from "@/server/db";
 export const createRouter = createTRPCRouter({
     createTeam: protectedProcedure
         .input(z.object({
-            game: z.string().min(1),
+            gameId: z.string().min(1),
             teamName: z.string().min(1),
             email: z.string().min(1),
             gameText: z.string().min(1)
@@ -20,7 +20,8 @@ export const createRouter = createTRPCRouter({
                 await tx
                     .insert(teams)
                     .values({
-                        game: input.game,
+                        gameId: input.gameId,
+                        gameTitle: input.gameText,
                         team_name: input.teamName,
                         id: teamRandomId
                     });
