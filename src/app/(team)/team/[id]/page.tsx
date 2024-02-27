@@ -1,12 +1,13 @@
 'use client';
 import { api } from "@/trpc/react";
-import { Avatar, Button, Divider } from "@nextui-org/react";
+import { Avatar, Button, Divider, useDisclosure } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import type { TeamMembersType } from "@/server/db/schema"
 import { statusGameMap } from "@/lib/sharedData";
+import Disband from "@/app/_components/modals/Disband";
 
 // const statusColorMap: Record<string, any["name"]>  = {
 //     "mw3": "Call of Duty: Modern Warare 3",
@@ -14,6 +15,7 @@ import { statusGameMap } from "@/lib/sharedData";
 // };
 
 export default function Team() {
+    const {isOpen, onOpen, onOpenChange} = useDisclosure();
     const session = useSession();
     const pathname = usePathname();
     const router = useRouter();
@@ -86,8 +88,8 @@ export default function Team() {
                                 <div className="text-white">
                                     <h2 className="text-3xl mb-2 font-bold">{team?.team_name}</h2>
                                     <p className="font-semibold">EST. {team?.createdAt.toLocaleDateString()}</p>
-                                    { team?.gameTitle.toLowerCase() === 'mw3' ?  statusGameMap[team?.gameTitle] : "Call of Duty: Modern Warare 3" }
-                                    { team?.gameTitle.toLowerCase() === 'fornite' ?  statusGameMap[team?.gameTitle] : "Fornite" }
+                                    { team?.gameTitle.toLowerCase() === 'mw3' &&  statusGameMap[team?.gameTitle] }
+                                    { team?.gameTitle.toLowerCase() === 'fornite' &&  statusGameMap[team?.gameTitle] }
                                     <h2 className="mb-2">{team?.team_name}</h2>
                                 </div>
                                 
@@ -101,7 +103,9 @@ export default function Team() {
                                     <>
                                         <Button color="success">Edit Background</Button>
                                         <Button>Find Match</Button>
-                                        <Button color="danger">Disband Team</Button> 
+                                        <Button color="danger" onPress={() => {
+                                            onOpen()
+                                        }}>Disband Team</Button> 
                                     </>
                                 }
                                 
@@ -143,6 +147,7 @@ export default function Team() {
                 </div>
                 
             </div>
+            <Disband open={isOpen} onOpenChange={onOpenChange} teamName={team?.team_name} teamId={team?.id} />
             <ToastContainer containerId="team_id" />
         </div>
     )
