@@ -540,7 +540,7 @@ import { useRouter } from "next/navigation";
               wrapper: "after:bg-foreground after:text-background text-background",
             },
           }}
-          className="bg-white p-3"
+          className="bg-white p-3 overflow-auto"
           classNames={classNames}
           // selectedKeys={selectedKeys}
           // selectionMode="multiple"
