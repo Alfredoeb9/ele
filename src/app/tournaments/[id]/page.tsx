@@ -149,9 +149,9 @@ export default function Tournaments({
                                     </CardFooter>
                                 </Card>
 
-                                <div className="tournament_info w-full ml-4">
+                                <div className="tournament_info w-full p-2 sm:ml-4">
                             <h1 className="text-3xl font-bold">{tournament?.game.toUpperCase()}</h1>
-                            <div className="flex mb-4 items-center justify-around w-1/2">
+                            <div className="flex mb-4 items-center justify-around w-full sm:w-1/2">
                                 <div>
                                     <p className="block font-bold">{tournament?.name}</p>
                                     <p className="block">{tournament?.tournament_type}</p>
@@ -166,11 +166,11 @@ export default function Tournaments({
                                 
                             </div>
                             
-                            <div className="flex gap-1 w-1/2">
+                            <div className="flex gap-1 w-full sm:w-1/2">
                                 <Card className="w-40 grow">
                                     <CardHeader>
                                         <div>
-                                            <p>REGISTRATION OPENS</p>
+                                            <p className="font-semibold">REGISTRATION OPENS</p>
                                             <p>{d2.valueOf() <= d1.valueOf() ? "OPEN NOW" : "CLOSED"}</p>
                                         </div>
                                     </CardHeader>
@@ -179,7 +179,7 @@ export default function Tournaments({
                                 <Card className="w-40 grow">
                                     <CardHeader>
                                         <div>
-                                            <p>Start Time</p>
+                                            <p className="font-semibold">Start Time</p>
                                             <p>{pstDate} PST</p>
                                         </div>
                                     </CardHeader>
@@ -187,7 +187,7 @@ export default function Tournaments({
                             </div>
                             
                             
-                            <div className="flex flex-wrap justify-evenly w-1/2 mt-4">
+                            <div className="flex flex-wrap justify-evenly w-full sm:w-1/2 mt-4">
                                 <div className="">
                                     <h5 className="font-bold">ENTRY/PLAYER</h5>
                                     <p>{tournament?.entry}</p>
@@ -219,18 +219,18 @@ export default function Tournaments({
                     
                     <div className="flex px-3 py-5 gap-2">
                         <div>
-                            <p className="text-lg un">
+                            <p className="text-base sm:text-lg">
                                 <span className="underline font-bold">Match Starts in: </span>
                                 { d2.valueOf() <= d1.valueOf() ? ( 
-                                    <span className="text-2xl">{days > 0 && days + "D"} {hours > 0 && hours + "H"} {minutes > 0 && minutes + "M"} {seconds > 0 && seconds + "S"}</span>
+                                    <span className="text-xl sm:text-2xl">{days > 0 && days + "D"} {hours > 0 && hours + "H"} {minutes > 0 && minutes + "M"} {seconds > 0 && seconds + "S"}</span>
                                 ) : (
-                                    <span className="text-2xl">Match Started</span>   
+                                    <span className="text-xl sm:text-2xl">Match Started</span>   
                                 )
                                 }
                             </p>            
                         </div>
-                        <Button isDisabled={d2.valueOf() <= d1.valueOf() ? false : true} className="px-4 py-3 font-bold text-lg" color="success" variant="solid" size="lg" radius="md"><Link href={`/tournaments/enroll?id=${tournamentId}`}>Enroll Now</Link></Button>
-                        <Button className="px-4 py-3 text-lg font-semibold" variant="bordered" size="lg" radius="md">Find Teammates</Button>
+                        <Button isDisabled={d2.valueOf() <= d1.valueOf() ? false : true} className="px-4 py-3 font-bold text-sm sm:text-lgtext-lg" color="success" variant="solid" size="lg" radius="md"><Link href={`/tournaments/enroll?id=${tournamentId}`}>Enroll Now</Link></Button>
+                        <Button className="px-4 py-3 text-sm sm:text-lg font-semibold" variant="bordered" size="lg" radius="md">Find {<br/>} Teammates</Button>
                     </div>
                 </div>
 
