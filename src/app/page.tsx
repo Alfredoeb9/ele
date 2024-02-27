@@ -53,7 +53,7 @@ export default function Home() {
   return (
     <main>
       
-      <section className='flex min-h-128 w-full h-lvh flex-col items-start justify-center place-content-center m-auto max-w-7xl px-10'>
+      <section className='flex min-h-128 w-full h-[80vh] sm:h-lvh flex-col items-start justify-center place-content-center m-auto max-w-7xl px-10'>
         <div className='flex flex-row place-content-start max-h-full'>
           <div className="bg-red-400 h-52 w-2 mr-4" />
           <div>
