@@ -83,6 +83,23 @@ export default function Header() {
         }
     })
 
+    const messageRead = api.user.messageRead.useMutation({
+        onSuccess: async () => {
+            await utils.user.getNotifications.invalidate()
+        },
+
+        onError: (error) => {
+            toast('Error setting message as read, please create a support ticket', {
+                position: "bottom-right",
+                autoClose: false,
+                closeOnClick: true,
+                draggable: false,
+                type: "error",
+                toastId: 29
+            })
+        }
+    })
+
     const declineFriendRequest = api.user.declineFriendRequest.useMutation({
         onSuccess: async () => {
             await utils.user.getNotifications.invalidate()
@@ -108,9 +125,11 @@ export default function Header() {
         }
     })
 
+    console.log("notification", usersNotifications.data)
+
     return (
         <header className="nav">
-            <div className="w-full h-16 px-4 flex items-center justify-between bg-gray-200 dark:bg-gray-800 rounded-b-lg">
+            <nav className="w-full h-16 px-4 flex items-center justify-between bg-gray-200 dark:bg-gray-800 rounded-b-lg">
                 <nav className="h-12 flex gap-x-4 items-center">
                     <Link className="text-md font-semibold text-zinc-300" href={"/"}>ELE</Link>
                     <Link className="text-md font-bold text-zinc-900" href="/">Home</Link>
@@ -144,23 +163,46 @@ export default function Header() {
                                         </Button>
                                     </DropdownTrigger>
                                     <DropdownMenu aria-label="Notification Actions" closeOnSelect={false}>
-                                        {(usersNotifications?.data as NotificationType[])?.map((notification: any, i: number) => (
-                                            <DropdownItem key={i}>
-                                                user wants to be your friend
-                                                <Button color="success" onPress={() => {
-                                                    acceptRequest.mutate({
-                                                        userId: session?.data?.user?.id,
-                                                        targetId: notification.from
+                                        {(usersNotifications?.data as NotificationType[])?.map((notification: {userName: string, from: string, id: string, isRead: boolean | null}) => (
+                                            <DropdownItem key={notification.id + notification.userName}>
+                                                {!notification.isRead && (
+                                                    <span className="h-[10px] w-[10px] bg-blue-500 inline-block rounded-full absolute -left-1"></span>
+                                                )}
+
+                                                <div  onClick={() => {
+                                                    if (notification.isRead) return null
+
+                                                    messageRead.mutate({
+                                                        isRead: true,
+                                                        id: session?.data.user.id
                                                     })
-                                                    }}>
-                                                        Accept
-                                                </Button>
-                                                <Button color="danger" onPress={() => {
-                                                    declineFriendRequest.mutate({
-                                                        userId: session?.data?.user?.id,
-                                                        targetId: notification.from
-                                                    })
-                                                }}>Decline</Button>
+                                                }}>
+                                                    {notification.userName} wants to be your friend
+
+                                                    <div className="flex gap-2 justify-end">
+                                                        <button  onClick={(id) => {
+                                                            console.log("id", id)
+                                                            // if (notification.)
+                                                            acceptRequest.mutate({
+                                                                userId: session?.data?.user?.id,
+                                                                targetId: notification.from,
+                                                                id: notification.id
+                                                            })
+                                                            }}>
+                                                                Accept
+                                                        </button>
+                                                        <button onClick={() => {
+                                                            declineFriendRequest.mutate({
+                                                                userId: session?.data?.user?.id,
+                                                                targetId: notification.from
+                                                            })
+                                                        }}>Decline</button>
+
+                                                    </div>
+
+                                                </div>
+                                                
+                                                
                                             </DropdownItem>
                                         ))}
                                 </DropdownMenu>
@@ -190,7 +232,7 @@ export default function Header() {
                                     <DropdownItem key="friends" textValue="friends"><Link href="/friends">Friends</Link></DropdownItem>
                                     <DropdownItem key="analytics" textValue="stats">Stats</DropdownItem>
                                     <DropdownItem key="buy_credits" textValue="pricing"><Link href={"/pricing"}>Buy Credits</Link></DropdownItem>
-                                    <DropdownItem key="help_and_feedback" textValue="help & feedback">Help & Feedback</DropdownItem>
+                                    <DropdownItem key="help_and_feedback" textValue="help & feedback">Help & Feedback</DropdownItem>                                    
                                     <DropdownItem 
                                         key="logout" 
                                         color="danger"
@@ -209,7 +251,7 @@ export default function Header() {
                         </div>
                     )}
                 </div>
-			</div>
+			</nav>
             <ToastContainer containerId={'header-toast'} />
             {/* {error && <ErrorComponent message="There was problem retrieving your credits, please refresh and try agian. If this problem presist please reach out to customer service"/>} */}
         </header>

@@ -22,13 +22,22 @@ export default function SendFriendRequest({ open, onOpenChange, handleModalPath 
     const session = useSession();
 
     const id = session.data?.user.id
-    const senderUser = session.data?.user.email
+    const senderUser = session.data?.user.username
 
     const sendRequest = api.user.sendFriendRequest.useMutation({
         onSuccess: async () => {
             await utils.user.getNotifications.invalidate()
             setUserName("")
+            toast(`Friend request sent to ${userName}`, {
+                position: "bottom-right",
+                autoClose: false,
+                closeOnClick: true,
+                draggable: false,
+                type: "error",
+                toastId: 27          
+            })
         },
+
         onError: (e) => {
           setError(e.message)
           
@@ -85,7 +94,7 @@ export default function SendFriendRequest({ open, onOpenChange, handleModalPath 
                                 
                             </form>
                             </ModalBody>
-                            <ToastContainer/>
+                            <ToastContainer containerId={"send-friend-modal"}/>
                         </>
                     )}
                     

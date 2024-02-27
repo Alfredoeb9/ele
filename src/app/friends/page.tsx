@@ -192,6 +192,7 @@ import { SearchIcon } from "./SearchIcon";
 import type { Users } from "@/server/db/schema"
 import RemoveFriendModal from "../_components/modals/RemoveFriendModal";
 import SendFriendRequest from "../_components/modals/SendFriendRequest";
+import { useRouter } from "next/navigation";
   
   const statusColorMap: Record<string, ChipProps["color"]> = {
     active: "success",
@@ -218,7 +219,10 @@ import SendFriendRequest from "../_components/modals/SendFriendRequest";
     const [email, setEmail] = useState<string>("");
     const [modalPath, setModalPath] = useState<string>("");
     const [error, setError] = useState("");
+    const router = useRouter()
     const utils = api.useUtils()
+
+    if (session.status === 'unauthenticated') router.push("/sign-in")
 
     const userFriendData = api.user.getUserWithFriends.useQuery({ id: session.data?.user.id as string }, { enabled: session.status === "authenticated" ? true : false})
   

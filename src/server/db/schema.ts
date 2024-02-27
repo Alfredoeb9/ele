@@ -215,9 +215,9 @@ export const usersRecordTable = createTable(
     wins: int('wins').default(0),
     losses: int('losses').default(0),
   },
-  (team) => ({
-    compoundKey: primaryKey({ columns: [team.userId] }),
-  })
+  // (user) => ({
+  //   userIdIdx: uniqueIndex("user_id_idx").on(user.userId)
+  // })
 )
 
 export type UsersRecordType = typeof usersRecordTable.$inferSelect
@@ -453,6 +453,7 @@ export const notificationsTable = createTable(
   {
     id: varchar('id', { length: 255 }).notNull(),
     userId: varchar('user_id', { length: 255 }).notNull(),
+    userName: varchar('user_name', { length: 255 }).notNull(),
     type: mysqlEnum('type', ['invite']).notNull(),
     from: varchar('from', { length: 255 }).notNull(),
     resourceId: varchar('resource_id', { length: 255 }),

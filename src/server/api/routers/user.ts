@@ -268,6 +268,7 @@ export const userRouter = createTRPCRouter({
       senderUserName: z.string().min(1),
     }))
     .mutation(async ({ ctx, input }) => {
+      console.log("iput", input.userName)
       try {
         // grab all users friends
         // const following = await ctx.db.query.followsTables.findMany({
@@ -289,6 +290,7 @@ export const userRouter = createTRPCRouter({
           isRead: false,
           type: "invite",
           id: crypto.randomUUID(),
+          userName: input.senderUserName
         })
 
         return sentRequest;
@@ -300,7 +302,8 @@ export const userRouter = createTRPCRouter({
   acceptFriendRequest: publicProcedure
     .input(z.object({
       targetId: z.string().min(1),
-      userId: z.string().min(1)
+      userId: z.string().min(1),
+      id: z.string().min(1),
     }))
     .mutation(async ({ ctx, input }) => {
       try {
@@ -311,7 +314,7 @@ export const userRouter = createTRPCRouter({
 
         // remove from notification table
 
-        await ctx.db.delete(notificationsTable).where(eq(notificationsTable.userId, input.userId))
+        await ctx.db.delete(notificationsTable).where(eq(notificationsTable.id, input.id))
 
         return "user is now your friend"
       } catch (error) {
@@ -345,6 +348,21 @@ export const userRouter = createTRPCRouter({
         const getNotification = await ctx.db.select().from(notificationsTable).where(eq(notificationsTable.userId, input.id))
 
         return getNotification;
+      } catch (error) {
+        throw new Error(error as string)
+      }
+    }),
+
+  messageRead: publicProcedure
+    .input(z.object({
+      isRead: z.boolean(),
+      id: z.string().min(1)
+    }))
+    .mutation(async ({ ctx, input}) => {
+      try {
+        await ctx.db.update(notificationsTable).set({
+          isRead: input.isRead
+        }).where(eq(notificationsTable.userId, input.id))
       } catch (error) {
         throw new Error(error as string)
       }
