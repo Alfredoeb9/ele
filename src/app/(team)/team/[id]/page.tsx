@@ -86,8 +86,8 @@ export default function Team() {
                                 <div className="text-white">
                                     <h2 className="text-3xl mb-2 font-bold">{team?.team_name}</h2>
                                     <p className="font-semibold">EST. {team?.createdAt.toLocaleDateString()}</p>
-                                    { team?.gameTitle === 'mw3' ?  statusGameMap[team?.gameTitle] : "Call of Duty: Modern Warare 3" }
-                                    { team?.gameTitle === 'fornite' ?  statusGameMap[team?.gameTitle] : "Fornite" }
+                                    { team?.gameTitle.toLowerCase() === 'mw3' ?  statusGameMap[team?.gameTitle] : "Call of Duty: Modern Warare 3" }
+                                    { team?.gameTitle.toLowerCase() === 'fornite' ?  statusGameMap[team?.gameTitle] : "Fornite" }
                                     <h2 className="mb-2">{team?.team_name}</h2>
                                 </div>
                                 
