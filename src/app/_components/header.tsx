@@ -205,7 +205,7 @@ export default function Header() {
                             </Dropdown>
                             </div>
                             
-                            <Dropdown placement="bottom-end">
+                            <Dropdown placement="bottom-end" closeOnSelect={false}>
                                 <DropdownTrigger>
                                     <Avatar
                                     isBordered
