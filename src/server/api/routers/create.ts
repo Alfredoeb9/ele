@@ -34,7 +34,7 @@ export const createRouter = createTRPCRouter({
                         userId: input.email,
                         game: input.gameText,
                         teamName: input.teamName,
-                        role: "member"
+                        role: "owner"
                     })
 
                 await tx

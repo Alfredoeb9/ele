@@ -30,8 +30,6 @@ export default function VerifyEmail() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
-  console.log("params", params?.token)
-
   // const {data, isFetching } = useQuery<any>({
   //   queryKey: ["get-user"],
   //   queryFn: 
@@ -207,7 +205,7 @@ export default function VerifyEmail() {
           )}
         </div>
       </>
-      <ToastContainer />
+      <ToastContainer containerId={"verify-toast"} />
     </div>
   );
 }

@@ -50,7 +50,6 @@ export default function Home() {
   if (tournamentMatches.isError) {
     setError("Match server is down, please reach out to admin")
   }
-  
   return (
     <main>
       
