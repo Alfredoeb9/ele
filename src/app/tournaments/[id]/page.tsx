@@ -126,40 +126,42 @@ export default function Tournaments({
             <div className="tournament_backgroundHeader h-24 bg-mw3 bg-no-repeat bg-cover bg-center bg-fixed" />
             <main className=" px-4">
                 <div id="tournament_info-block" className="bg-slate-400 rounded-xl">
-                    <div className="flex">
-                        <Card isFooterBlurred className="w-56 h-[300px] col-span-12 sm:col-span-7 after:absolute after:top-0 after:left-0 after:w-full after:h-full after:bg-gradient-to-br from-white to-neutral-400 after:opacity-30">
-                            {/* <CardHeader className="absolute z-10 top-1 flex-col items-start">
-                                <p className="text-tiny text-white/60 uppercase font-bold">Your day your way</p>
-                                <h4 className="text-white/90 font-medium text-xl">Your checklist for better sleep</h4>
-                            </CardHeader> */}
-                            <Image
-                                removeWrapper
-                                alt="Relaxing app background"
-                                className="z-0 w-full h-full object-cover"
-                                src={`/images/${tournament?.data && tournament?.data[0]?.game}.png`}
-                                width={400}
-                            />
-                            <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
-                                <div className="flex w-full justify-between items-center ">
-                                    <p className="text-sm text-white/60">Prize: {tournament?.data && tournament?.data[0]?.prize}</p>
-                                    <p className="text-sm text-white/60">NA + EU</p>
-                                </div>
-                            </CardFooter>
-                        </Card>
+                    <div className="block sm:flex">
+                        {tournament.data?.map((tournament) => (
+                            <>
+                                <Card isFooterBlurred className="w-full sm:w-56 h-[300px] col-span-12 sm:col-span-7 after:absolute after:top-0 after:left-0 after:w-full after:h-full after:bg-gradient-to-br from-white to-neutral-400 after:opacity-30">
+                                    {/* <CardHeader className="absolute z-10 top-1 flex-col items-start">
+                                        <p className="text-tiny text-white/60 uppercase font-bold">Your day your way</p>
+                                        <h4 className="text-white/90 font-medium text-xl">Your checklist for better sleep</h4>
+                                    </CardHeader> */}
+                                    <Image
+                                        removeWrapper
+                                        alt={`${tournament?.game} game poster`}
+                                        className="z-0 w-full h-full object-cover"
+                                        src={`/images/${tournament?.game}.png`}
+                                        width={400}
+                                    />
+                                    <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
+                                        <div className="flex w-full justify-between items-center ">
+                                            <p className="text-sm text-white/60">Prize: {tournament?.prize}</p>
+                                            <p className="text-sm text-white/60">NA + EU</p>
+                                        </div>
+                                    </CardFooter>
+                                </Card>
 
-                        <div className="tournament_info w-full ml-4">
-                            <h1 className="text-3xl font-bold">{tournament?.data &&  tournament.data[0]?.game.toUpperCase()}</h1>
+                                <div className="tournament_info w-full ml-4">
+                            <h1 className="text-3xl font-bold">{tournament?.game.toUpperCase()}</h1>
                             <div className="flex mb-4 items-center justify-around w-1/2">
                                 <div>
-                                    <p className="block font-bold">{tournament?.data &&  tournament.data[0]?.name}</p>
-                                    <p className="block">{tournament?.data && tournament.data[0]?.tournament_type}</p>
+                                    <p className="block font-bold">{tournament?.name}</p>
+                                    <p className="block">{tournament?.tournament_type}</p>
                                 </div>
 
                                 <Divider orientation="vertical" className="w-0.5 h-20 text-white bg-white mx-1"/>
                                 
                                 <div>
                                 <p className="font-bold">Platforms:</p>
-                                <p>{tournament?.data && tournament?.data[0]?.platform ? "Cross Platform" : <span className="text-bold text-small capitalize">{tournament.data && tournament?.data[0]?.platform as any}</span>}</p>
+                                <p>{tournament?.platform ? "Cross Platform" : <span className="text-bold text-small capitalize">{tournament?.platform as any}</span>}</p>
                                 </div>
                                 
                             </div>
@@ -188,25 +190,31 @@ export default function Tournaments({
                             <div className="flex flex-wrap justify-evenly w-1/2 mt-4">
                                 <div className="">
                                     <h5 className="font-bold">ENTRY/PLAYER</h5>
-                                    <p>{tournament?.data && tournament?.data[0]?.entry}</p>
+                                    <p>{tournament?.entry}</p>
                                 </div>
                                 <Divider orientation="vertical" className="w-0.5 h-20 text-white bg-white mx-1"/>
                                 <div className="">
                                     <h5 className="font-bold">TEAM SIZE</h5>
-                                    <p>{tournament?.data && tournament?.data[0]?.team_size}</p>
+                                    <p>{tournament?.team_size}</p>
                                 </div>
                                 <Divider orientation="vertical" className="w-0.5 h-20 text-white bg-white mx-1"/>
                                 <div className="">
                                     <h5 className="font-bold">MAX TEAMS</h5>
-                                    <p>{tournament?.data && tournament?.data[0]?.max_teams}</p>
+                                    <p>{tournament?.max_teams}</p>
                                 </div>
                                 <Divider orientation="vertical" className="w-0.5 h-20 text-white bg-white mx-1"/>
                                 <div className="">
                                     <h5 className="font-bold">ENROLLED</h5>
-                                    <p>{tournament?.data && tournament?.data[0]?.enrolled}</p>
+                                    <p>{tournament?.enrolled}</p>
                                 </div>
                             </div>
                         </div>
+                            </>
+                            
+                        ))}
+                        
+
+                        
                     </div>
                     
                     <div className="flex px-3 py-5 gap-2">
