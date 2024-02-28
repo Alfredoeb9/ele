@@ -13,7 +13,8 @@ export const teamRouter = createTRPCRouter({
                 const team = await ctx.db.query.teams.findFirst({
                     where: eq(teams.id, input.id),
                     with: {
-                        members: true
+                        members: true,
+                        record: true
                     }
                 })
 

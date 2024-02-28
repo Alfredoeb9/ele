@@ -323,7 +323,7 @@ import { useRouter } from "next/navigation";
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu>
-                  <DropdownItem><Link href={`/profile/${user.username}`}>View</Link></DropdownItem>
+                  <DropdownItem href={`/profile/${user?.username}`}>View</DropdownItem>
                   <DropdownItem 
                     onPress={ () => { 
                       onOpen()

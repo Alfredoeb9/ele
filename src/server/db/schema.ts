@@ -245,6 +245,8 @@ export const teamRecordTable = createTable(
   })
 )
 
+export type TeamRecordType = typeof teamRecordTable.$inferSelect
+
 // This is needed for a one-one realtion
 export const teamRecordRelations = relations(teamRecordTable, ({ one }) => ({
   user: one(teamMembersTable, 

@@ -72,3 +72,18 @@ export const statusGameMap: Record<string, any["name"]>  = {
   "mw3": "Call of Duty: Modern Warare 3",
   "fornite": "Fornite"
 };
+
+export const friendTableColumn = [
+  {
+    key: "userId",
+    label: "USERID",
+  },
+  {
+    key: "role",
+    label: "ROLE",
+  },
+  {
+    key: "actions",
+    label: "ACTIONS",
+  }
+];
