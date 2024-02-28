@@ -12,7 +12,7 @@ export default function Pricing() {
     // status could === 
     // unauthenticated || authenticated
 
-    if (status === "unauthenticated") return router.push('/auth/sign-in')
+    if (status === "unauthenticated") return router.push('/sign-in')
 
     return (
         <section className="flex justify-center items-center flex-col max-w-7xl w-full p-8 text-white">
