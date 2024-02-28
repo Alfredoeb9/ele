@@ -153,7 +153,7 @@ export default function Header() {
                     ) : (
                         <div className="flex gap-2">
                             <div>
-                                <Link href={"/subscription"} className="bg-cyan-500 py-2 px-2 rounded-xl mr-2 text-white font-semibold">Upgrade</Link>
+                                <Link href={"/subscription"} className="bg-cyan-500 py-2 px-2 rounded-xl mr-2 text-white font-semibold hidden sm:inline-flex">Upgrade</Link>
                                 <Dropdown placement="bottom-end">
                                     <DropdownTrigger>
                                         <Button variant="bordered">
@@ -229,7 +229,7 @@ export default function Header() {
                                     <DropdownItem key="friends" textValue="friends" href="/friends">Friends</DropdownItem>
                                     <DropdownItem key="stats" textValue="stats">Stats</DropdownItem>
                                     <DropdownItem key="buy_credits" textValue="pricing" href="/pricing">Buy Credits</DropdownItem>
-                                    <DropdownItem key="buy_credits" textValue="pricing" className="bg-cyan-500 text-white transition-all" href="/subscription">Upgrade</DropdownItem>
+                                    <DropdownItem key="buy_credits" textValue="upgrade" className="bg-cyan-500 text-white transition-all mt-1" href="/subscription">Upgrade</DropdownItem>
                                     <DropdownItem key="help_and_feedback" textValue="help & feedback">Help & Feedback</DropdownItem>                                    
                                     <DropdownItem 
                                         key="logout" 
