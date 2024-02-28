@@ -10,7 +10,8 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "stripe:listen": "stripe listen --forward-to localhost:3000/api/stripe"
+    "stripe:listen": "stripe listen --forward-to localhost:3000/api/stripe-credits",
+    "stripe:sub-listen": "stripe listen --forward-to localhost:3000/api/stripe-subscription"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^0.7.0",

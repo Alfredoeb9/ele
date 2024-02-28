@@ -87,3 +87,11 @@ export const friendTableColumn = [
     label: "ACTIONS",
   }
 ];
+
+export const subscriptionCards = [
+  {
+      id: 1,
+      cost: 5,
+      content: ["Move you from a 7.5% award match fee to a 3.5% award match fee", "High priority ticktes", "Tier 1 Emblems", "Exclusive tournament and match entries"]
+  }
+]

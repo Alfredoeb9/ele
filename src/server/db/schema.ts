@@ -72,7 +72,10 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   follows: many(followsTables),
   notifications: many(notificationsTable),
   matches: many(matches),
-  userRecord: one(usersRecordTable)
+  payments: many(payments),
+  subscription: one(subscription),
+  userRecord: one(usersRecordTable),
+  
 }));
 
 export const accounts = createTable(
@@ -570,25 +573,48 @@ export type TeamsToMatchesInsert = typeof teamsToMatches.$inferInsert;
 //   }),
 // }))
 
-/*
-  SUBSCRIPTION SCHEMA
+export const subscription = createTable(
+  "subscription", 
+  {
+    id: varchar("id", { length: 256 }).notNull(),
+    userId: varchar("user_id", { length: 256 }),
+    stripeSubscriptionId: varchar("stripe_subscription_id", { length: 191 }),
+    stripePriceId: varchar("stripe_price_id", { length: 191 }),
+    stripeCustomerId: varchar("stripe_customer_id", { length: 191 }),
+    stripeCurrentPeriodEnd: int("stripe_current_period_end"),
+    createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`).notNull(),
+    updatedAt: timestamp("updated_at").onUpdateNow(),
+  }
+);
 
-export const subscription = mysqlTable("subscription", {
-  id: varchar("id", { length: 256 }).primaryKey(),
-  userId: varchar("userId", { length: 256 }).notNull(),
-  status: subscriptionStatus('status'),
-  metadata: jsonb('metadat'),
-  cancelAt:
-  updatedAt: timestamp("updated_at", { fsp: 3 }).notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' })default(sql`CURRENT_TIMESTAMP`).notNull(),
-});
+export type Subscription = typeof subscription.$inferSelect
+export type NewSubscription = typeof subscription.$inferInsert
 
 export const subscriptionRelations = relations(subscription, ({ one }) => ({
-  user: one(user, {
+  user: one(users, {
     fields: [subscription.userId],
-    references: [user.id],
+    references: [users.id],
   }),
 }));
 
+export const payments = createTable(
+  "payments", 
+  {
+    id: serial("id").primaryKey(),
+    userId: int("user_id").notNull(),
+    stripeAccountCreatedAt: int("stripe_account_created_at"),
+    stripeAccountExpiresAt: int("stripe_account_expires_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").onUpdateNow(),
+  }
+)
 
-*/
+export type Payment = typeof payments.$inferSelect
+export type NewPayment = typeof payments.$inferInsert
+
+// export const paymentsRelations = relations(payments, ({ one }) => ({
+//   user: one(stores, { 
+//     fields: [payments.storeId], 
+//     references: [stores.id] 
+//   }),
+// }))
