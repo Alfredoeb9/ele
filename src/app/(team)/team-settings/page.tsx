@@ -8,6 +8,7 @@ import { useDisclosure } from "@nextui-org/react";
 import { Button, Spinner } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -17,11 +18,14 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function TeamSettings() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
     const session = useSession();
+    const router = useRouter();
     const [teamName, setTeamName] = useState<string>("");
     const [teamId, setTeamId] = useState<string>("");
     const [modalPath, setModalPath] = useState<string>("");
 
     // const [error, setError] = useState<string>("");
+
+    if (session.status === 'unauthenticated') return router.push("/sign-in")
 
     const currentUser = api.user.getSingleUserWithTeamMembers.useQuery({ email: session.data?.user?.email as string }, { enabled: session.status === "authenticated"})
     
