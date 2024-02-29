@@ -131,8 +131,8 @@ export default function Profile() {
                                         <div className="flex">
                                             <h4 className="pr-1 font-semibold">Game ID:</h4>
                                             <div>
-                                                <p>Playstation: Abstracts</p>
-                                                <p>Battlenet: Abstractss_</p>
+                                                <p>Playstation: {user?.username}</p>
+                                                <p>Battlenet: {user?.username}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -141,9 +141,8 @@ export default function Profile() {
                                 <div className="flex flex-col gap-1">
                                     { userSession?.username === user?.username ? (
                                         <>
-                                            <Button color="success" disabled={userSession?.id !== user?.id}>Edit Background</Button>
-                                            <Button disabled={userSession?.id !== user?.id}>Find Match</Button>
-                                            <Button color="danger" disabled={userSession?.id !== user?.id}>Disband Team</Button>
+                                            <Button color="success" disabled={userSession?.id !== user?.id} className="text-base">Edit Background</Button>
+                                            <Link href={"/account-manage#connect-accounts"} className="text-base bg-neutral-300 py-2 px-2 rounded-xl hover:bg-neutral-400 transition-all">Connect Accounts</Link>
                                         </>
                                     ) : (
                                         <Button color="success" disabled={userSession?.username === user?.username} onClick={(e: { preventDefault: () => void; }) => {
