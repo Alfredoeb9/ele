@@ -1,15 +1,14 @@
 'use client';
 import { api } from "@/trpc/react";
 import { useSession } from "next-auth/react"
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 
-const CustomToastWithLink = () => (
-    <div>
-        User needs to <Link href="/sign-in" className="text-blue-600 hover:text-blue-500">sign in</Link> to subscribe. 
-    </div>
-);
+// const CustomToastWithLink = () => (
+//     <div>
+//         User needs to <Link href="/sign-in" className="text-blue-600 hover:text-blue-500">sign in</Link> to subscribe. 
+//     </div>
+// );
 
 export default function AccountSettings() {
     const session = useSession();
@@ -17,7 +16,7 @@ export default function AccountSettings() {
 
     if (session.status === 'unauthenticated') return router.push('/')
 
-    const getSingleUser = api.user.getSingleUser.useQuery({ email: session.data?.user.email as string }, { enabled: session.status === 'authenticated'});
+    const getSingleUser = api.user.getSingleUser.useQuery({ email: session.data?.user.email as string}, { enabled: session.status === 'authenticated'});
 
     if (getSingleUser.data === undefined) {
         router.push("/")

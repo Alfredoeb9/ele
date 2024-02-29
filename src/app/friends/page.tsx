@@ -1,192 +1,29 @@
 "use client";
-// import React, { useCallback, useMemo, useState } from "react";
-// import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, User, Chip, Tooltip, ChipProps, getKeyValue, Button} from "@nextui-org/react";
-// import {EditIcon} from "./EditIcon";
-// import {DeleteIcon} from "./DeleteIcon";
-// import {EyeIcon} from "./EyeIcon";
-// import {columns, users} from "./data";
-// import Link from "next/link";
-// import { api } from "@/trpc/react";
-// import { useSession } from "next-auth/react";
-
-// const statusColorMap: Record<string, ChipProps["color"]>  = {
-//   active: "success",
-//   paused: "danger",
-//   vacation: "warning",
-// };
-
-// type User = typeof users[0];
-
-// export default function Friends() {
-//     const session = useSession()
-//     const [rowsPerPage, setRowsPerPage] = useState<number>(5);
-//     const [page, setPage] = useState<number>(1);
-//     const [currentSet, setCurrentSet] = useState<number[]>([0,0])
-//     const [error, setError] = useState("")
-
-//     const userFriendData = api.user.getUserWithFriends.useQuery({ id: session.data && session.data.user.id as string | any})
-
-//     console.log("user", userFriendData)
-//     // if(!userFriendData.data) {
-//     //     console.log("help")
-//     // }
-
-//     // if (userFriendData.isError) {
-//     //     setError("No Friends")
-
-//     // }
-
-//     const items = useMemo(() => {
-//         const start = (page - 1) * rowsPerPage;
-//         const end = start + rowsPerPage;
-
-//         setCurrentSet([start, end])
-        
-//         return users.slice(start, end);
-//     }, [page, users, rowsPerPage]);
-
-
-//     const pages = Math.ceil(users.length / rowsPerPage);
-
-//     console.log("pages", pages)
-
-//     const onNextPage = useCallback(() => {
-//         if (page < pages) {
-//             setPage(page + 1);
-//         }
-//     }, [page, pages]);
-
-//     const onPreviousPage = useCallback(() => {
-//         if (page > 1) {
-//             setPage(page - 1);
-//         }
-//     }, [page]);
-
-//     const renderCell = React.useCallback((user: User, columnKey: React.Key) => {
-//         const cellValue = user[columnKey as keyof User];
-
-//         switch (columnKey) {
-//         case "name":
-//             return (
-//             <User
-//                 avatarProps={{radius: "lg", src: user.avatar}}
-//                 description={user.email}
-//                 name={cellValue}
-//             >
-//                 {user.email}
-//             </User>
-//             );
-//         case "role":
-//             return (
-//             <div className="flex flex-col">
-//                 <p className="text-bold text-sm capitalize">{cellValue}</p>
-//                 <p className="text-bold text-sm capitalize text-default-400">{user.team}</p>
-//             </div>
-//             );
-//         case "status":
-//             return (
-//             <Chip className="capitalize" color={statusColorMap[user.status]} size="sm" variant="flat">
-//                 {cellValue}
-//             </Chip>
-//             );
-//         case "actions":
-//             return (
-//             <div className="relative flex items-center gap-2">
-//                 <Tooltip content="Details">
-//                 <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-//                     {/* <Link href={`/user/${friend.id}`}><EyeIcon /></Link> */}
-//                 </span>
-//                 </Tooltip>
-//                 <Tooltip content="Edit user">
-//                 <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-//                     <EditIcon />
-//                 </span>
-//                 </Tooltip>
-//                 <Tooltip color="danger" content="Delete user">
-//                 <span className="text-lg text-danger cursor-pointer active:opacity-50">
-//                     <DeleteIcon />
-//                 </span>
-//                 </Tooltip>
-//             </div>
-//             );
-//         default:
-//             return cellValue;
-//         }
-//     }, []);
-
-//     const bottomContent = useMemo(() => {
-//         return (
-//             <div className="py-2 px-2 block items-center">
-//                 <div className="flex justify-between">
-//                     <p>{currentSet[0]} out of {users.length} cash matches</p>
-//                     <div className="flex gap-2">
-//                         <Button isDisabled={pages === 1} size="sm" variant="flat" onPress={onPreviousPage}>
-//                             Previous
-//                         </Button>
-//                         <Button isDisabled={pages === 1} size="sm" variant="solid" onPress={onNextPage}>
-//                             Next
-//                         </Button>
-//                     </div>
-                    
-//                 </div>
-//             </div>
-//         );
-//     }, [ items?.length, page, pages, currentSet]);
-
-//     return (
-//         <div>
-//             <h1 className="text-2xl md:text-3xl lg:text-4xl text-white">Friends List</h1>
-//             <Table 
-//                 aria-label="Friends list" 
-//                 bottomContent={bottomContent}
-//             >
-//                 <TableHeader columns={columns}>
-//                     {(column) => (
-//                     <TableColumn key={column.uid} align={column.uid === "actions" ? "center" : "start"}>
-//                         {column.name}
-//                     </TableColumn>
-//                     )}
-//                 </TableHeader>
-//                 <TableBody items={users}>
-//                     {(item) => (
-//                     <TableRow key={item.id}>
-//                         {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
-//                     </TableRow>
-//                     )}
-//                 </TableBody>
-//             </Table>
-//         </div>
-        
-//     );
-// }
-
 
 import {
-    Table,
-    TableHeader,
-    TableColumn,
-    TableBody,
-    TableRow,
-    TableCell,
-    Input,
-    Button,
-    DropdownTrigger,
-    Dropdown,
-    DropdownMenu,
-    DropdownItem,
-    Chip,
-    Pagination,
-    Selection,
-    ChipProps,
-    SortDescriptor,
-    User,
-    useDisclosure
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Input,
+  Button,
+  DropdownTrigger,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem,
+  Chip,
+  Pagination,
+  User,
+  useDisclosure
   } from "@nextui-org/react";
+import type { Selection, ChipProps, SortDescriptor } from "@nextui-org/react";
 import { useCallback, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { api } from "@/trpc/react";
 import { friendsVisibleColumns, statusOptions, friendsColumns } from "@/lib/sharedData";
-import Link from "next/link";
+// import Link from "next/link";
 import { VerticalDotsIcon } from "./VerticalDotsIcon";
 import { SearchIcon } from "./SearchIcon";
 import type { Users } from "@/server/db/schema"
@@ -218,9 +55,9 @@ import { useRouter } from "next/navigation";
     const [userId, setUserId] = useState<string>("");
     const [email, setEmail] = useState<string>("");
     const [modalPath, setModalPath] = useState<string>("");
-    const [error, setError] = useState("");
+    // const [error, setError] = useState("");
     const router = useRouter()
-    const utils = api.useUtils()
+    // const utils = api.useUtils()
 
     if (session.status === 'unauthenticated') router.push("/sign-in")
 
@@ -254,7 +91,7 @@ import { useRouter } from "next/navigation";
       const end = start + rowsPerPage;
   
       return filteredItems?.slice(start, end);
-    }, [page, filteredItems, rowsPerPage]);
+    }, [page, filteredItems, rowsPerPage, hasSearchFilter]);
 
 
     const sortedItems = useMemo(() => {
@@ -341,7 +178,7 @@ import { useRouter } from "next/navigation";
         default:
           return cellValue;
       }
-    }, []);
+    }, [userFriendData.data]);
     
   
     const onRowsPerPageChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -522,7 +359,7 @@ import { useRouter } from "next/navigation";
           setModalPath("")
           break;
       }
-    }, [modalPath])
+    }, [])
 
     if (userFriendData.data === undefined) return null
   

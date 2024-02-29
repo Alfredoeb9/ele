@@ -1,11 +1,12 @@
 'use client';
 import { api } from "@/trpc/react";
 import { usePathname, useRouter } from 'next/navigation'
-import { Avatar, Button, Divider, Spinner } from "@nextui-org/react";
+import { Avatar, Button, Divider } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import type { SetStateAction } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import type { Users, FollowsType, UsersRecordType, Match } from '@/server/db/schema'
+import type { UsersRecordType, Match, FollowsType } from '@/server/db/schema'
 import Link from "next/link";
 
 export default function Profile() {
@@ -14,8 +15,7 @@ export default function Profile() {
     const pathname = usePathname()
     const session = useSession();
     const [error, setError] = useState<string>("");
-    const [userName, setUserName] = useState<string>("");
-    const [path, setPath] = useState<string>("profile");
+    const [path, ] = useState<string>("profile");
     const [areFriends, setAreFriends] = useState<boolean>(false);
 
     const userFromPath = pathname.split("/")[2]
@@ -35,7 +35,7 @@ export default function Profile() {
             }, 5000);
             return setError("User does not exist")
         }
-    }, [userFromPath])
+    }, [userFromPath, router])
 
     const userSession = session.data?.user
 
@@ -56,12 +56,12 @@ export default function Profile() {
             }, 5000);
             return setError("User does not exist")
         }
-    }, [getUserData])
+    }, [getUserData, router])
 
     const user = getUserData?.data
 
     //@ts-expect-error follows table should be available
-    const usersFriends =  user?.follows
+    const usersFriends: FollowsType[] =  user?.follows
     //@ts-expect-error user record table should be available
     const usersRecord: UsersRecordType = user?.userRecord
     //@ts-expect-error user matches table should be available
@@ -107,7 +107,7 @@ export default function Profile() {
     // finalize how i want to grab recent matches, if on profile path (which means viewing users) 
     //then we can grab only solo games or find a way to get all teams users is assigned to (solo, duos, teams, etc...)
     // and then display upcoming matches
-    const getUpcomingGames = api.matches.getLatestUsersMatches.useQuery({userId: userSession?.id as string, tournamentId: usersUpcomingMatches}, { enabled: usersUpcomingMatches?.length > 0 })
+    // const getUpcomingGames = api.matches.getLatestUsersMatches.useQuery({userId: userSession?.id as string, tournamentId: usersUpcomingMatches}, { enabled: usersUpcomingMatches?.length > 0 })
 
     return (
         <div className="bg-neutral-600">

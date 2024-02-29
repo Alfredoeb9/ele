@@ -1,11 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { redirect, useParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import {useAppDispatch} from "@/redux/hooks"
+// import {useAppDispatch} from "@/redux/hooks"
 // import authAPI from "@/redux/api/authAPI";
-import { verifyEmail } from "@/redux/features/AuthContext";
-import { useQuery } from "@tanstack/react-query";
+// import { verifyEmail } from "@/redux/features/AuthContext";
+// import { useQuery } from "@tanstack/react-query";
 // import { useFetchVerify } from "@/app/hooks/fetchVerify";
 import { api } from "@/trpc/react";
 import { ToastContainer, toast } from "react-toastify";
@@ -17,17 +17,17 @@ import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function VerifyEmail() {
-  const dispatch = useAppDispatch()
+  // const dispatch = useAppDispatch()
   const params = useParams();
   const router = useRouter();
 
   // const { Header } = Layout;
 //   const dispatch = useDispatch();
   // const { isLoading, isError, isSuccess } = useAppSelector((state) => state.user.user);
-  const [isError, setIsError] = useState(false);
-  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  // const [isError, setIsError] = useState(false);
+  // const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  // const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
   // const {data, isFetching } = useQuery<any>({
@@ -160,7 +160,7 @@ export default function VerifyEmail() {
 
   useEffect(() => {
     verifyUser.mutate({ token: params.token?.toString() })
-  }, [params?.token])
+  }, [params?.token, verifyUser])
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -169,13 +169,7 @@ export default function VerifyEmail() {
           <div className='flex items-center justify-between pt-2'>
             <div>
               <Link href='/auth/sign-in'>
-                <img
-                  // src={logo}
-                  alt='logo'
-                  style={{
-                    width: 100
-                  }}
-                />
+                ELG
               </Link>
             </div>
           </div>

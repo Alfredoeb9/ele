@@ -21,9 +21,9 @@ export default function TeamSettings() {
     const [teamId, setTeamId] = useState<string>("");
     const [modalPath, setModalPath] = useState<string>("");
 
-    const [error, setError] = useState<string>("");
+    // const [error, setError] = useState<string>("");
 
-    const currentUser = api.user.getSingleUserWithTeamMembers.useQuery({ email: session?.data && session.data?.user?.email as string | any })
+    const currentUser = api.user.getSingleUserWithTeamMembers.useQuery({ email: session.data?.user?.email as string }, { enabled: session.status === "authenticated"})
     
     if (currentUser.isError) {
         toast(`There was a problem getting user data`, {
@@ -48,7 +48,7 @@ export default function TeamSettings() {
             setModalPath("")
             break;
         }
-      }, [modalPath])
+      }, [])
 
     if (currentUser.isLoading) return <Spinner label="Loading..." color="warning" />
 

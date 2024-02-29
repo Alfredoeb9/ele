@@ -3,7 +3,7 @@ import { api } from "@/trpc/react";
 import { Select, SelectItem, Spinner } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 
 import 'react-toastify/dist/ReactToastify.css';
@@ -20,20 +20,6 @@ export default function CreateTeam() {
 
     if (session.status === 'unauthenticated') router.push("/sign-in")
 
-    // const currentUser = api.user.getSingleUserWithTeams.useQuery({ email: session.data?.user.email as string })
-
-    // if (currentUser.isError) {
-    //     setError("Service is down, please refresh or submit a ticket")
-    //     toast(`Service is down, please refresh or submit a ticket`, {
-    //         position: "bottom-right",
-    //         autoClose: false,
-    //         closeOnClick: true,
-    //         draggable: false,
-    //         type: "error",
-    //         toastId: 9                             
-    //     })
-    // }
-    
     const createTeam = api.create.createTeam.useMutation({
         
         onSuccess: () => {
@@ -101,7 +87,7 @@ export default function CreateTeam() {
                         required
                         >
                             {gameCategory.data?.map((match) => (
-                                <SelectItem key={match.id} onClick={(e) => setSelectedGame((e.target as any).outerText)} value={match.game}>
+                                <SelectItem key={match.id} onClick={(e) => setSelectedGame((e.target as HTMLElement).outerText)} value={match.game}>
                                     {match.game}
                                 </SelectItem>
                             )) as []}

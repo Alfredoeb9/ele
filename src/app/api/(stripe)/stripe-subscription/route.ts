@@ -1,6 +1,6 @@
 // import db from "@/lib/db";
 import { headers } from "next/headers";
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { db } from "@/server/db";
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
             await db.insert(subscription).values({
                 id: subscriptions.id,
                 userId: completedEvent.metadata.userId,
-                stripeCurrentPeriodEnd: subscriptions.current_period_end as any
+                stripeCurrentPeriodEnd: subscriptions.current_period_end
             })
 
             break;

@@ -12,8 +12,8 @@ export async function getCurrentDateTime() {
 }
 
 export async function createToken(id: string) {
-    const token1 = jwt.sign({id }, process.env.JWT_SECRET as string);
-    const token2 = jwt.sign({id}, process.env.JWT_SECRET as string);
+    const token1 = jwt.sign({id }, process.env.JWT_SECRET!);
+    const token2 = jwt.sign({id}, process.env.JWT_SECRET!);
     const secureToken = token1 + token2;
     return secureToken;
 }

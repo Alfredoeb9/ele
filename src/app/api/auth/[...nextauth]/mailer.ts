@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import { createEmailTemplate } from "../../services/templateService";
-import { Options } from "nodemailer/lib/mailer";
+import type { Options } from "nodemailer/lib/mailer";
 
 const SMTPConfig = {
     service: "gmail",

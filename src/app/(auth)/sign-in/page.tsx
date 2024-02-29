@@ -2,7 +2,7 @@
 import SignIn from "@/components/signIn";
 import React from "react";
 
-export default async function SignInPage() {
+export default function SignInPage() {
     
     // console.log("sess", session)
     return(

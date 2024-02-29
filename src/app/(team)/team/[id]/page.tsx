@@ -1,10 +1,10 @@
 'use client';
 import { api } from "@/trpc/react";
-import { Avatar, Button, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip, useDisclosure } from "@nextui-org/react";
+import { Avatar, Button, Divider, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 
-import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import type { TeamMembersType, TeamRecordType } from "@/server/db/schema"
 import { friendTableColumn, statusGameMap } from "@/lib/sharedData";
@@ -16,9 +16,9 @@ export default function Team() {
     const session = useSession();
     const pathname = usePathname();
     const router = useRouter();
-    const [error, setError] = useState<string>("");
-    const [rowsPerPage, setRowsPerPage] = useState<number>(5);
-    const [page, setPage] = useState<number>(1);
+    // const [error, setError] = useState<string>("");
+    const [rowsPerPage, ] = useState<number>(5);
+    const [page, ] = useState<number>(1);
     const [currentSet, setCurrentSet] = useState<number[]>([0,0]);
     const [isUserOwner, setIsUserOwner] = useState(false)
     const [isUserMember, setIsUserMember] = useState(false)
@@ -57,9 +57,9 @@ export default function Team() {
 
     const team = getTeamData?.data
     //@ts-expect-error members should be present
-    const members = team?.members as TeamMembersType[],
+    const members: TeamMembersType[] = team?.members,
     //@ts-expect-error members should be present
-          teamRecord = team?.record as TeamRecordType
+          teamRecord: TeamRecordType = team?.record
 
     type User = typeof members;
 
@@ -76,31 +76,31 @@ export default function Team() {
 
     const pages = Math.ceil(members?.length / rowsPerPage);
 
-    const onNextPage = useCallback(() => {
-        if (page < pages) {
-            setPage(page + 1);
-        }
-    }, [page, pages]);
+    // const onNextPage = useCallback(() => {
+    //     if (page < pages) {
+    //         setPage(page + 1);
+    //     }
+    // }, [page, pages]);
 
-    const onPreviousPage = useCallback(() => {
-        if (page > 1) {
-            setPage(page - 1);
-        }
-    }, [page]);
+    // const onPreviousPage = useCallback(() => {
+    //     if (page > 1) {
+    //         setPage(page - 1);
+    //     }
+    // }, [page]);
 
-    const renderToolTip = ((data: ( Record<string, string> | ArrayLike<ReactNode>)[] | undefined) => {
-        if (!data || data === undefined) return null;
+    // const renderToolTip = ((data: ( Record<string, string> | ArrayLike<ReactNode>)[] | undefined) => {
+    //     if (!data || data === undefined) return null;
         
-        return (
-            <div>
-                <ul>
-                    {data?.map((rule: Record<string, string> | ArrayLike<ReactNode>, i: number) => (
-                        <li key={i}><span className="font-bold">{Object.keys(rule)[0]}:</span> {Object.values(rule)}</li>
-                    ))}
-                </ul>
-            </div>
-        )
-    })
+    //     return (
+    //         <div>
+    //             <ul>
+    //                 {data?.map((rule: Record<string, string> | ArrayLike<ReactNode>, i: number) => (
+    //                     <li key={i}><span className="font-bold">{Object.keys(rule)[0]}:</span> {Object.values(rule)}</li>
+    //                 ))}
+    //             </ul>
+    //         </div>
+    //     )
+    // })
 
     const renderCell = useCallback((user: any, columnKey: React.Key) => {
         const cellValue = user[columnKey as keyof User];

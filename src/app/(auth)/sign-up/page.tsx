@@ -1,22 +1,19 @@
 "use client";
-import { register } from "@/redux/features/AuthContext";
-import { useAppDispatch } from "@/redux/hooks";
 import { api } from "@/trpc/react";
 import { useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function SignUp() {
     const user = useSession();
     const router = useRouter();
-    const dispatch = useAppDispatch();
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [firstName, setFirstName] = useState<string>("");
     const [lastName, setLastName] = useState<string>("");
     const [username, setUsername] = useState<string>("");
-    const [isVerified, setIsVerified] = useState<boolean>(false);
-    const [spinnerLoading, setSpinnerLoading] = useState<boolean>(true);
+    const [isVerified, ] = useState<boolean>(false);
+    // const [spinnerLoading, setSpinnerLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>("");
     const [show, setShow] = useState({ password: false });
     // const { signup, error, isLoading } = useSignup();
