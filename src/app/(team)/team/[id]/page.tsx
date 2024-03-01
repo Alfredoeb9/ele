@@ -218,7 +218,6 @@ export default function Team() {
                                 
                                 { isUserOwner &&
                                     <>
-                                        <Button color="success">Edit Background</Button>
                                         <Button onPress={() => [
                                             router.push(`/game/${team?.gameTitle.toLowerCase()}`)
                                         ]}>Find Match</Button>

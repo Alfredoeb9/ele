@@ -141,7 +141,6 @@ export default function Profile() {
                                 <div className="flex flex-col gap-1">
                                     { userSession?.username === user?.username ? (
                                         <>
-                                            <Button color="success" disabled={userSession?.id !== user?.id} className="text-base">Edit Background</Button>
                                             <Link href={"/account-manage#connect-accounts"} className="text-base bg-neutral-300 py-2 px-2 rounded-xl hover:bg-neutral-400 transition-all">Connect Accounts</Link>
                                         </>
                                     ) : (
