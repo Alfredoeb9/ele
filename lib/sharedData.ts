@@ -95,3 +95,38 @@ export const subscriptionCards = [
       content: ["Move you from a 7.5% award match fee to a 3.5% award match fee", "High priority ticktes", "Tier 1 Emblems", "Exclusive tournament and match entries"]
   }
 ]
+
+export const gameIdsInputs = [
+  {
+    label: "PSN ID", 
+    key: "psn_id" 
+  },
+  {
+    label: "Xbox Live ID",
+    key: "xbox_live_id"
+  }, 
+  {
+    label: "EPIC Display Name",
+    key: "epic_display_name"
+  }, 
+  {
+    label: "Battle.net", 
+    key: "battle_net"
+  }, 
+  {
+    label: "Switch Friend Code", 
+    key: "switch_friend_code"
+  }, 
+  {
+    label: "Activision ID",
+    key: "activision_id"
+  }, 
+  {
+    label: "2K ID",
+    key: "2k_id"
+  }, 
+  {
+    label: "Steam Friend Code",
+    key: "steam_friend_code"
+  }
+]
