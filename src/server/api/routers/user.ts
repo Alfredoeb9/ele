@@ -2,10 +2,11 @@ import { z } from "zod";
 import { eq, sql } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { followsTables, notificationsTable, posts, sessions, users, usersRecordTable, verificationTokens } from "@/server/db/schema";
+import { followsTables, gamerTags, notificationsTable, posts, sessions, users, usersRecordTable, verificationTokens } from "@/server/db/schema";
 import { db } from "@/server/db";
 import { createToken, emailRegx } from "@/lib/utils/utils";
 import { sentVerifyUserEmail } from "@/app/api/auth/[...nextauth]/mailer";
+import type { GamerTagsTypes } from "@/app/(profile)/account-manage/page"
 
 export const userRouter = createTRPCRouter({
   // getUser: publicProcedure
@@ -260,6 +261,30 @@ export const userRouter = createTRPCRouter({
         throw new Error(error as string)
       }
     }),
+
+  getSingleUserWithAccountInfo: publicProcedure
+    .input(z.object({
+      email: z.string().min(1)
+    }))
+    .query(async ({ ctx, input }) => {
+      try {
+        const currentUserWithAccountInfo = await ctx.db.query.users.findFirst({
+          where: eq(users.email, input.email),
+          columns: {
+            password: false,
+          },
+          with: {
+            gamerTags: true,
+          }
+        })
+
+        if (!currentUserWithAccountInfo) throw new Error("No user with such credentials")
+
+        return currentUserWithAccountInfo
+      } catch (error) {
+        throw new Error(error as string)
+      }
+    }),
   
   sendFriendRequest: publicProcedure
     .input(z.object({
@@ -387,6 +412,77 @@ export const userRouter = createTRPCRouter({
         )
 
         return allFriendsProfiles
+      } catch (error) {
+        throw new Error(error as string)
+      }
+    }),
+
+  updateUsersGamerTags: publicProcedure
+    .input(z.object({
+      email: z.string().min(1),
+      gamerTags: z.array(z.object({
+        label: z.string(),
+        value: z.string()
+      }))
+    }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        
+        const currentUserWithGamerTags = await ctx.db.query.users.findFirst({
+          where: eq(users.email, input.email),
+          columns: {
+            password: false,
+          },
+          with: {
+            gamerTags: true
+          }
+        })
+
+        // const getUser = await ctx.db
+        //                         .select()
+        //                         .from(users)
+        //                         .where(eq(users.email, input.email))
+
+        if (!currentUserWithGamerTags) throw new Error("No user with such credentials")
+
+        console.log("current", currentUserWithGamerTags)
+        
+
+        if(currentUserWithGamerTags.gamerTags.length <= 0) {
+          // if gamerTag array is empty then create whatever they give us off the initial button click
+          
+
+          input.gamerTags.map(async (tag) => {
+            await ctx.db.insert(gamerTags).values({
+              userId: currentUserWithGamerTags.id,
+              gamerTag: tag.value,
+              type: tag.label,
+
+            })
+          })
+        } else if (currentUserWithGamerTags.gamerTags.length > 0) {
+          input.gamerTags.map(async (tag) => {
+            await ctx.db.update(gamerTags).set({
+              userId: currentUserWithGamerTags.id,
+              gamerTag: tag.value,
+              type: tag.label,
+            })
+          })
+        }
+        
+        // else if() {
+        //   // else find the gamer tag type and if that type if null & || undefined
+        //   // then insert new gamerTag
+        // } else {
+        //   // else update the following types with the new values
+        // }
+
+        
+
+
+        
+
+        // update users gamerTags
       } catch (error) {
         throw new Error(error as string)
       }

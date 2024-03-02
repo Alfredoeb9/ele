@@ -73,10 +73,32 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   notifications: many(notificationsTable),
   matches: many(matches),
   payments: many(payments),
+  gamerTags: many(gamerTags),
   subscription: one(subscription),
   userRecord: one(usersRecordTable),
   
 }));
+
+export const gamerTags = createTable(
+  "gamer_tags",
+  {
+    userId: varchar("user_id", { length: 255 }).notNull(),
+    type: varchar("type", { length: 255 }).notNull(),
+    gamerTag: varchar("gamer_tag", { length: 255 }).notNull(),
+    createdAt: timestamp("created_at")
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updatedAt").onUpdateNow(),
+  }
+)
+
+export const gamerTagsRelation = relations(gamerTags, ({ one }) => ({
+  user: one(users, 
+    {
+      fields: [gamerTags.userId],
+      references: [users.id]
+    })
+}))
 
 export const accounts = createTable(
   "account",
