@@ -438,36 +438,27 @@ export const userRouter = createTRPCRouter({
           }
         })
 
-        // const getUser = await ctx.db
-        //                         .select()
-        //                         .from(users)
-        //                         .where(eq(users.email, input.email))
-
-        if (!currentUserWithGamerTags) throw new Error("No user with such credentials")
-
-        console.log("current", currentUserWithGamerTags)
-        
+        if (!currentUserWithGamerTags) throw new Error("No user with such credentials")        
 
         if(currentUserWithGamerTags.gamerTags.length <= 0) {
-          // if gamerTag array is empty then create whatever they give us off the initial button click
+
+          await Promise.all(input.gamerTags.map(async (tag) => {
+            return await ctx.db.insert(gamerTags).values({
+              userId: currentUserWithGamerTags.id,
+              gamerTag: tag.value,
+              type: tag.label,
+
+            })
+          }))
           
-
-          input.gamerTags.map(async (tag) => {
-            await ctx.db.insert(gamerTags).values({
-              userId: currentUserWithGamerTags.id,
-              gamerTag: tag.value,
-              type: tag.label,
-
-            })
-          })
         } else if (currentUserWithGamerTags.gamerTags.length > 0) {
-          input.gamerTags.map(async (tag) => {
-            await ctx.db.update(gamerTags).set({
+          await Promise.all(input.gamerTags.map(async (tag) => {
+            return await ctx.db.update(gamerTags).set({
               userId: currentUserWithGamerTags.id,
               gamerTag: tag.value,
               type: tag.label,
             })
-          })
+          }))
         }
         
         // else if() {
