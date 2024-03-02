@@ -21,6 +21,7 @@ export interface GamerTagsTypes {
 }
 
 export default function AccountSettings() {
+    const utils = api.useUtils()
     const session = useSession();
     const router = useRouter();
     const [currentKey, setCurrentKey] = useState<string>("account_settings");
@@ -62,7 +63,8 @@ export default function AccountSettings() {
     };
 
     const updateGamerTag = api.user.updateUsersGamerTags.useMutation({
-        onSuccess: () => {
+        onSuccess: async () => {
+            await utils.user.getSingleUserWithAccountInfo.invalidate()
             toast('GamerTag has been updated', {
                 position: "bottom-right",
                 autoClose: 5000,
@@ -135,7 +137,7 @@ export default function AccountSettings() {
 
                                         <div className="w-[50%]">
                                             <div className="flex items-center">
-                                                <Input type="text" label="Dmail" size="sm" placeholder={session.data?.user.email as string} />
+                                                <Input type="text" label="Email" size="sm" placeholder={session.data?.user.email as string} />
                                                 <Button isIconOnly variant="light" className="ml-2">
                                                     <FaCog className="w-[50px] text-xl sm:text-2xl md:text-3xl" />
                                                 </Button>

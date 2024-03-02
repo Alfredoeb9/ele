@@ -457,7 +457,7 @@ export const userRouter = createTRPCRouter({
               userId: currentUserWithGamerTags.id,
               gamerTag: tag.value,
               type: tag.label,
-            })
+            }).where(eq(gamerTags.type, tag.label))
           }))
         }
         
