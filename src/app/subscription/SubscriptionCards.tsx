@@ -37,7 +37,7 @@ export default function SubscriptionCards({ userId }: SubscribtionTypes) {
                             </div>
                         </CardBody>
 
-                        <CardFooter className="flex justify-center items-center">
+                        <CardFooter className="flex justify-center items-center flex-col">
                             <span className="bg-blue-400 px-3 py-4 rounded-md text-white hover:scale-105 hover:cursor-pointer shadow-xl transition-all" 
                                 onClick={() => {
                                     checkoutSubscriptionAction(card.cost, userId).then(async (session) => {
@@ -78,6 +78,8 @@ export default function SubscriptionCards({ userId }: SubscribtionTypes) {
                                 }}>
                                 Buy for ${card.cost}
                             </span>
+
+                            <p className="text-neutral-400 pt-4 sm:w-4/6">Membership will auto-renew at the end of each period. You may cancel at any time.</p>
                         </CardFooter>
                     </Card>
                 ))}
