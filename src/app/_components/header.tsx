@@ -217,13 +217,13 @@ export default function Header() {
                                     size="sm"
                                     />
                                 </DropdownTrigger>
-                                <DropdownMenu aria-label="Profile Actions" disabledKeys={["profile", "credits", "settings", "stats", "help_and_feedback"]}>
+                                <DropdownMenu aria-label="Profile Actions" disabledKeys={["profile", "credits", "stats", "help_and_feedback"]}>
                                     <DropdownItem key="profile" textValue={session?.data?.user?.email as string} className="h-14 gap-2">
                                         <p className="font-semibold">Signed in as</p>
                                         <p className="font-semibold">{session?.data.user.email}</p>
                                     </DropdownItem>
                                     <DropdownItem key="credits" textValue={currentUser.data !== undefined && currentUser.isSuccess && (currentUser?.data as any).credits}><span className="font-black">Credits: </span> <span className="font-semibold">{ currentUser.data == undefined || currentUser.isError ? "Err" : (currentUser?.data as any).credits}</span></DropdownItem>
-                                    <DropdownItem key="settings" textValue="my settings">My Settings</DropdownItem>
+                                    <DropdownItem key="settings" textValue="my settings" href="/account-manage">My Settings</DropdownItem>
                                     
                                     <DropdownItem key="team_settings" textValue="team-settings" href="/team-settings">Team Settings</DropdownItem>
                                     <DropdownItem key="friends" textValue="friends" href="/friends">Friends</DropdownItem>

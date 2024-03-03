@@ -106,7 +106,7 @@ export default function AccountSettings() {
         return null
     }
 
-    if (getSingleUser.data?.id !== session.data?.user.id) {
+    if (getSingleUser.data && session.data && getSingleUser.data?.id !== session.data?.user.id) {
         router.push('/sign-in')
         return null
     }
