@@ -286,6 +286,7 @@ export const teamMembersTable = createTable(
   'team_members', 
   {
     userId: varchar('user_id', { length: 255 }).notNull(),
+    userName: varchar('user_name', { length: 255 }).notNull(),
     teamId: varchar('team_id', { length: 255 }).notNull(),
     game: varchar('game', { length: 100 }).notNull(),
     teamName: varchar('team_name', { length: 100 }).notNull(),

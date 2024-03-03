@@ -193,7 +193,8 @@ export default function Header() {
                                                                 teamId: notification.metaData.teamId,
                                                                 game: notification.metaData.game,
                                                                 teamName: notification.metaData.teamName,
-                                                                targetEmail: session.data?.user.email as string
+                                                                targetEmail: session.data?.user.email as string,
+                                                                userName: session.data.user.username
                                                             })
                                                             }}>
                                                                 Accept

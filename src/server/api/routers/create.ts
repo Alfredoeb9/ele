@@ -10,7 +10,8 @@ export const createRouter = createTRPCRouter({
             gameId: z.string().min(1),
             teamName: z.string().min(1),
             email: z.string().min(1),
-            gameText: z.string().min(1)
+            gameText: z.string().min(1),
+            userName: z.string().min(1)
         }))
         .mutation(async ({ ctx, input })=> {
             await ctx.db.transaction(async (tx) => {
@@ -35,7 +36,8 @@ export const createRouter = createTRPCRouter({
                         userId: input.email,
                         game: input.gameText,
                         teamName: input.teamName,
-                        role: "owner"
+                        role: "owner",
+                        userName: input.userName
                     })
 
                 await tx

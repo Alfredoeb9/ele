@@ -334,7 +334,8 @@ export const userRouter = createTRPCRouter({
       teamName: z.string().min(1),
       game: z.string().min(1),
       teamId: z.string().min(1),
-      targetEmail: z.string().min(1)
+      targetEmail: z.string().min(1),
+      userName: z.string().min(1)
     }))
     .mutation(async ({ ctx, input }) => {
       try {
@@ -358,7 +359,8 @@ export const userRouter = createTRPCRouter({
                 inviteId: input.userId,
                 teamName: input.teamName,
                 game: input.game,
-                teamId: input.teamId
+                teamId: input.teamId,
+                userName: input.userName
               })
       
               // remove from notification table

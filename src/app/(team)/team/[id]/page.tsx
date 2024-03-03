@@ -138,7 +138,7 @@ export default function Team() {
                             </Button>
                           </DropdownTrigger>
                           <DropdownMenu aria-label="teammates">
-                            <DropdownItem href={`/profile${user?.username}`} aria-label="view">View</DropdownItem>
+                            <DropdownItem href={`/profile/${user?.userName}`} aria-label="view">View</DropdownItem>
                             <DropdownItem 
                             //   onPress={ () => { 
                             //     onOpen()

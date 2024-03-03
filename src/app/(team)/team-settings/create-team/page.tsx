@@ -62,7 +62,8 @@ export default function CreateTeam() {
                             gameId: selectedGameId,
                             gameText:selectedGame,
                             teamName: teamName,
-                            email: session.data?.user.email as string
+                            email: session.data?.user.email as string,
+                            userName: session.data?.user.username as string
                         });
                     }}
                 >
