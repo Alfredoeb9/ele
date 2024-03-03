@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react";
 interface SendFriendProps {
     open: boolean;
     onOpenChange: () => void;
-    handleModalPath: (path: string) => void;
+    handleModalPath?: (path: string) => void;
     teamName: string;
     userEmail: string;
 }
@@ -48,7 +48,7 @@ export default function LeaveTeamModal({ open, onOpenChange, handleModalPath, te
                 size={size as 'md'} 
                 isOpen={open} 
                 onClose={() => {
-                    handleModalPath("")
+                    handleModalPath && handleModalPath("")
                     setUserName("")
                     onClose()
                 }} 

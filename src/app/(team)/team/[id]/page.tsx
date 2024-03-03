@@ -11,6 +11,7 @@ import { friendTableColumn, statusGameMap } from "@/lib/sharedData";
 import Disband from "@/app/_components/modals/Disband";
 import { VerticalDotsIcon } from "@/app/friends/VerticalDotsIcon";
 import SendTeamInvite from "@/app/_components/modals/SendTeamInvite";
+import LeaveTeamModal from "@/app/_components/modals/LeaveTeamModal";
 
 export default function Team() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
@@ -104,6 +105,7 @@ export default function Team() {
     // })
 
     const renderCell = useCallback((user: any, columnKey: React.Key) => {
+        console.log("user", user)
         const cellValue = user[columnKey as keyof User];
 
         switch (columnKey) {
@@ -135,8 +137,8 @@ export default function Team() {
                               <VerticalDotsIcon className="text-default-400" />
                             </Button>
                           </DropdownTrigger>
-                          <DropdownMenu>
-                            <DropdownItem href={`/profile${user?.username}`}>View</DropdownItem>
+                          <DropdownMenu aria-label="teammates">
+                            <DropdownItem href={`/profile${user?.username}`} aria-label="view">View</DropdownItem>
                             <DropdownItem 
                             //   onPress={ () => { 
                             //     onOpen()
@@ -144,6 +146,7 @@ export default function Team() {
                             //     setEmail(user.email)
                             //     setUserId(user.id)
                             //   }}
+                            aria-label="delete"
                             >
                               Delete
                             </DropdownItem>
@@ -230,7 +233,7 @@ export default function Team() {
                                     </>
                                 }
                                 
-                                { isUserMember && <Button color="danger">Leave Team</Button> }                                             
+                                { isUserMember && <CustomLeaveTeamButton teamName={team?.team_name as string} userEmail={session.data?.user.email as string} teamId={team?.id as string} /> }                                             
                                 
                             </div>
                         </div>
@@ -280,7 +283,7 @@ export default function Team() {
                                 </TableHeader>
                                 <TableBody items={items ?? []} emptyContent={"No users found"}>
                                     {(item: any) => (
-                                    <TableRow key={item?.id ?? ""}>
+                                    <TableRow key={item?.userId}>
                                         {(columnKey) => <TableCell className="text-center">{renderCell(item, columnKey)}</TableCell>}
                                     </TableRow>
                                     )}
@@ -315,5 +318,25 @@ function CustomButton({ teamName, game, teamId }: CustomButtonTypes) {
             <SendTeamInvite open={isOpen} onOpenChange={onOpenChange} teamName={teamName} game={game} teamId={teamId} />
         </>
         
+    )
+}
+
+interface CustomeLeaveTeamButtonTypes {
+    teamName: string;
+    userEmail: string;
+    teamId: string;
+}
+
+function CustomLeaveTeamButton({ teamName, teamId, userEmail }: CustomeLeaveTeamButtonTypes) {
+    const {isOpen, onOpen, onOpenChange} = useDisclosure();
+
+    return (
+        <>
+            <Button color="danger" onPress={() => {
+                onOpen()
+            }}>Leave Team</Button>
+
+            <LeaveTeamModal open={isOpen} onOpenChange={onOpenChange} teamName={teamName} userEmail={userEmail} />
+        </>
     )
 }
