@@ -335,7 +335,6 @@ export const userRouter = createTRPCRouter({
       game: z.string().min(1),
       teamId: z.string().min(1),
       targetEmail: z.string().min(1)
-      // metaData: z.object({}),
     }))
     .mutation(async ({ ctx, input }) => {
       try {

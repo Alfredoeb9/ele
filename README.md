@@ -7,8 +7,8 @@ This is a ELE Main App
 - [x] - Transfer from prisma to drizzle
 - [x] - Fix typings
 - [x] - Implement create teams table and respectable relations to other tables
-- [] - Implement users able to invite players to teams
-  - [] - Let users accept incoming invite
+- [x] - Implement users able to invite players to teams
+  - [x] - Let users accept incoming invite
 - [x] - Implement users able to invite players as friends
   - [x] - Let users accept incoming friend invite
 - [x] - let user create teams in teams settings
