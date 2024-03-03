@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { followsTables, gamerTags, notificationsTable, posts, sessions, users, usersRecordTable, verificationTokens } from "@/server/db/schema";
@@ -457,7 +457,12 @@ export const userRouter = createTRPCRouter({
               userId: currentUserWithGamerTags.id,
               gamerTag: tag.value,
               type: tag.label,
-            }).where(eq(gamerTags.type, tag.label))
+            }).where(
+              and(
+                eq(gamerTags.type, tag.label),
+                eq(gamerTags.userId, currentUserWithGamerTags.id)
+              )
+            )
           }))
         }
         
