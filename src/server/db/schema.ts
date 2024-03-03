@@ -482,10 +482,11 @@ export const notificationsTable = createTable(
     id: varchar('id', { length: 255 }).notNull(),
     userId: varchar('user_id', { length: 255 }).notNull(),
     userName: varchar('user_name', { length: 255 }).notNull(),
-    type: mysqlEnum('type', ['invite']).notNull(),
+    type: mysqlEnum('type', ['invite', 'team-invite']).notNull(),
     from: varchar('from', { length: 255 }).notNull(),
     resourceId: varchar('resource_id', { length: 255 }),
-    isRead: boolean('is_read').default(false)
+    isRead: boolean('is_read').default(false),
+    metaData: json('meta_data')
   }
 )
 

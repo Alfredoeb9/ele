@@ -28,7 +28,6 @@ export const useGetUser = () => {
     const json = await response.json();
 
     if (!response.ok) {
-        console.log("json", json)
         // if (json.error.includes("not enrolled in a team")) {
         //     setIsLoading(false);
         //     setError(json.error);

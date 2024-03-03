@@ -61,7 +61,7 @@ export default function Header() {
         onSuccess: async () => {
             await utils.user.getNotifications.invalidate()
             await utils.user.getUserWithFriends.invalidate()
-            toast('Friend request accepted', {
+            toast('Request has been accepted', {
                 position: "bottom-right",
                 autoClose: false,
                 closeOnClick: true,
@@ -125,11 +125,7 @@ export default function Header() {
         }
     })
 
-    console.log("sub", currentUser.data?.subscription)
-
     const sub = currentUser.data?.subscription
-
-    
 
     return (
         <header className="nav">
@@ -169,7 +165,7 @@ export default function Header() {
                                         </Button>
                                     </DropdownTrigger>
                                     <DropdownMenu aria-label="Notification Actions" closeOnSelect={false}>
-                                        {(usersNotifications?.data as NotificationType[])?.map((notification: {userName: string, from: string, id: string, isRead: boolean | null}) => (
+                                        {(usersNotifications?.data as NotificationType[])?.map((notification: {userName: string, from: string, id: string, isRead: boolean | null, type: string, metaData: any}) => (
                                             <DropdownItem key={notification.id + notification.userName}>
                                                 {!notification.isRead && (
                                                     <span className="h-[10px] w-[10px] bg-blue-500 inline-block rounded-full absolute -left-1"></span>
@@ -180,17 +176,24 @@ export default function Header() {
 
                                                     messageRead.mutate({
                                                         isRead: true,
-                                                        id: session?.data.user.id
+                                                        notificationId: notification.id
                                                     })
                                                 }}>
-                                                    {notification.userName} wants to be your friend
+                                                    {notification.type === "invite" && <>{notification.userName} wants to be your friend</>}
+                                                    {notification.type === "team-invite" && <>{notification.userName} wants you to join team {notification.metaData.teamName}</>}
+                                                    
 
                                                     <div className="flex gap-2 justify-end">
                                                         <Button variant="solid" size="sm" color="success" onPress={() => {
                                                             acceptRequest.mutate({
                                                                 userId: session?.data?.user?.id,
                                                                 targetId: notification.from,
-                                                                id: notification.id
+                                                                id: notification.id,
+                                                                type: notification.type,
+                                                                teamId: notification.metaData.teamId,
+                                                                game: notification.metaData.game,
+                                                                teamName: notification.metaData.teamName,
+                                                                targetEmail: session.data?.user.email as string
                                                             })
                                                             }}>
                                                                 Accept

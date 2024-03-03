@@ -10,6 +10,7 @@ import type { TeamMembersType, TeamRecordType } from "@/server/db/schema"
 import { friendTableColumn, statusGameMap } from "@/lib/sharedData";
 import Disband from "@/app/_components/modals/Disband";
 import { VerticalDotsIcon } from "@/app/friends/VerticalDotsIcon";
+import SendTeamInvite from "@/app/_components/modals/SendTeamInvite";
 
 export default function Team() {
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
@@ -221,9 +222,11 @@ export default function Team() {
                                         <Button onPress={() => [
                                             router.push(`/game/${team?.gameTitle.toLowerCase()}`)
                                         ]}>Find Match</Button>
+                                        <CustomButton teamName={team?.team_name as string} game={team?.gameTitle as string} teamId={team?.id as string} />
                                         <Button color="danger" onPress={() => {
                                             onOpen()
-                                        }}>Disband Team</Button> 
+                                        }}>Disband Team</Button>
+                                        
                                     </>
                                 }
                                 
@@ -291,5 +294,26 @@ export default function Team() {
             <Disband open={isOpen} onOpenChange={onOpenChange} teamName={team?.team_name} teamId={team?.id} />
             <ToastContainer containerId="team_id" />
         </div>
+    )
+}
+
+interface CustomButtonTypes {
+    teamName: string;
+    game: string;
+    teamId: string;
+}
+
+function CustomButton({ teamName, game, teamId }: CustomButtonTypes) {
+    const {isOpen, onOpen, onOpenChange} = useDisclosure();
+
+    return (
+        <>
+            <Button color="primary" onPress={() => {
+                onOpen()
+            }}>Invite User</Button>
+
+            <SendTeamInvite open={isOpen} onOpenChange={onOpenChange} teamName={teamName} game={game} teamId={teamId} />
+        </>
+        
     )
 }

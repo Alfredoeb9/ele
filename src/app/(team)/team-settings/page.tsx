@@ -25,7 +25,7 @@ export default function TeamSettings() {
 
     // const [error, setError] = useState<string>("");
 
-    if (session.status === 'unauthenticated') return router.push("/sign-in")
+    if (session.status === 'unauthenticated') router.push("/sign-in")
 
     const currentUser = api.user.getSingleUserWithTeamMembers.useQuery({ email: session.data?.user?.email as string }, { enabled: session.status === "authenticated"})
     

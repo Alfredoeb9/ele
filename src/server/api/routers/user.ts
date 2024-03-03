@@ -2,11 +2,12 @@ import { z } from "zod";
 import { and, eq, sql } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { followsTables, gamerTags, notificationsTable, posts, sessions, users, usersRecordTable, verificationTokens } from "@/server/db/schema";
+import { followsTables, gamerTags, notificationsTable, posts, sessions, teamMembersTable, users, usersRecordTable, verificationTokens } from "@/server/db/schema";
 import { db } from "@/server/db";
 import { createToken, emailRegx } from "@/lib/utils/utils";
 import { sentVerifyUserEmail } from "@/app/api/auth/[...nextauth]/mailer";
 import type { GamerTagsTypes } from "@/app/(profile)/account-manage/page"
+import { NextResponse } from "next/server";
 
 export const userRouter = createTRPCRouter({
   // getUser: publicProcedure
@@ -329,19 +330,48 @@ export const userRouter = createTRPCRouter({
       targetId: z.string().min(1),
       userId: z.string().min(1),
       id: z.string().min(1),
+      type: z.string().min(1),
+      teamName: z.string().min(1),
+      game: z.string().min(1),
+      teamId: z.string().min(1),
+      targetEmail: z.string().min(1)
+      // metaData: z.object({}),
     }))
     .mutation(async ({ ctx, input }) => {
       try {
-        await ctx.db.insert(followsTables).values({
-          targetUser: input.targetId,
-          userId: input.userId
-        })
-
-        // remove from notification table
-
-        await ctx.db.delete(notificationsTable).where(eq(notificationsTable.id, input.id))
-
-        return "user is now your friend"
+        switch (input.type) {
+          case "invite":
+            await ctx.db.insert(followsTables).values({
+              targetUser: input.targetId,
+              userId: input.userId
+            })
+    
+            // remove from notification table
+    
+            await ctx.db.delete(notificationsTable).where(eq(notificationsTable.id, input.id))
+    
+            return "user is now your friend"
+            break;
+      
+          case "team-invite":
+              const t = await ctx.db.insert(teamMembersTable).values({
+                userId: input.targetEmail,
+                inviteId: input.userId,
+                teamName: input.teamName,
+                game: input.game,
+                teamId: input.teamId
+              })
+      
+              // remove from notification table
+      
+              await ctx.db.delete(notificationsTable).where(eq(notificationsTable.id, input.id))
+      
+              return t
+              break;
+          default:
+            break;
+        }
+        
       } catch (error) {
         throw new Error(error as string)
       }
@@ -381,13 +411,13 @@ export const userRouter = createTRPCRouter({
   messageRead: publicProcedure
     .input(z.object({
       isRead: z.boolean(),
-      id: z.string().min(1)
+      notificationId: z.string().min(1)
     }))
     .mutation(async ({ ctx, input}) => {
       try {
         await ctx.db.update(notificationsTable).set({
           isRead: input.isRead
-        }).where(eq(notificationsTable.userId, input.id))
+        }).where(eq(notificationsTable.id, input.notificationId))
       } catch (error) {
         throw new Error(error as string)
       }
@@ -474,12 +504,6 @@ export const userRouter = createTRPCRouter({
         //   // else update the following types with the new values
         // }
 
-        
-
-
-        
-
-        // update users gamerTags
       } catch (error) {
         throw new Error(error as string)
       }
