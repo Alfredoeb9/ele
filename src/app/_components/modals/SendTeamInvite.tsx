@@ -78,7 +78,7 @@ export default function SendTeamInvite({ open, onOpenChange, teamName, game, tea
                                     sendRequest.mutate({
                                         inviteeUserName: userName,
                                         invitedBy: id as string,
-                                        teamName: teamName as string,
+                                        teamName: teamName,
                                         invitedByUserName: senderUser as string,
                                         game: game,
                                         teamId: teamId
