@@ -100,15 +100,15 @@ export default function Enroll() {
     if(tournament.isLoading || currentUser.isLoading) return <Spinner label="Loading..." color="warning" />
 
     return (
-        <div className="container m-auto pt-2">
-            <h1 className="text-white text-2xl md:text-3xl lg:text-4xl font-bold">Match Confirmation</h1>
-            <p className="text-white mb-2">Attention: Before accepting match read our 
+        <div className="container m-auto pt-2 px-4">
+            <h1 className="text-white text-4xl md:text-3xl lg:text-4xl font-bold pb-4">Match Confirmation</h1>
+            <p className="text-white mb-2"><span className="font-semibold">Attention:</span> Before accepting match read our 
                 <Link href={"/refund-policy"} className="text-blue-500"> refund policy</Link>, 
                 we are currently not accepting any refunds at this time and
                 current match/tournament rules.
             </p>
 
-            <p className="text-white mb-2">This Match/ Tournament will cost <span className="text-blue-500">{tournament?.data && tournament?.data[0]?.entry}</span></p>
+            <p className="text-white mb-2">This Match/ Tournament will cost <span className="text-blue-500 font-semibold">{tournament?.data && tournament?.data[0]?.entry}</span></p>
             <form onSubmit={(e) => {
                 e.preventDefault();
                 enrollTeam.mutate({
