@@ -309,6 +309,12 @@ export const userRouter = createTRPCRouter({
         const isUserActive = await ctx.db.select().from(users).where(eq(users.username, input.userName))
 
         if (isUserActive.length <= 0) throw new Error("No user found")
+
+        // check if friend request has been previously sent
+
+        const isFriendRequestSent = await ctx.db.select().from(notificationsTable).where(and(eq(notificationsTable.type, 'invite'),eq(notificationsTable.from, input.id),eq(notificationsTable.userName, input.senderUserName)))
+
+        if (isFriendRequestSent) throw new Error("You have already sent user a friend request")
         
         const sentRequest = await ctx.db.insert(notificationsTable).values({
           userId: isUserActive[0].id, // target
