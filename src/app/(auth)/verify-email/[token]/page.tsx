@@ -160,7 +160,7 @@ export default function VerifyEmail() {
 
   useEffect(() => {
     verifyUser.mutate({ token: params.token?.toString() })
-  }, [params?.token, verifyUser])
+  }, [params?.token])
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-between p-24">
