@@ -336,7 +336,7 @@ function CustomLeaveTeamButton({ teamName, teamId, userEmail }: CustomeLeaveTeam
                 onOpen()
             }}>Leave Team</Button>
 
-            <LeaveTeamModal open={isOpen} onOpenChange={onOpenChange} teamName={teamName} userEmail={userEmail} />
+            <LeaveTeamModal open={isOpen} onOpenChange={onOpenChange} teamName={teamName} userEmail={userEmail} teamId={teamId} />
         </>
     )
 }

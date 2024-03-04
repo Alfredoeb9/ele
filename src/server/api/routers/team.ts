@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { notificationsTable, teamMembersTable, teamRecordTable, teams, users } from "@/server/db/schema";
 
@@ -28,11 +28,12 @@ export const teamRouter = createTRPCRouter({
 
     leaveTeam: publicProcedure
         .input(z.object({
-            userEmail: z.string().min(1)
+            userEmail: z.string().min(1),
+            teamId: z.string().min(1)
         }))
         .mutation(async ({ ctx, input}) => {
             try {
-                await ctx.db.delete(teamMembersTable).where(eq(teamMembersTable.userId, input.userEmail));
+                await ctx.db.delete(teamMembersTable).where(and(eq(teamMembersTable.teamId, input.teamId),eq(teamMembersTable.userId, input.userEmail)));
 
                 return "User has left team"
             } catch (error) {

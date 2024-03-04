@@ -11,9 +11,10 @@ interface SendFriendProps {
     handleModalPath?: (path: string) => void;
     teamName: string;
     userEmail: string;
+    teamId: string;
 }
 
-export default function LeaveTeamModal({ open, onOpenChange, handleModalPath, teamName, userEmail }: SendFriendProps) {
+export default function LeaveTeamModal({ open, onOpenChange, handleModalPath, teamName, userEmail, teamId }: SendFriendProps) {
     const { onClose } = useDisclosure();
     const [size, setSize] = useState<string>('md')
     const [userName, setUserName] = useState<string>("");
@@ -72,7 +73,8 @@ export default function LeaveTeamModal({ open, onOpenChange, handleModalPath, te
                                 Close
                                 </Button>
                                 <Button color="primary" onPress={() => leaveTeam.mutate({
-                                    userEmail: userEmail
+                                    userEmail: userEmail,
+                                    teamId: teamId
                                 })}>
                                 Action
                                 </Button>

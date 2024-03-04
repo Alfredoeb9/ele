@@ -378,18 +378,19 @@ export const userRouter = createTRPCRouter({
       }
     }),
 
-  declineFriendRequest: publicProcedure
+  declineRequest: publicProcedure
     .input(z.object({
       targetId: z.string().min(1),
-      userId: z.string().min(1)
+      userId: z.string().min(1),
+      notificationID: z.string().min(1)
     }))
     .mutation(async ({ ctx, input }) => {
       try {
 
         // remove from notification table
-        await ctx.db.delete(notificationsTable).where(eq(notificationsTable.userId, input.userId))
+        await ctx.db.delete(notificationsTable).where(eq(notificationsTable.id, input.notificationID))
 
-        return "user declined friend request"
+        return "user declined request"
       } catch (error) {
         throw new Error(error as string)
       }

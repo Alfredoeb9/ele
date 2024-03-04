@@ -135,7 +135,7 @@ export default function TeamSettings() {
                 <button className="text-white w-64 bg-green-500 rounded-3xl p-4 hover:bg-green-600 transition-all"><Link href="/team-settings/create-team">Create a Team</Link></button>
                 
                 { modalPath === "member" && (
-                    <LeaveTeamModal  open={isOpen} onOpenChange={onOpenChange} handleModalPath={handleModalPath} userEmail={session.data?.user.email as string} teamName={teamName} />
+                    <LeaveTeamModal  open={isOpen} onOpenChange={onOpenChange} handleModalPath={handleModalPath} userEmail={session.data?.user.email as string} teamName={teamName} teamId={teamId} />
                 )}
 
                 { modalPath === "owner" && (

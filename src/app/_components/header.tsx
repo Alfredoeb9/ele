@@ -24,7 +24,7 @@ export default function Header() {
     if (currentUser.isError) {
         toast(`There was a problem getting user data`, {
             position: "bottom-right",
-            autoClose: false,
+            autoClose: 3000,
             closeOnClick: true,
             draggable: false,
             type: "error",
@@ -37,7 +37,7 @@ export default function Header() {
     if (usersNotifications.isError) {
         toast('Notification Service is down, please reach out to admin', {
             position: "bottom-right",
-            autoClose: false,
+            autoClose: 3000,
             closeOnClick: true,
             draggable: false,
             type: "error",
@@ -49,7 +49,7 @@ export default function Header() {
     if (currentUser?.data && currentUser?.data?.credits === undefined) {
         toast(`There was problem retrieving your credits, please refresh and try agian. If this problem presist please reach out to customer service`, {
             position: "bottom-right",
-            autoClose: false,
+            autoClose: 3000,
             closeOnClick: true,
             draggable: false,
             type: "error",
@@ -63,7 +63,7 @@ export default function Header() {
             await utils.user.getUserWithFriends.invalidate()
             toast('Request has been accepted', {
                 position: "bottom-right",
-                autoClose: false,
+                autoClose: 3000,
                 closeOnClick: true,
                 draggable: false,
                 type: "success",
@@ -74,7 +74,7 @@ export default function Header() {
         onError: (error) => {
             toast('Error on accepting friend request, please try again', {
                 position: "bottom-right",
-                autoClose: false,
+                autoClose: 3000,
                 closeOnClick: true,
                 draggable: false,
                 type: "error",
@@ -91,7 +91,7 @@ export default function Header() {
         onError: (error) => {
             toast('Error setting message as read, please create a support ticket', {
                 position: "bottom-right",
-                autoClose: false,
+                autoClose: 3000,
                 closeOnClick: true,
                 draggable: false,
                 type: "error",
@@ -100,12 +100,12 @@ export default function Header() {
         }
     })
 
-    const declineFriendRequest = api.user.declineFriendRequest.useMutation({
+    const declineFriendRequest = api.user.declineRequest.useMutation({
         onSuccess: async () => {
             await utils.user.getNotifications.invalidate()
             toast('Friend request declined', {
                 position: "bottom-right",
-                autoClose: false,
+                autoClose: 3000,
                 closeOnClick: true,
                 draggable: false,
                 type: "success",
@@ -116,7 +116,7 @@ export default function Header() {
         onError: (error) => {
             toast('Error on declining friend request, please try again', {
                 position: "bottom-right",
-                autoClose: false,
+                autoClose: 3000,
                 closeOnClick: true,
                 draggable: false,
                 type: "error",
@@ -202,7 +202,8 @@ export default function Header() {
                                                         <Button variant="solid" size="sm" color="danger" onPress={() => {
                                                             declineFriendRequest.mutate({
                                                                 userId: session?.data?.user?.id,
-                                                                targetId: notification.from
+                                                                targetId: notification.from,
+                                                                notificationID: notification.id
                                                             })
                                                         }}>Decline</Button>
 

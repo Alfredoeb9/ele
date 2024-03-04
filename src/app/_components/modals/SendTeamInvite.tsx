@@ -72,7 +72,17 @@ export default function SendTeamInvite({ open, onOpenChange, teamName, game, tea
                         <>
                             <ModalHeader className="flex flex-col gap-1 text-red-600">Send Team Invite </ModalHeader>
                             <ModalBody>
-                                <form onSubmit={(e) => {
+                                {/* <form> */}
+                                <Input 
+                                    type="text" 
+                                    placeholder="username" 
+                                    onChange={(e) => setUserName(e.target.value)}
+                                    value={userName}
+                                />
+
+                                <div className="flex gap-2 md:gap-3 xl:gap-4 justify-end mt-2">
+                                    <button className="text-red-500" onClick={onClose}>Cancel</button>
+                                    <button className="bg-green-500 p-3 rounded-2xl text-white" onClick={(e) => {
                                     e.preventDefault();
 
                                     sendRequest.mutate({
@@ -83,20 +93,10 @@ export default function SendTeamInvite({ open, onOpenChange, teamName, game, tea
                                         game: game,
                                         teamId: teamId
                                     });
-                                }}>
-                                <Input 
-                                    type="text" 
-                                    placeholder="username" 
-                                    onChange={(e) => setUserName(e.target.value)}
-                                    value={userName}
-                                />
-
-                                <div className="flex gap-2 md:gap-3 xl:gap-4 justify-end mt-2">
-                                    <button className="text-red-500">Cancel</button>
-                                    <button className="bg-green-500 p-3 rounded-2xl text-white">Send Team Invite</button>
+                                }}>Send Team Invite</button>
                                 </div>
                                 
-                            </form>
+                            {/* </form> */}
                             </ModalBody>
                             <ToastContainer containerId={"send-team-invite-modal"}/>
                         </>
