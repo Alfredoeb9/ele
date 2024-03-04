@@ -1,6 +1,5 @@
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { api } from "@/trpc/react";
 import { ToastContainer, toast } from "react-toastify";
 
@@ -15,7 +14,7 @@ interface RemoveFriendProps {
 
 export default function RemoveFriendModal({ open, onOpenChange, handleModalPath, teamName, email, id }: RemoveFriendProps) {
     const { onClose } = useDisclosure();
-    const [size, setSize] = useState<string>('md')
+    const [size, ] = useState<string>('md')
     const utils = api.useUtils()
 
     const removeFriend = api.user.removeFriend.useMutation({
@@ -23,11 +22,22 @@ export default function RemoveFriendModal({ open, onOpenChange, handleModalPath,
             await utils.user.getUserWithFriends.invalidate()
             toast('User has been removed as a friend', {
                 position: "bottom-right",
-                autoClose: false,
+                autoClose: 3000,
                 closeOnClick: true,
                 draggable: false,
                 type: "success",
-                toastId: 16                     
+                toastId: 16
+            })
+        },
+
+        onError: () => {
+            toast('There was a service error please try again or open a support ticket', {
+                position: "bottom-right",
+                autoClose: false,
+                closeOnClick: true,
+                draggable: false,
+                type: "error",
+                toastId: 43
             })
         }
     })

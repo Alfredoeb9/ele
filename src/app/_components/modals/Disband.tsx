@@ -13,7 +13,7 @@ interface DisbandProps {
 
 export default function Disband({ open, onOpenChange, teamName, teamId }: DisbandProps) {
   const { onClose } = useDisclosure();
-  const [size, setSize] = useState<string>('md')
+  const [size, ] = useState<string>('md')
 
   const utils = api.useUtils()
 

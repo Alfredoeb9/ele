@@ -2,22 +2,11 @@ import { z } from "zod";
 import { and, eq, sql } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { followsTables, gamerTags, notificationsTable, posts, sessions, teamMembersTable, users, usersRecordTable, verificationTokens } from "@/server/db/schema";
-import { db } from "@/server/db";
+import { followsTables, gamerTags, notificationsTable, teamMembersTable, users, usersRecordTable, verificationTokens } from "@/server/db/schema";
 import { createToken, emailRegx } from "@/lib/utils/utils";
 import { sentVerifyUserEmail } from "@/app/api/auth/[...nextauth]/mailer";
-import type { GamerTagsTypes } from "@/app/(profile)/account-manage/page"
-import { NextResponse } from "next/server";
 
 export const userRouter = createTRPCRouter({
-  // getUser: publicProcedure
-  //   .input(z.object({ text: z.string() }))
-  //   .query(({ input }) => {
-  //     return {
-  //       greeting: `Hello ${input.text}`,
-  //     };
-  //   }),
-
   create: publicProcedure
     .input(z.object({ 
       email: z.string().min(1), 
@@ -35,17 +24,15 @@ export const userRouter = createTRPCRouter({
       if (input.lastName.length <= 0) throw new Error("Please provide a proper last name");
 
       try {
-
         const isEmailValid = await emailRegx(input.email);
 
         if (!isEmailValid) {
-            throw new Error("Please provide a proper email")
+          throw new Error("Please provide a proper email")
         }
 
         const salt = await bcrypt.genSalt();
         
         const hashedPassword = await bcrypt.hash(input.password, salt);
-      
 
         await ctx.db.insert(users).values({
           id: crypto.randomUUID(),
@@ -74,7 +61,6 @@ export const userRouter = createTRPCRouter({
         return 'success';
     } catch (error) {
       throw new Error(error as string)
-        // return NextResponse.json({ message: `${error}`}, { status: 500 })
     } 
   }),
 
@@ -91,7 +77,6 @@ export const userRouter = createTRPCRouter({
           .update(users)
           .set({ isVerified: true })
           .where(eq(users.id, dbUser[0].id))
-
           
         await ctx.db
           .update(verificationTokens)
@@ -117,7 +102,6 @@ export const userRouter = createTRPCRouter({
     }))
     .query(async ({ ctx, input }) => {
       try {
-        // const currentUser = await ctx.db.select().from(users).where(eq(users.email, input.email))
 
         const currentUser = await ctx.db.query.users.findFirst({
           where: eq(users.email, input.email),
@@ -296,21 +280,10 @@ export const userRouter = createTRPCRouter({
     }))
     .mutation(async ({ ctx, input }) => {
       try {
-        // grab all users friends
-        // const following = await ctx.db.query.followsTables.findMany({
-        //   where: eq(users.username, input.username)
-        // })
-
-        // check if user is already a friend
-        // const isFriend = await ctx.db.query.followsTables.findFirst({
-        //   where: eq(followsTables.targetUser, input.userName)
-        // })
 
         const isUserActive = await ctx.db.select().from(users).where(eq(users.username, input.userName))
 
         if (isUserActive.length <= 0) throw new Error("No user found")
-
-        // check if friend request has been previously sent
 
         const isFriendRequestSent = await ctx.db.select().from(notificationsTable).where(and(eq(notificationsTable.type, 'invite'),eq(notificationsTable.from, input.id),eq(notificationsTable.userName, input.senderUserName)))
 
@@ -504,14 +477,6 @@ export const userRouter = createTRPCRouter({
             )
           }))
         }
-        
-        // else if() {
-        //   // else find the gamer tag type and if that type if null & || undefined
-        //   // then insert new gamerTag
-        // } else {
-        //   // else update the following types with the new values
-        // }
-
       } catch (error) {
         throw new Error(error as string)
       }

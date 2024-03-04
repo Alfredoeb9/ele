@@ -1,6 +1,5 @@
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input} from "@nextui-org/react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { api } from "@/trpc/react";
 import { ToastContainer, toast } from "react-toastify";
 import { useSession } from "next-auth/react";
@@ -15,9 +14,8 @@ interface SendTeamInvite {
 
 export default function SendTeamInvite({ open, onOpenChange, teamName, game, teamId }: SendTeamInvite) {
     const { onClose } = useDisclosure();
-    const [size, setSize] = useState<string>('md')
+    const [size, ] = useState<string>('md')
     const [userName, setUserName] = useState<string>("");
-    const [error, setError] = useState<string>("");
 
     const utils = api.useUtils()
 
@@ -27,12 +25,12 @@ export default function SendTeamInvite({ open, onOpenChange, teamName, game, tea
     const senderUser = session.data?.user.username
 
     const sendRequest = api.team.sendTeamInvite.useMutation({
-        onSuccess: async (data) => {
+        onSuccess: async () => {
             await utils.user.getNotifications.invalidate()
             setUserName("")
             toast(`Friend request sent to ${userName}`, {
                 position: "bottom-right",
-                autoClose: false,
+                autoClose: 3000,
                 closeOnClick: true,
                 draggable: false,
                 type: "success",
@@ -41,18 +39,39 @@ export default function SendTeamInvite({ open, onOpenChange, teamName, game, tea
         },
 
         onError: (e) => {
-          setError(e.message)
-          
-          if (!toast.isActive(38, "friendRequest")) {
-            toast(`User ${userName} does not exist`, {
-                position: "bottom-right",
-                autoClose: false,
-                closeOnClick: true,
-                draggable: false,
-                type: "error",
-                toastId: 38
-            })
-          }
+            if (e.data?.zodError) {
+                e.data?.zodError?.fieldErrors.userName?.map((error) => {    
+                    if (error.includes("String must contain at least 1")) {
+                        toast('Please insert a username', {
+                            position: "bottom-right",
+                            autoClose: 5000,
+                            closeOnClick: true,
+                            draggable: false,
+                            type: "error",
+                            toastId: 40
+                        })
+                    }
+                })
+            } else if (e.message.includes("No user found")) {
+                toast(`User ${userName} does not exist`, {
+                    position: "bottom-right",
+                    autoClose: 5000,
+                    closeOnClick: true,
+                    draggable: false,
+                    type: "error",
+                    toastId: 41
+                })
+            } else {
+                toast('There was a service error please try again or open a support ticket', {
+                    position: "bottom-right",
+                    autoClose: false,
+                    closeOnClick: true,
+                    draggable: false,
+                    type: "error",
+                    toastId: 42
+                })
+            }
+            
         }
     });
 

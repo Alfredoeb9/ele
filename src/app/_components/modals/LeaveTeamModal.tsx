@@ -1,9 +1,7 @@
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input} from "@nextui-org/react";
+import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { api } from "@/trpc/react";
 import { ToastContainer, toast } from "react-toastify";
-import { useSession } from "next-auth/react";
 
 interface SendFriendProps {
     open: boolean;
@@ -16,9 +14,8 @@ interface SendFriendProps {
 
 export default function LeaveTeamModal({ open, onOpenChange, handleModalPath, teamName, userEmail, teamId }: SendFriendProps) {
     const { onClose } = useDisclosure();
-    const [size, setSize] = useState<string>('md')
+    const [size, ] = useState<string>('md')
     const [userName, setUserName] = useState<string>("");
-    const [error, setError] = useState<string>("");
 
     const utils = api.useUtils()
 
@@ -26,20 +23,24 @@ export default function LeaveTeamModal({ open, onOpenChange, handleModalPath, te
         onSuccess: async () => {
             await utils.user.getSingleUserWithTeamMembers.invalidate()
             setUserName("")
-        },
-        onError: (e) => {
-          setError(e.message)
-          
-          if (!toast.isActive(25, "friendRequest")) {
-            toast(`User ${userName} does not exist`, {
+            toast('You have left the team', {
                 position: "bottom-right",
-                autoClose: false,
+                autoClose: 3000,
                 closeOnClick: true,
                 draggable: false,
-                type: "error",
-                toastId: 25          
+                type: "success",
+                toastId: 44
             })
-          }
+        },
+        onError: (e) => {          
+        toast(`User ${userName} does not exist`, {
+            position: "bottom-right",
+            autoClose: false,
+            closeOnClick: true,
+            draggable: false,
+            type: "error",
+            toastId: 25          
+        })
         }
     });
 

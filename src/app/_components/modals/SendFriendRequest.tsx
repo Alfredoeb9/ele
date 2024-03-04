@@ -1,6 +1,5 @@
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input} from "@nextui-org/react";
+import {Modal, ModalContent, ModalHeader, ModalBody, useDisclosure, Input} from "@nextui-org/react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { api } from "@/trpc/react";
 import { ToastContainer, toast } from "react-toastify";
 import { useSession } from "next-auth/react";
@@ -16,7 +15,7 @@ interface SendFriendProps {
 
 export default function SendFriendRequest({ open, onOpenChange, handleModalPath }: SendFriendProps) {
     const { onClose } = useDisclosure();
-    const [size, setSize] = useState<string>('md')
+    const [size, ] = useState<string>('md')
     const [userName, setUserName] = useState<string>("");
 
     const utils = api.useUtils()
@@ -55,7 +54,7 @@ export default function SendFriendRequest({ open, onOpenChange, handleModalPath 
                     }
                 })
             } else if (e.message.includes("already sent user a friend request")) {
-                toast(`User ${userName} does not exist`, {
+                toast('You have already sent user a friend request', {
                     position: "bottom-right",
                     autoClose: 5000,
                     closeOnClick: true,
@@ -123,7 +122,6 @@ export default function SendFriendRequest({ open, onOpenChange, handleModalPath 
                 
             </Modal>
 
-            {/* <ToastContainer containerId={"send-friend-modal"}/> */}
         </>
     );
 }
