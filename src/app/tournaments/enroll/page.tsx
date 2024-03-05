@@ -1,26 +1,22 @@
 "use client";
-import React, { JSXElementConstructor, PromiseLikeOfReactNode, ReactElement, ReactNode, useEffect, useState } from "react";
-import { QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { CheckboxGroup, Checkbox, Select, SelectItem, Spinner } from '@nextui-org/react';
+import { Select, SelectItem } from '@nextui-org/react';
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useGetUser } from "../../hooks/getUser";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.min.css';
 import { api } from "@/trpc/react";
 import Link from "next/link";
-import type { TournamentType } from "@/server/db/schema";
 
 export default function Enroll() {
-    const pathname = usePathname();
     const searchParams = useSearchParams();
     const router = useRouter();
     const session = useSession();
-    const [error, setError] = useState<any>(null);
+    // const [error, setError] = useState<any>(null);
     const [gameIdError, setGameIdError] = useState<boolean>(false);
     const [selectedGames, setSelectedGames] = useState<string>("");
     const [teamName, setTeamName] = useState<string>("");
-    const { getuser, error2, isLoading2 } = useGetUser();
 
     if (session?.data === null) router.push("/sign-in")
 
