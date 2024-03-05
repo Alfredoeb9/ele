@@ -12,6 +12,10 @@ export default function HomeFeaturedGames({ data, error }: HomeDataProps) {
         <h2>Please refresh and try again!</h2>
     )
 
+    data.map((d: any) => {
+        console.log("d", d)
+    })
+
     return (
         <section className='flex flex-col items-center justify-center m-auto bg-black p-8'>
             <div className='flex flex-row justify-center m-auto'>
@@ -27,12 +31,12 @@ export default function HomeFeaturedGames({ data, error }: HomeDataProps) {
                         ) : (
                             <>
                                 {data?.slice(0,4).map((set: { id: React.Key | null | undefined; game: string }) => (
-                                    <Link href={`/game/${set.game}`} key={set.id} className="flex items-center border-2 border-slate-500 h-20 text-white">
+                                    <Link key={set.id} href={`/game/${set?.game}`} className={`flex items-center border-2 relative border-slate-500 h-[100px] w-[100px] text-white bg-${set?.game && set?.game} bg-no-repeat bg-cover bg-center`}>
                                         {set.game}
                                     </Link>
                                 ))}
                                 
-                                <Link href={"/tournaments"} className="flex items-center border-2 border-slate-500 h-20 text-white">
+                                <Link href={"/tournaments"} className="flex items-center border-2 border-slate-500 h-[100px] text-white">
                                     SEE ALL GAMES
                                 </Link>
                             </>
