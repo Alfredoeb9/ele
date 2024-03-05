@@ -41,11 +41,13 @@ export const matchRouter = createTRPCRouter({
     try {
       const tournament = await ctx.db.select().from(tournaments).where(eq(tournaments.id, input.id))
 
+      if (tournament.length <= 0) throw new Error("Tournament was not found, plesae try again or create a support ticket.")
+
       if (!tournament) throw new Error("Tournament was not found, plesae try again or create a support ticket.")
-      
+
       return tournament;
     } catch (error) {
-      throw new Error("Error retrieving tournament information")
+      throw new Error(error as string)
     }
   }),
 

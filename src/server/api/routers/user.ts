@@ -126,13 +126,16 @@ export const userRouter = createTRPCRouter({
       email: z.string().min(1),
       gameId: z.string().min(1)
     }))
-    .mutation(async({ ctx, input }) => {
+    .query(async({ ctx, input }) => {
       try { 
         const userWithSpecificTeam = await ctx.db.query.users.findFirst({
           where: eq(users.email, input.email),
+          columns: {
+            password: false
+          },
           with: {
             teamMembers: {
-              where: (teamMembers, {eq}) => eq(teamMembers.game, 'mw3')
+              where: (teamMembers, {eq}) => eq(teamMembers.game, input.gameId)
             }
           }
         });

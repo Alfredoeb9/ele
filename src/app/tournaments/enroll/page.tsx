@@ -9,6 +9,7 @@ import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.min.css';
 import { api } from "@/trpc/react";
 import Link from "next/link";
+import type { TournamentType } from "@/server/db/schema";
 
 export default function Enroll() {
     const pathname = usePathname();
@@ -16,45 +17,63 @@ export default function Enroll() {
     const router = useRouter();
     const session = useSession();
     const [error, setError] = useState<any>(null);
+    const [gameIdError, setGameIdError] = useState<boolean>(false);
     const [selectedGames, setSelectedGames] = useState<string>("");
     const [teamName, setTeamName] = useState<string>("");
     const { getuser, error2, isLoading2 } = useGetUser();
 
-    if (session?.data === null) return router.push("/sign-in")
+    if (session?.data === null) router.push("/sign-in")
 
     const search = searchParams.get('id')
 
-    const tournament = api.matches.getSingleMatch.useMutation({
-        onSuccess: () => {
-            console.log("success")
-        },
+    if (!search) {
+        toast('There was a problem returning data', {
+            position: "bottom-right",
+            autoClose: 3000,
+            closeOnClick: true,
+            draggable: false,
+            type: "error",
+            toastId: 45
+        })
+        router.push('/')
+        return null
+    }
 
-        onError: (error) => {
-            console.log("Error", error.message)
-        },
-    })
-
-    useEffect(() => {
-        if (search) {
-            tournament.mutate({ id: search })
-        }
-    }, [search])
-
-    const currentUser = api.user.getSingleUserByTeamId.useMutation({
-        onSuccess: (data) => {
-            return true
-        },
-
-        onError: (error) => {
-            setError(error.message)
-        }
-    })
+    const tournament = api.matches.getSingleMatch.useQuery({ id: search }, {enabled: search.length > 0})
 
     useEffect(() => {
-        if (session?.data?.user && tournament?.data) {
-            currentUser.mutate({ email: session?.data?.user.email as string, gameId: tournament?.data[0]?.id})
+        if (tournament.isError) {
+            if (tournament.error.message.includes("Tournament was not found")) {
+                setGameIdError(true)
+                toast(`Please enroll in a supported match`, {
+                    position: "bottom-right",
+                    autoClose: 5000,
+                    closeOnClick: true,
+                    draggable: false,
+                    type: "error",
+                    toastId: 47
+                })
+            }
         }
-    }, [session.data, tournament.data])
+    }, [tournament.isError])
+
+    const currentUser = api.user.getSingleUserByTeamId.useQuery({ email: session?.data?.user.email as string, gameId: tournament.data && tournament?.data[0]?.game as string | any }, { enabled: tournament.data !== undefined && gameIdError === false && tournament.data.length > 0 } )
+
+    useEffect(() => {
+        if (currentUser.isError) {
+            if (currentUser.error.message.includes("gameId")) {
+                setGameIdError(true)
+                toast(`Please enroll in a supported match`, {
+                    position: "bottom-right",
+                    autoClose: 5000,
+                    closeOnClick: true,
+                    draggable: false,
+                    type: "error",
+                    toastId: 46
+                })
+            }
+        }
+    }, [currentUser.isError])
 
     const enrollTeam = api.matches.enrollTeamToTournament.useMutation({
         onSuccess: () => {
@@ -68,7 +87,7 @@ export default function Enroll() {
             })
             setSelectedGames("")
             setTeamName("")
-            // router.push("/")
+            router.push("/")
         },
 
         onError:(error) => {
@@ -81,7 +100,7 @@ export default function Enroll() {
                     type: "error",
                     toastId: 24
                 })
-            }
+            } 
         }
     })
 
@@ -97,7 +116,7 @@ export default function Enroll() {
         }
     }
 
-    if(tournament.isLoading || currentUser.isLoading) return <Spinner label="Loading..." color="warning" />
+    // if(currentUser.isLoading) return <Spinner label="Loading..." color="warning" />
 
     return (
         <div className="container m-auto pt-2 px-4">
@@ -147,13 +166,13 @@ export default function Enroll() {
 
                 <button
                     className='mt-4 flex w-64 justify-center rounded-md m-auto bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-slate-500'
-                    disabled={ (currentUser?.data?.teams && currentUser.data.teams.length <= 0) ?? selectedGames.length <= 0}
+                    disabled={  (currentUser?.data?.teams && currentUser.data.teams.length <= 0) ?? selectedGames.length <= 0}
                 >
                     Enroll 
                 </button>
 
             </form>
-            <ToastContainer />
+            <ToastContainer containerId={"enroll-toast"} />
         </div>
     )
 }
