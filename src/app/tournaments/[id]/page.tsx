@@ -130,15 +130,11 @@ export default function Tournaments({
             <div className={`w-full h-[300px] bg-${tournament?.data && tournament?.data[0].game.toLowerCase()}_team_background bg-no-repeat bg-cover bg-center bg-fixed`} />
 
             <main className=" px-4 relative mt-[-150px]">
-                <div id="tournament_info-block" className="bg-slate-400 rounded-xl">
+                <div id="tournament_info-block" className="bg-slate-400 rounded-xl w-full sm:w-[65%] p-1">
                     <div className="block sm:flex">
                         {tournament.data?.map((tournament) => (
                             <>
                                 <Card isFooterBlurred className="w-full sm:w-56 h-[300px] col-span-12 sm:col-span-7 after:absolute after:top-0 after:left-0 after:w-full after:h-full after:bg-gradient-to-br from-white to-neutral-400 after:opacity-30">
-                                    {/* <CardHeader className="absolute z-10 top-1 flex-col items-start">
-                                        <p className="text-tiny text-white/60 uppercase font-bold">Your day your way</p>
-                                        <h4 className="text-white/90 font-medium text-xl">Your checklist for better sleep</h4>
-                                    </CardHeader> */}
                                     <Image
                                         removeWrapper
                                         alt={`${tournament?.game} game poster`}
@@ -158,7 +154,7 @@ export default function Tournaments({
                                     {tournament.game.toLowerCase() === 'mw3' && <h1 className="text-3xl font-bold">{statusGameMap[tournament?.game]}</h1>}
                                     {tournament.game.toLowerCase() === 'fornite' && <h1 className="text-3xl font-bold">{statusGameMap[tournament?.game]}</h1>}
 
-                                    <div className="flex mb-4 items-center justify-around w-full sm:w-1/2">
+                                    <div className="flex mb-4 items-center justify-around w-full">
                                         <div>
                                             <p className="block font-bold">{tournament?.name}</p>
                                             <p className="block">{tournament?.tournament_type}</p>
@@ -172,8 +168,8 @@ export default function Tournaments({
                                         </div>
                                     </div>
                                 
-                                    <div className="flex gap-1 w-full sm:w-1/2">
-                                        <Card className="w-40 grow">
+                                    <div className="flex gap-1 w-[90%] m-auto">
+                                        <Card className="grow">
                                             <CardHeader>
                                                 <div>
                                                     <p className="font-semibold">REGISTRATION OPENS</p>
@@ -182,7 +178,7 @@ export default function Tournaments({
                                             </CardHeader>
                                         </Card>
 
-                                        <Card className="w-40 grow">
+                                        <Card className="grow">
                                             <CardHeader>
                                                 <div>
                                                     <p className="font-semibold">Start Time</p>
@@ -193,7 +189,7 @@ export default function Tournaments({
                                     </div>
                                 
                                     
-                                    <div className="flex flex-wrap justify-evenly w-full sm:w-1/2 mt-4">
+                                    <div className="flex flex-wrap justify-evenly w-full mt-4">
                                         <div className="">
                                             <h5 className="font-bold">ENTRY/PLAYER</h5>
                                             <p>{tournament?.entry}</p>
