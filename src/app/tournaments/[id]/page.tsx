@@ -25,30 +25,7 @@ export default function Tournaments({
     const [seconds, setSeconds] = useState(0);
     const session = useSession()
 
-    // const { data: tournament, isSuccess, isLoading, isError } = useQuery<any>({
-    //     queryKey: ["tournament-finder"],
-    //     queryFn: () => 
-    //         fetch(`/api/match-finder/${tournamentId}`, {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify(tournamentId)
-    //         }).then((res) =>
-    //             res.json()
-    //         ).catch(() => {
-    //             console.log("catch ran up")
-    //         }),
-    //     retry: 3
-    // })
-
     const tournament = api.matches.getSingleMatch.useQuery({ id: tournamentId }, { enabled: tournamentId.length >= 0 })
-
-    // useEffect(() => {
-    //     if (tournamentId) {
-    //         tournament.({ id: tournamentId })
-    //     }
-    // }, [tournamentId])
 
     if (tournament.isError) {
         toast('There was an error returning tournament data', {
@@ -61,11 +38,6 @@ export default function Tournaments({
         })
     }
 
-    // const tourney = tournament.data[0]
-
-    // if (tournament?.data[0]?.start_time == undefined) throw new Error("this is a test")
-
-    // const t1 = new Date(tournament.data[0].start_time).valueOf() // end
     const t1 = new Date(`${tournament.data && tournament.data[0]?.start_time}`).valueOf() // end
         const t2 = new Date().valueOf()
 
@@ -81,45 +53,14 @@ export default function Tournaments({
         return () => clearInterval(i);
     }, [t2])
 
-    
-
     function formatTime(time: any) {
         return time < 10 ? `0${time}` : time
     }
-
-    // const fetchEnroll = async () => {
-    //     try {
-    //         await fetch(`/api/tournament`, {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify(tournamentId)
-    //         }).then(async (res) => {
-
-    //             let data = await res.json()
-
-    //             if (res.status >= 500) return setError(data?.message)
-
-    //             if (res.status === 201) {
-    //                 router.push(`/tournaments/enroll?id=${tournamentId}`)
-    //                 return data;
-    //             };
-    //         }).catch(() => {
-    //             setError(true);
-    //         })
-    //     } catch (error) {
-    //         setError(error)
-    //     }
-        
-    // }
     
     if ( tournament.isLoading ) return <Spinner label="Loading..." color="warning" />
 
-
     const d1 = new Date(`${tournament.data && tournament.data[0]?.start_time}`), 
         d2 = new Date();
-
 
     const pstDate = d1.toLocaleString("en-US", {
             timeZone: "America/Los_Angeles"
@@ -212,11 +153,7 @@ export default function Tournaments({
                                     </div>
                                 </div>
                             </>
-                            
                         ))}
-                        
-
-                        
                     </div>
                     
                     <div className="flex px-3 py-5 gap-2">
