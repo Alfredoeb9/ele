@@ -130,11 +130,24 @@ export default function Enroll() {
                 
                 <form onSubmit={(e) => {
                     e.preventDefault();
-                    enrollTeam.mutate({
-                        tournamentId: tournament.data && tournament.data[0]?.id as string | any,
-                        teamId: selectedGames,
-                        teamName: teamName
-                    });
+                    if (selectedGames.length <= 0 || teamName.length <= 0 || tournament.data && tournament?.data[0]?.id.length <= 0) {
+                        toast(`Please fill in necessary details to enter`, {
+                            position: "bottom-right",
+                            autoClose: 5000,
+                            closeOnClick: true,
+                            draggable: false,
+                            type: "error",
+                            toastId: 48
+                        })
+                        return null
+                    } else {
+                        enrollTeam.mutate({
+                            tournamentId: tournament.data && tournament.data[0]?.id as string | any,
+                            teamId: selectedGames,
+                            teamName: teamName
+                        });
+                    }
+                    
                 }}>
                     <div>
                         <Select 
