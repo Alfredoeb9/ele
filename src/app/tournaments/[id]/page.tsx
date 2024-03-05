@@ -6,6 +6,8 @@ import { Divider } from "@nextui-org/react";
 import Link from "next/link";
 import { api } from "@/trpc/react";
 import { useSession } from "next-auth/react";
+import { toast } from "react-toastify";
+import { statusGameMap } from "@/lib/sharedData";
 
 export default function Tournaments({
     params: { id },
@@ -40,21 +42,24 @@ export default function Tournaments({
     //     retry: 3
     // })
 
-    const tournament = api.matches.getSingleMatch.useMutation({
-        onSuccess: () => {
-            console.log("success")
-        },
+    const tournament = api.matches.getSingleMatch.useQuery({ id: tournamentId }, { enabled: tournamentId.length >= 0 })
 
-        onError: (error) => {
-            console.log("Error", error.message)
-        }
-    })
+    // useEffect(() => {
+    //     if (tournamentId) {
+    //         tournament.({ id: tournamentId })
+    //     }
+    // }, [tournamentId])
 
-    useEffect(() => {
-        if (tournamentId) {
-            tournament.mutate({ id: tournamentId })
-        }
-    }, [tournamentId])
+    if (tournament.isError) {
+        toast('There was an error returning tournament data', {
+            position: "bottom-right",
+            autoClose: 5000,
+            closeOnClick: true,
+            draggable: false,
+            type: "error",
+            toastId: 45
+        })
+    }
 
     // const tourney = tournament.data[0]
 
@@ -111,7 +116,6 @@ export default function Tournaments({
     
     if ( tournament.isLoading ) return <Spinner label="Loading..." color="warning" />
 
-    // if ( isError || tournament == undefined || tournament == null || tournament.isError || tournament.message.includes("does not exist")) return <p>Error</p>
 
     const d1 = new Date(`${tournament.data && tournament.data[0]?.start_time}`), 
         d2 = new Date();
@@ -123,8 +127,9 @@ export default function Tournaments({
 
     return (
         <div>
-            <div className="tournament_backgroundHeader h-24 bg-mw3 bg-no-repeat bg-cover bg-center bg-fixed" />
-            <main className=" px-4">
+            <div className={`w-full h-[300px] bg-${tournament?.data && tournament?.data[0].game.toLowerCase()}_team_background bg-no-repeat bg-cover bg-center bg-fixed`} />
+
+            <main className=" px-4 relative mt-[-150px]">
                 <div id="tournament_info-block" className="bg-slate-400 rounded-xl">
                     <div className="block sm:flex">
                         {tournament.data?.map((tournament) => (
@@ -143,72 +148,73 @@ export default function Tournaments({
                                     />
                                     <CardFooter className="absolute bg-black/40 bottom-0 z-10 border-t-1 border-default-600 dark:border-default-100">
                                         <div className="flex w-full justify-between items-center ">
-                                            <p className="text-sm text-white/60">Prize: {tournament?.prize}</p>
+                                            <p className="text-sm text-white/60">Prize: ${tournament?.prize}</p>
                                             <p className="text-sm text-white/60">NA + EU</p>
                                         </div>
                                     </CardFooter>
                                 </Card>
 
                                 <div className="tournament_info w-full p-2 sm:ml-4">
-                            <h1 className="text-3xl font-bold">{tournament?.game.toUpperCase()}</h1>
-                            <div className="flex mb-4 items-center justify-around w-full sm:w-1/2">
-                                <div>
-                                    <p className="block font-bold">{tournament?.name}</p>
-                                    <p className="block">{tournament?.tournament_type}</p>
-                                </div>
+                                    {tournament.game.toLowerCase() === 'mw3' && <h1 className="text-3xl font-bold">{statusGameMap[tournament?.game]}</h1>}
+                                    {tournament.game.toLowerCase() === 'fornite' && <h1 className="text-3xl font-bold">{statusGameMap[tournament?.game]}</h1>}
 
-                                <Divider orientation="vertical" className="w-0.5 h-20 text-white bg-white mx-1"/>
-                                
-                                <div>
-                                <p className="font-bold">Platforms:</p>
-                                <p>{tournament?.platform ? "Cross Platform" : <span className="text-bold text-small capitalize">{tournament?.platform as any}</span>}</p>
-                                </div>
-                                
-                            </div>
-                            
-                            <div className="flex gap-1 w-full sm:w-1/2">
-                                <Card className="w-40 grow">
-                                    <CardHeader>
+                                    <div className="flex mb-4 items-center justify-around w-full sm:w-1/2">
                                         <div>
-                                            <p className="font-semibold">REGISTRATION OPENS</p>
-                                            <p>{d2.valueOf() <= d1.valueOf() ? "OPEN NOW" : "CLOSED"}</p>
+                                            <p className="block font-bold">{tournament?.name}</p>
+                                            <p className="block">{tournament?.tournament_type}</p>
                                         </div>
-                                    </CardHeader>
-                                </Card>
 
-                                <Card className="w-40 grow">
-                                    <CardHeader>
+                                        <Divider orientation="vertical" className="w-0.5 h-20 text-white bg-white mx-1"/>
+                                    
                                         <div>
-                                            <p className="font-semibold">Start Time</p>
-                                            <p>{pstDate} PST</p>
+                                            <p className="font-bold">Platforms:</p>
+                                            <p>{tournament?.platform ? "Cross Platform" : <span className="text-bold text-small capitalize">{tournament?.platform as any}</span>}</p>
                                         </div>
-                                    </CardHeader>
-                                </Card>
-                            </div>
-                            
-                            
-                            <div className="flex flex-wrap justify-evenly w-full sm:w-1/2 mt-4">
-                                <div className="">
-                                    <h5 className="font-bold">ENTRY/PLAYER</h5>
-                                    <p>{tournament?.entry}</p>
+                                    </div>
+                                
+                                    <div className="flex gap-1 w-full sm:w-1/2">
+                                        <Card className="w-40 grow">
+                                            <CardHeader>
+                                                <div>
+                                                    <p className="font-semibold">REGISTRATION OPENS</p>
+                                                    <p>{d2.valueOf() <= d1.valueOf() ? "OPEN NOW" : "CLOSED"}</p>
+                                                </div>
+                                            </CardHeader>
+                                        </Card>
+
+                                        <Card className="w-40 grow">
+                                            <CardHeader>
+                                                <div>
+                                                    <p className="font-semibold">Start Time</p>
+                                                    <p>{pstDate} PST</p>
+                                                </div>
+                                            </CardHeader>
+                                        </Card>
+                                    </div>
+                                
+                                    
+                                    <div className="flex flex-wrap justify-evenly w-full sm:w-1/2 mt-4">
+                                        <div className="">
+                                            <h5 className="font-bold">ENTRY/PLAYER</h5>
+                                            <p>{tournament?.entry}</p>
+                                        </div>
+                                        <Divider orientation="vertical" className="w-0.5 h-20 text-white bg-white mx-1"/>
+                                        <div className="">
+                                            <h5 className="font-bold">TEAM SIZE</h5>
+                                            <p>{tournament?.team_size}</p>
+                                        </div>
+                                        <Divider orientation="vertical" className="w-0.5 h-20 text-white bg-white mx-1"/>
+                                        <div className="">
+                                            <h5 className="font-bold">MAX TEAMS</h5>
+                                            <p>{tournament?.max_teams}</p>
+                                        </div>
+                                        <Divider orientation="vertical" className="w-0.5 h-20 text-white bg-white mx-1"/>
+                                        <div className="">
+                                            <h5 className="font-bold">ENROLLED</h5>
+                                            <p>{tournament?.enrolled}</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <Divider orientation="vertical" className="w-0.5 h-20 text-white bg-white mx-1"/>
-                                <div className="">
-                                    <h5 className="font-bold">TEAM SIZE</h5>
-                                    <p>{tournament?.team_size}</p>
-                                </div>
-                                <Divider orientation="vertical" className="w-0.5 h-20 text-white bg-white mx-1"/>
-                                <div className="">
-                                    <h5 className="font-bold">MAX TEAMS</h5>
-                                    <p>{tournament?.max_teams}</p>
-                                </div>
-                                <Divider orientation="vertical" className="w-0.5 h-20 text-white bg-white mx-1"/>
-                                <div className="">
-                                    <h5 className="font-bold">ENROLLED</h5>
-                                    <p>{tournament?.enrolled}</p>
-                                </div>
-                            </div>
-                        </div>
                             </>
                             
                         ))}

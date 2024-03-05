@@ -105,7 +105,6 @@ export default function Team() {
     // })
 
     const renderCell = useCallback((user: any, columnKey: React.Key) => {
-        console.log("user", user)
         const cellValue = user[columnKey as keyof User];
 
         switch (columnKey) {

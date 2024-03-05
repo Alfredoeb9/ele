@@ -37,16 +37,16 @@ export const matchRouter = createTRPCRouter({
 
   getSingleMatch: publicProcedure
   .input(z.object({ id: z.string().min(1) }))
-  .mutation(async ({ ctx, input }) => {
-
+  .query(async ({ ctx, input }) => {
     try {
       const tournament = await ctx.db.select().from(tournaments).where(eq(tournaments.id, input.id))
 
+      if (!tournament) throw new Error("Tournament was not found, plesae try again or create a support ticket.")
+      
       return tournament;
     } catch (error) {
       throw new Error("Error retrieving tournament information")
     }
-    
   }),
 
   // getSingle: publicProcedure.query(({ ctx }) => {
