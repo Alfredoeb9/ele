@@ -2,8 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Select, SelectItem } from '@nextui-org/react';
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useGetUser } from "../../hooks/getUser";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.min.css';
 import { api } from "@/trpc/react";
@@ -18,7 +17,7 @@ export default function Enroll() {
     const [selectedGames, setSelectedGames] = useState<string>("");
     const [teamName, setTeamName] = useState<string>("");
 
-    if (session?.data === null) router.push("/sign-in")
+    if (session.status === 'unauthenticated') router.push("/sign-in")
 
     const search = searchParams.get('id')
 
@@ -75,7 +74,7 @@ export default function Enroll() {
         onSuccess: () => {
             toast(`${teamName} has been enrolled into ${tournament?.data![0]?.name} tournament`, {
                 position: "bottom-right",
-                autoClose: 5000,
+                autoClose: 3500,
                 closeOnClick: true,
                 draggable: false,
                 type: "success",
@@ -83,7 +82,10 @@ export default function Enroll() {
             })
             setSelectedGames("")
             setTeamName("")
-            router.push("/")
+            setTimeout(() => {
+                router.push("/")
+            }, 4000)
+            
         },
 
         onError:(error) => {
@@ -116,58 +118,62 @@ export default function Enroll() {
 
     return (
         <div className="container m-auto pt-2 px-4">
-            <h1 className="text-white text-4xl md:text-3xl lg:text-4xl font-bold pb-4">Match Confirmation</h1>
-            <p className="text-white mb-2"><span className="font-semibold">Attention:</span> Before accepting match read our 
-                <Link href={"/refund-policy"} className="text-blue-500"> refund policy</Link>, 
-                we are currently not accepting any refunds at this time and
-                current match/tournament rules.
-            </p>
+            <div className="px-4">
+                <h1 className="text-white text-4xl md:text-3xl lg:text-4xl font-bold pb-4">Match Confirmation</h1>
+                <p className="text-white mb-2"><span className="font-semibold">Attention:</span> Before accepting match read our 
+                    <Link href={"/refund-policy"} className="text-blue-500"> refund policy</Link>, 
+                    we are currently not accepting any refunds at this time and
+                    current match/tournament rules.
+                </p>
 
-            <p className="text-white mb-2">This Match/ Tournament will cost <span className="text-blue-500 font-semibold">{tournament?.data && tournament?.data[0]?.entry}</span></p>
-            <form onSubmit={(e) => {
-                e.preventDefault();
-                enrollTeam.mutate({
-                    tournamentId: tournament.data && tournament.data[0]?.id as string | any,
-                    teamId: selectedGames,
-                    teamName: teamName
-                });
-            }}>
-                <div>
-                    <Select 
-                    label="Select a Team" 
-                    className="max-w-xs"
-                    onClick={() => {
-                        if (currentUser.data && currentUser.data.teams && currentUser.data.teams.length <= 0 ) {
-                            toast.error(CustomToastWithLink, {
-                                position: "bottom-right",
-                                autoClose: 5000,
-                                closeOnClick: true,
-                                draggable: false,
-                                type: "error",
-                                toastId: 6 
-                            })
-                        }
-                    }}
-                    onSelectionChange={(e) => setSelectedGames(Object.values(e)[0]) }
-                    required
-                    >
-                        {currentUser.data?.teams?.map((match) => (
-                            <SelectItem key={match.teamId} onClick={() => setTeamName(match.teamName)} value={match.teamName}>
-                                {match.teamName}
-                            </SelectItem>
-                        )) as []}
+                <p className="text-white mb-2">This Match/ Tournament will cost <span className="text-blue-500 font-semibold">{tournament?.data && tournament?.data[0]?.entry}</span></p>
                 
-                    </Select>
-                </div>
+                <form onSubmit={(e) => {
+                    e.preventDefault();
+                    enrollTeam.mutate({
+                        tournamentId: tournament.data && tournament.data[0]?.id as string | any,
+                        teamId: selectedGames,
+                        teamName: teamName
+                    });
+                }}>
+                    <div>
+                        <Select 
+                        label="Select a Team" 
+                        className="max-w-xs"
+                        onClick={() => {
+                            if (currentUser.data && currentUser.data.teams && currentUser.data.teams.length <= 0 ) {
+                                toast.error(CustomToastWithLink, {
+                                    position: "bottom-right",
+                                    autoClose: 5000,
+                                    closeOnClick: true,
+                                    draggable: false,
+                                    type: "error",
+                                    toastId: 6 
+                                })
+                            }
+                        }}
+                        onSelectionChange={(e) => setSelectedGames(Object.values(e)[0]) }
+                        required
+                        >
+                            {currentUser.data?.teams?.map((match) => (
+                                <SelectItem key={match.teamId} onClick={() => setTeamName(match.teamName)} value={match.teamName}>
+                                    {match.teamName}
+                                </SelectItem>
+                            )) as []}
+                    
+                        </Select>
+                    </div>
 
-                <button
-                    className='mt-4 flex w-64 justify-center rounded-md m-auto bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-slate-500'
-                    disabled={  (currentUser?.data?.teams && currentUser.data.teams.length <= 0) ?? selectedGames.length <= 0}
-                >
-                    Enroll 
-                </button>
+                    <button
+                        className='mt-4 flex w-64 justify-center rounded-md m-auto bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-slate-500'
+                        disabled={  (currentUser?.data?.teams && currentUser.data.teams.length <= 0) ?? selectedGames.length <= 0}
+                    >
+                        Enroll 
+                    </button>
 
-            </form>
+                </form>
+            </div>
+            
             <ToastContainer containerId={"enroll-toast"} />
         </div>
     )
