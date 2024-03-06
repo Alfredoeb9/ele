@@ -14,7 +14,6 @@ export default {
       },
       backgroundImage: {
         'mw3_team_background': "url('/images/mw3_team_background.png')",
-        'mw3': "url('/images/mw3.png')",
       }
     },
   },

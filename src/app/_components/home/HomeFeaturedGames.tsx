@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from "next/link";
 import React from "react";
 
@@ -20,22 +21,27 @@ export default function HomeFeaturedGames({ data, error }: HomeDataProps) {
                 
                 <div>
                     <h2 className='text-xl lg:text-2xl text-white'>GAMES</h2>
-                    <p className='text-base lg:text-lg text-white mb-2'>Select a game and then choose how you want to play.</p>
-                    <div className='flex flex-row  gap-3'>
+                    <p className='text-base lg:text-lg text-white mb-4'>Select a game and then choose how you want to play.</p>
+                    <div>
                         { error ? (
                             <p>{ error }</p>
                         ) : (
-                            <>
-                                {data?.slice(0,4).map((set: { id: React.Key | null | undefined; game: string }) => (
-                                    <Link key={set.id} href={`/game/${set?.game}`} className={`flex items-center border-2 relative border-slate-500 h-[100px] w-[100px] text-white bg-${set?.game && set?.game} bg-no-repeat bg-cover bg-center`}>
-                                        {set.game}
-                                    </Link>
-                                ))}
+                            <div className='md:flex md:flex-row md:gap-3'>
+                                <div className='flex flex-wrap'>
+                                    {data?.slice(0,4).map((set: { id: React.Key, game: string }) => (
+                                        
+                                        <Link key={set.id} href={`/game/${set?.game}`} className={`border-2 border-slate-500 h-[150px] w-[150px] text-white`}>
+                                            <Image src={`/images/${set?.game}.png`} width={150} height={150} style={{height: '100%'}} alt={`${set?.game} game placeholder`}/>
+                                        </Link>
+                                    
+                                    ))}
+                                </div>
                                 
-                                <Link href={"/tournaments"} className="flex items-center border-2 border-slate-500 h-[100px] text-white">
+                                
+                                <Link href={"/tournaments"} className="h-[50px] w-[150px] md:h-[100px] flex items-center justify-center mt-4 border-2 border-slate-500  text-white">
                                     SEE ALL GAMES
                                 </Link>
-                            </>
+                            </div>
                         )}
                         
                     </div>
