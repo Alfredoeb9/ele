@@ -8,29 +8,29 @@ import { api } from "@/trpc/react";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 
-function singleEliminationTournament(players: string | any[]) {
-  const rounds = [];
-  const numberOfRounds = Math.log2(players.length);
+// function singleEliminationTournament(players: string | any[]) {
+//   const rounds = [];
+//   const numberOfRounds = Math.log2(players.length);
 
-  // Generate the initial round with players
-  rounds.push(players);
+//   // Generate the initial round with players
+//   rounds.push(players);
 
-  // Simulate each round
-  for (let i = 0; i < numberOfRounds; i++) {
-    const currentRound: string | unknown[] = rounds[rounds.length - 1];
-    const nextRound = [];
+//   // Simulate each round
+//   for (let i = 0; i < numberOfRounds; i++) {
+//     const currentRound: string | unknown[] = rounds[rounds.length - 1];
+//     const nextRound = [];
 
-    // Pair players for the next round
-    for (let j = 0; j < currentRound.length; j += 2) {
-      const match: string | unknown[] = [currentRound[j], currentRound[j + 1]];
-      nextRound.push(match);
-    }
+//     // Pair players for the next round
+//     for (let j = 0; j < currentRound.length; j += 2) {
+//       const match: string | unknown[] = [currentRound[j], currentRound[j + 1]];
+//       nextRound.push(match);
+//     }
 
-    rounds.push(nextRound);
-  }
+//     rounds.push(nextRound);
+//   }
 
-  return rounds;
-}
+//   return rounds;
+// }
 
 class Participant {
   name: string;
@@ -93,9 +93,11 @@ class Tournament {
   // Method to display the scores of all participants
   displayScores() {
     console.log("Tournament Results:");
-    this.participants.forEach((participant: { name: any; score: any }) => {
-      console.log(`${participant.name}: ${participant.score} points`);
-    });
+    this.participants.forEach(
+      (participant: { name: string; score: number }) => {
+        console.log(`${participant.name}: ${participant.score} points`);
+      },
+    );
   }
 }
 
