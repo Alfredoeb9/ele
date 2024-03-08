@@ -17,7 +17,7 @@ function singleEliminationTournament(players: string | any[]) {
 
   // Simulate each round
   for (let i = 0; i < numberOfRounds; i++) {
-      let currentRound = rounds[rounds.length - 1];
+      let currentRound: any = rounds[rounds.length - 1];
       let nextRound = [];
 
       // Pair players for the next round
