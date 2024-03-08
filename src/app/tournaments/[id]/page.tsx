@@ -74,7 +74,7 @@ export default function Tournaments({
                 <div id="tournament_info-block" className="bg-slate-400 rounded-xl w-full sm:w-[65%] p-1">
                     <div className="block sm:flex">
                         {tournament.data?.map((tournament) => (
-                            <>
+                            <div key={tournament.id} className="flex">
                                 <Card isFooterBlurred className="w-full sm:w-56 h-[300px] col-span-12 sm:col-span-7 after:absolute after:top-0 after:left-0 after:w-full after:h-full after:bg-gradient-to-br from-white to-neutral-400 after:opacity-30">
                                     <Image
                                         removeWrapper
@@ -152,7 +152,7 @@ export default function Tournaments({
                                         </div>
                                     </div>
                                 </div>
-                            </>
+                            </div>
                         ))}
                     </div>
                     
