@@ -8,6 +8,90 @@ import { api } from "@/trpc/react";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 
+function singleEliminationTournament(players: string | any[]) {
+  let rounds = [];
+  let numberOfRounds = Math.log2(players.length);
+  
+  // Generate the initial round with players
+  rounds.push(players);
+
+  // Simulate each round
+  for (let i = 0; i < numberOfRounds; i++) {
+      let currentRound = rounds[rounds.length - 1];
+      let nextRound = [];
+
+      // Pair players for the next round
+      for (let j = 0; j < currentRound.length; j += 2) {
+          let match = [currentRound[j], currentRound[j + 1]];
+          nextRound.push(match);
+      }
+
+      rounds.push(nextRound);
+  }
+
+  return rounds;
+}
+
+class Participant {
+  name: any;
+  score: number;
+  constructor(name: any) {
+      this.name = name;
+      this.score = 0;
+  }
+
+  // Method to increase score
+  increaseScore() {
+      this.score++;
+  }
+}
+
+class Tournament {
+  participants: any;
+  constructor(participants: any) {
+      this.participants = participants;
+  }
+
+  // Method to simulate a single round of the tournament
+  playRound() {
+      // Randomly shuffle participants for fairness
+      this.shuffleParticipants();
+
+      // Pair participants for matches
+      for (let i = 0; i < this.participants.length; i += 2) {
+          const participant1 = this.participants[i];
+          const participant2 = this.participants[i + 1];
+          
+          // Simulate match and increase score of winner
+          const winner = this.simulateMatch(participant1, participant2);
+          winner.increaseScore();
+      }
+  }
+
+  // Method to shuffle participants
+  shuffleParticipants() {
+      for (let i = this.participants.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [this.participants[i], this.participants[j]] = [this.participants[j], this.participants[i]];
+      }
+  }
+
+  // Method to simulate a match between two participants
+  simulateMatch(participant1: any, participant2: any) {
+      // Simulate match result (assuming participant1 wins with 50% probability)
+      const randomNumber = Math.random();
+      return randomNumber < 0.5 ? participant1 : participant2;
+  }
+
+  // Method to display the scores of all participants
+  displayScores() {
+      console.log("Tournament Results:");
+      this.participants.forEach((participant: { name: any; score: any; }) => {
+          console.log(`${participant.name}: ${participant.score} points`);
+      });
+  }
+}
+
 export default function Home() {
   noStore();
   // const hello = await api.post.hello.query({ text: "from tRPC" });
@@ -15,6 +99,28 @@ export default function Home() {
   const session = useSession();
   const [error, setError] = useState<string>("");
 
+  // Example usage
+  // let players = ["Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Player 6", "Player 7", "Player 8"];
+  // let tournament = singleEliminationTournament(players);
+
+  // console.log('tie', tournament);
+
+
+  // Example usage
+const participants = [
+  new Participant("Player 1"),
+  new Participant("Player 2"),
+  new Participant("Player 3"),
+  new Participant("Player 4")
+];
+
+const tournament = new Tournament(participants);
+
+// Play a single round
+tournament.playRound();
+
+// Display scores after the round
+tournament.displayScores();
   // const { data, isPending, isError, isSuccess } = useQuery<any>({
   //   queryKey: ["game-finder"],
   //   queryFn: () => 

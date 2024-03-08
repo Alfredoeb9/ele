@@ -173,7 +173,8 @@ export const gameCategory = createTable(
   {
     id: varchar("id", { length: 256 }).notNull(),
     game: varchar("game", { length: 256 }).notNull(),
-    platforms: json("platforms").notNull()
+    platforms: json("platforms").notNull(),
+    category: json("category").$type<string[]>().default([])
   }
 )
 
@@ -186,6 +187,7 @@ export const tournaments = createTable(
     name: varchar("name", { length: 255 }).notNull(),
     game: varchar("game", { length: 255 }).notNull(),
     prize: int("prize").notNull().default(0),
+    category: varchar("category", { length: 255 }),
     tournament_type: varchar("tournament_type", { length: 100 }).notNull(),
     platform: json("platform").notNull(),
     entry: varchar("entry", { length: 150 }).notNull(),
@@ -201,6 +203,8 @@ export const tournaments = createTable(
     nameIndex: index("name_idx").on(example.name),
   })
 );
+
+export type TournamentType = typeof tournaments.$inferSelect
 
 // A gameCategory can have many tournaments
 export const tournamentRelations = relations(gameCategory, ({ many }) => ({

@@ -10,6 +10,42 @@ import { statusGameMap, trophys } from "@/lib/sharedData";
 import { GrTrophy } from "react-icons/gr";
 import MatchTimer from "@/app/_components/MatchTimer";
 
+// ANOTHER WAY TO DO TOURNAMENTS
+/*
+
+    function singleEliminationTournament(players) {
+    let rounds = [];
+    let numberOfRounds = Math.log2(players.length);
+    
+    // Generate the initial round with players
+    rounds.push(players);
+
+    // Simulate each round
+    for (let i = 0; i < numberOfRounds; i++) {
+        let currentRound = rounds[rounds.length - 1];
+        let nextRound = [];
+
+        // Pair players for the next round
+        for (let j = 0; j < currentRound.length; j += 2) {
+            let match = [currentRound[j], currentRound[j + 1]];
+            nextRound.push(match);
+        }
+
+        rounds.push(nextRound);
+    }
+
+    return rounds;
+}
+
+// Example usage
+let players = ["Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Player 6", "Player 7", "Player 8"];
+let tournament = singleEliminationTournament(players);
+
+console.log(tournament);
+
+
+*/
+
 export default function Tournaments({
     params: { id },
 }: {
@@ -43,11 +79,11 @@ export default function Tournaments({
         })
     }
 
-    const prizes = tournament?.data.map((tourney) => {
-        tourney?.prize
-    })
+    // const prizes = tournament?.data.map((tourney) => {
+    //     tourney?.prize
+    // })
 
-    console.log("prizes", prizes)
+    // console.log("prizes", prizes)
 
 
     const t1 = new Date(`${tournament.data && tournament.data[0]?.start_time}`).valueOf() // end
