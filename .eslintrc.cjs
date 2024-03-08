@@ -25,8 +25,8 @@ const config = {
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-unsafe-member-access": "warn",
     "@typescript-eslint/no-unsafe-return": "warn",
-    "@typescript-eslint/no-non-null-assertion": "warn",
-    
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
     "@typescript-eslint/consistent-type-imports": [
       "warn",
       {
