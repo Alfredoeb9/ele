@@ -306,10 +306,12 @@ export default function Tournaments({
                         <div key={trophy.id} className="block text-center">
                           <GrTrophy
                             key={trophy.id}
-                            style={{ color: `${trophy.id}` }}
-                            className="h-[175px] w-[175px] border-2 border-solid border-slate-300 p-4 text-8xl"
+                            style={{ color: `${trophy.color}` }}
+                            className="h-[175px] w-[175px] border-4 border-solid border-slate-300 p-4 text-8xl"
                           />
-                          <p>${prizeTest[i]}</p>
+                          <p className="mt-2 text-2xl font-bold sm:text-5xl">
+                            ${prizeTest[i]}
+                          </p>
                         </div>
                       ))}
                     </div>
