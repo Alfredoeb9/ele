@@ -3,10 +3,6 @@ import { useEffect, useState } from "react";
 interface MatchTimerTypes {
   d2: Date;
   d1: Date;
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
 }
 
 export default function MatchTimer({ d2, d1 }: MatchTimerTypes) {
