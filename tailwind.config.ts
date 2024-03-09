@@ -5,7 +5,7 @@ import { fontFamily } from "tailwindcss/defaultTheme";
 export default {
   content: [
     "./src/**/*.tsx",
-    "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"
+    "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
@@ -13,10 +13,10 @@ export default {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
       backgroundImage: {
-        'mw3_team_background': "url('/images/mw3_team_background.png')",
-      }
+        mw3_team_background: "url('/images/mw3_team_background.png')",
+      },
     },
   },
-  darkMode: 'class',
+  darkMode: "class",
   plugins: [nextui()],
 } satisfies Config;

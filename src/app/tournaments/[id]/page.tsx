@@ -67,10 +67,12 @@ export default function Tournaments({
   const pathname = usePathname();
   const router = useRouter();
   const [tournamentId, setTournamentId] = useState<string>(id);
-  const [days, setDays] = useState(0);
-  const [hours, setHours] = useState(0);
-  const [minutes, setMinutes] = useState(0);
-  const [seconds, setSeconds] = useState(0);
+  // const [days, setDays] = useState(0);
+  // const [hours, setHours] = useState(0);
+  // const [minutes, setMinutes] = useState(0);
+  // const [seconds, setSeconds] = useState(0);
+  const [prize, setPrize] = useState<number>(0);
+  const [prizeTest, setPrizeTest] = useState<number[]>([5, 0, 0]);
   const session = useSession();
 
   const tournament = api.matches.getSingleMatch.useQuery(
@@ -79,6 +81,8 @@ export default function Tournaments({
   );
 
   // console.log("tour", tournament.data)
+
+  // if (tournament.data === undefined) return null;
 
   if (tournament.isError) {
     toast("There was an error returning tournament data", {
@@ -91,16 +95,22 @@ export default function Tournaments({
     });
   }
 
-  // const prizes = tournament?.data.map((tourney) => {
-  //     tourney?.prize
-  // })
+  useEffect(() => {
+    if (tournament.data) {
+      tournament?.data.map(
+        (tourney: { prize: React.SetStateAction<number> }) => {
+          setPrize(tourney.prize);
+        },
+      );
+    }
+  }, [tournament?.data]);
 
-  // console.log("prizes", prizes)
+  console.log("prizes", prize);
 
-  const t1 = new Date(
-    `${tournament.data && tournament.data[0]?.start_time}`,
-  ).valueOf(); // end
-  const t2 = new Date().valueOf();
+  // const t1 = new Date(
+  //   `${tournament.data && tournament.data[0]?.start_time}`,
+  // ).valueOf(); // end
+  // const t2 = new Date().valueOf();
 
   if (tournament.data === undefined) return null;
 
@@ -254,14 +264,7 @@ export default function Tournaments({
               <div>
                 <p className="text-base sm:text-lg">
                   <span className="font-bold underline">Match Starts in: </span>
-                  <MatchTimer
-                    d1={d1}
-                    d2={d2}
-                    days={days}
-                    hours={hours}
-                    minutes={minutes}
-                    seconds={seconds}
-                  />
+                  <MatchTimer d1={d1} d2={d2} />
                 </p>
               </div>
               <Button
@@ -291,7 +294,7 @@ export default function Tournaments({
             <Tabs aria-label="Options">
               <Tab key="info" title="INFO">
                 <Card>
-                  <CardBody>
+                  <CardBody className="scrollbar">
                     <p>
                       <span className="font-semibold">IMPORTANT:</span> Final
                       prize will be adjusted based on the total number of
@@ -299,14 +302,14 @@ export default function Tournaments({
                     </p>
 
                     <div className="flex justify-evenly ">
-                      {trophys?.map((trophy) => (
+                      {trophys?.map((trophy, i) => (
                         <div key={trophy.id} className="block text-center">
                           <GrTrophy
                             key={trophy.id}
                             style={{ color: `${trophy.id}` }}
                             className="h-[175px] w-[175px] border-2 border-solid border-slate-300 p-4 text-8xl"
                           />
-                          <p>$</p>
+                          <p>${prizeTest[i]}</p>
                         </div>
                       ))}
                     </div>
