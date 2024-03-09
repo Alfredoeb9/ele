@@ -8,87 +8,96 @@ import { api } from "@/trpc/react";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 
-function singleEliminationTournament(players: string | any[]) {
-  let rounds = [];
-  let numberOfRounds = Math.log2(players.length);
-  
-  // Generate the initial round with players
-  rounds.push(players);
+// function singleEliminationTournament(players: string | any[]) {
+//   const rounds = [];
+//   const numberOfRounds = Math.log2(players.length);
 
-  // Simulate each round
-  for (let i = 0; i < numberOfRounds; i++) {
-      let currentRound: any = rounds[rounds.length - 1];
-      let nextRound = [];
+//   // Generate the initial round with players
+//   rounds.push(players);
 
-      // Pair players for the next round
-      for (let j = 0; j < currentRound.length; j += 2) {
-          let match = [currentRound[j], currentRound[j + 1]];
-          nextRound.push(match);
-      }
+//   // Simulate each round
+//   for (let i = 0; i < numberOfRounds; i++) {
+//     const currentRound: string | unknown[] = rounds[rounds.length - 1];
+//     const nextRound = [];
 
-      rounds.push(nextRound);
-  }
+//     // Pair players for the next round
+//     for (let j = 0; j < currentRound.length; j += 2) {
+//       const match: string | unknown[] = [currentRound[j], currentRound[j + 1]];
+//       nextRound.push(match);
+//     }
 
-  return rounds;
-}
+//     rounds.push(nextRound);
+//   }
+
+//   return rounds;
+// }
 
 class Participant {
-  name: any;
+  name: string;
   score: number;
-  constructor(name: any) {
-      this.name = name;
-      this.score = 0;
+  constructor(name: string) {
+    this.name = name;
+    this.score = 0;
   }
 
   // Method to increase score
   increaseScore() {
-      this.score++;
+    this.score++;
   }
 }
 
 class Tournament {
-  participants: any;
-  constructor(participants: any) {
-      this.participants = participants;
+  participants: Participant[];
+
+  constructor(participants: Participant[]) {
+    this.participants = participants;
   }
 
   // Method to simulate a single round of the tournament
   playRound() {
-      // Randomly shuffle participants for fairness
-      this.shuffleParticipants();
+    // Randomly shuffle participants for fairness
+    this.shuffleParticipants();
 
-      // Pair participants for matches
-      for (let i = 0; i < this.participants.length; i += 2) {
-          const participant1 = this.participants[i];
-          const participant2 = this.participants[i + 1];
-          
-          // Simulate match and increase score of winner
-          const winner = this.simulateMatch(participant1, participant2);
-          winner.increaseScore();
-      }
+    // Pair participants for matches
+    for (let i = 0; i < this.participants.length; i += 2) {
+      const participant1 = this.participants[i];
+      const participant2 = this.participants[i + 1];
+
+      // Simulate match and increase score of winner
+      const winner: Participant = this.simulateMatch(
+        participant1,
+        participant2,
+      );
+      winner.increaseScore();
+    }
   }
 
   // Method to shuffle participants
   shuffleParticipants() {
-      for (let i = this.participants.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [this.participants[i], this.participants[j]] = [this.participants[j], this.participants[i]];
-      }
+    for (let i = this.participants.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [this.participants[i], this.participants[j]] = [
+        this.participants[j],
+        this.participants[i],
+      ];
+    }
   }
 
   // Method to simulate a match between two participants
-  simulateMatch(participant1: any, participant2: any) {
-      // Simulate match result (assuming participant1 wins with 50% probability)
-      const randomNumber = Math.random();
-      return randomNumber < 0.5 ? participant1 : participant2;
+  simulateMatch(participant1: Participant, participant2: Participant) {
+    // Simulate match result (assuming participant1 wins with 50% probability)
+    const randomNumber = Math.random();
+    return randomNumber < 0.5 ? participant1 : participant2;
   }
 
   // Method to display the scores of all participants
   displayScores() {
-      console.log("Tournament Results:");
-      this.participants.forEach((participant: { name: any; score: any; }) => {
-          console.log(`${participant.name}: ${participant.score} points`);
-      });
+    console.log("Tournament Results:");
+    this.participants.forEach(
+      (participant: { name: string; score: number }) => {
+        console.log(`${participant.name}: ${participant.score} points`);
+      },
+    );
   }
 }
 
@@ -105,27 +114,26 @@ export default function Home() {
 
   // console.log('tie', tournament);
 
-
   // Example usage
-const participants = [
-  new Participant("Player 1"),
-  new Participant("Player 2"),
-  new Participant("Player 3"),
-  new Participant("Player 4")
-];
+  const participants = [
+    new Participant("Player 1"),
+    new Participant("Player 2"),
+    new Participant("Player 3"),
+    new Participant("Player 4"),
+  ];
 
-const tournament = new Tournament(participants);
+  const tournament = new Tournament(participants);
 
-// Play a single round
-tournament.playRound();
+  // Play a single round
+  tournament.playRound();
 
-// Display scores after the round
-tournament.displayScores();
+  // Display scores after the round
+  tournament.displayScores();
   // const { data, isPending, isError, isSuccess } = useQuery<any>({
   //   queryKey: ["game-finder"],
-  //   queryFn: () => 
+  //   queryFn: () =>
   //       fetch('/api/games').then(async (res) => {
-          
+
   //         if( res.status === 500) return <ErrorComponent />
 
   //         return await res.json()
@@ -149,41 +157,48 @@ tournament.displayScores();
   //     }
   // }, [session.data])
 
-  const tournamentMatches = api.matches.getAllMatches.useQuery()
+  const tournamentMatches = api.matches.getAllMatches.useQuery();
 
-  const getGames = api.games.getAllGames.useQuery()
+  const getGames = api.games.getAllGames.useQuery();
 
   if (tournamentMatches.isError) {
-    setError("Match server is down, please reach out to admin")
+    setError("Match server is down, please reach out to admin");
+    return null;
   }
   return (
     <main>
-      
-      <section className='flex min-h-128 w-full h-[80vh] sm:h-lvh flex-col items-start justify-center place-content-center m-auto max-w-7xl px-10'>
-        <div className='flex flex-row place-content-start max-h-full'>
-          <div className="bg-red-400 h-52 w-2 mr-4" />
+      <section className="min-h-128 m-auto flex h-[80vh] w-full max-w-7xl flex-col place-content-center items-start justify-center px-10 sm:h-lvh">
+        <div className="flex max-h-full flex-row place-content-start">
+          <div className="mr-4 h-52 w-2 bg-red-400" />
           <div>
-            <h1 className='text-4xl md:text-5xl lg:text-6xl	text-white'>WELCOME TO YOUR NEW COMPETITIVE JOURNEY</h1>
-            <h1 className='text-3xl md:text-4xl lg:text-5xl	text-gray-400'>COMPETE FOR CASH.</h1>
-            <h1 className='text-3xl md:text-4xl lg:text-5xl	text-gray-400'>COMPETE FOR ...</h1>
+            <h1 className="text-4xl text-white md:text-5xl	lg:text-6xl">
+              WELCOME TO YOUR NEW COMPETITIVE JOURNEY
+            </h1>
+            <h1 className="text-3xl text-gray-400 md:text-4xl	lg:text-5xl">
+              COMPETE FOR CASH.
+            </h1>
+            <h1 className="text-3xl text-gray-400 md:text-4xl	lg:text-5xl">
+              COMPETE FOR ...
+            </h1>
 
-            <Link 
+            <Link
               href={"/sign-up"}
-              className="inline-block text-center mt-6 py-4 px-12 border-2 border-slate-300 text-white text-lg hover:scale-105 hover:border-slate-200 transition-all"
+              className="mt-6 inline-block border-2 border-slate-300 px-12 py-4 text-center text-lg text-white transition-all hover:scale-105 hover:border-slate-200"
             >
               JOIN MLG
             </Link>
           </div>
         </div>
       </section>
-      
-      
-      <HomeFeaturedGames data={getGames?.isSuccess && getGames?.data} error={error} />
+
+      <HomeFeaturedGames
+        data={getGames?.isSuccess && getGames?.data}
+        error={error}
+      />
 
       <LoginBanner />
 
       <HomeMatchFinder />
-
     </main>
     // <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
     //   <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
