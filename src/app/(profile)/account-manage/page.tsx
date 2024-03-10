@@ -1,11 +1,13 @@
 "use client";
 import { api } from "@/trpc/react";
-import { useSession } from "next-auth/react";
+import { SessionContextValue, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Tabs, Tab, Card, CardBody, Input, Button } from "@nextui-org/react";
+import { Tabs, Tab, Card, CardBody, Input, Button, useDisclosure } from "@nextui-org/react";
 import { FaCog } from "react-icons/fa";
 import { ChangeEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import UpdateUsernameModal from "@/app/_components/modals/UpdateUsernameModal";
+import { Session } from "next-auth";
 // import { toast } from "react-toastify";
 
 // const CustomToastWithLink = () => (
@@ -73,30 +75,7 @@ export default function AccountSettings() {
     setGamerTags(list);
   };
 
-  const updateUsername = api.user.updateUsersUsername.useMutation({
-    onSuccess: async() => {
-      await utils.user.getSingleUserWithAccountInfo.invalidate()
-      toast("Username has been updated", {
-        position: "bottom-right",
-        autoClose: 5000,
-        closeOnClick: true,
-        draggable: false,
-        type: "success",
-        toastId: 55,
-      })
-    },
-
-    onError: () => {
-      toast("There was an error updating your username", {
-        position: "bottom-right",
-        autoClose: 5000,
-        closeOnClick: true,
-        draggable: false,
-        type: "error",
-        toastId: 54,
-      })
-    }
-  })
+  
 
   const updateGamerTag = api.user.updateUsersGamerTags.useMutation({
     onSuccess: async () => {
@@ -151,6 +130,8 @@ export default function AccountSettings() {
     return null;
   }
 
+  console.log("user", session.data?.user)
+
   return (
     <div className="container m-auto py-4">
       <h1 className="text-xl text-white sm:text-2xl md:text-4xl">
@@ -190,26 +171,8 @@ export default function AccountSettings() {
                           placeholder={session.data?.user.username}
                           onChange={(e) => setChangeUserName(e.target.value)}
                         />
-                        <Button isIconOnly variant="light" className="ml-2" disabled={updateUsername.isPending || updateGamerTag.isPending} onPress={() => {
-                          if (changeUsername.length <= 0 || changeUsername === session.data?.user.username) {
-                            toast("Please update your username before submitting", {
-                              position: "bottom-right",
-                              autoClose: 5000,
-                              closeOnClick: true,
-                              draggable: false,
-                              type: "error",
-                              toastId: 56,
-                            })
-                          } else {
-                            updateUsername.mutate({
-                              userId: session.data?.user.id!,
-                              newUserName: changeUsername
-                            })
-                          }
-                          
-                        }}>
-                          <FaCog className="w-[50px] text-xl sm:text-2xl md:text-3xl" />
-                        </Button>
+                        
+                        <CustomUpdateUsernameButton newUsername={changeUsername} oldUsername={session.data?.user.username as string} session={session} />
                       </div>
 
                       <p className="pt-4 text-sm text-neutral-400">
@@ -279,7 +242,7 @@ export default function AccountSettings() {
                   <Button
                     className="mt-4 w-32"
                     color="success"
-                    disabled={ updateGamerTag.isPending || updateUsername.isPending }
+                    disabled={ updateGamerTag.isPending }
                     onPress={() =>
                       updateGamerTag.mutate({
                         email: session.data?.user.email as string,
@@ -311,6 +274,30 @@ export default function AccountSettings() {
           </Tabs>
         </div>
       </div>
+      
     </div>
   );
+}
+
+
+interface CustomeLeaveTeamButtonTypes {
+  newUsername: string;
+  oldUsername: string;
+  session: SessionContextValue
+}
+
+function CustomUpdateUsernameButton({ oldUsername, newUsername, session }: CustomeLeaveTeamButtonTypes) {
+  const {isOpen, onOpen, onOpenChange} = useDisclosure();
+
+  return (
+      <>
+          <Button isIconOnly variant="light" className="ml-2" onPress={() => {
+          onOpen()
+          }}>
+              <FaCog className="w-[50px] text-xl sm:text-2xl md:text-3xl" />
+            </Button>
+
+          <UpdateUsernameModal open={isOpen} onOpenChange={onOpenChange} newUsername={newUsername} oldUsername={oldUsername}  />
+      </>
+  )
 }

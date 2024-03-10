@@ -140,7 +140,8 @@ export const authOptions: NextAuthOptions = {
       signIn: "/sign-in"
   },
   callbacks: {
-    jwt({token, account, user}) {   
+    jwt({token, account, user, trigger, session}) {
+        console.log("session", session)
         if (user){
             return {
                 ...token,
@@ -160,9 +161,13 @@ export const authOptions: NextAuthOptions = {
             token.role = (user as User).role
         }
 
+        if (trigger === "update" && session.username) {
+            token.username = session.username
+        }
+
         return token
     },
-    session({session, token, user}) {
+    session({session, token}) {
         if (token) {            
             return {
                 ...session,
