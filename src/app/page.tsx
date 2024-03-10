@@ -7,6 +7,7 @@ import HomeMatchFinder from "./_components/home/HomeMatchFinder";
 import { api } from "@/trpc/react";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import { ToastContainer, toast } from "react-toastify";
 
 // function singleEliminationTournament(players: string | any[]) {
 //   const rounds = [];
@@ -168,6 +169,17 @@ export default function Home() {
   //   setError("Match server is down, please reach out to admin");
   //   return null;
   // }
+
+  if (getGames.isError) {
+    toast('There was an error with getting all games service', {
+      position: "bottom-right",
+      autoClose: 5000,
+      closeOnClick: true,
+      draggable: false,
+      type: "error",
+      toastId: 53
+  })
+  }
   return (
     <main>
       <section className="min-h-128 m-auto flex h-[80vh] w-full max-w-7xl flex-col place-content-center items-start justify-center px-10 sm:h-lvh">
@@ -199,9 +211,11 @@ export default function Home() {
         error={error}
       />
 
-      <LoginBanner />
+      <LoginBanner session={session} />
 
       <HomeMatchFinder />
+
+      <ToastContainer containerId={"home-page-toast"} />
     </main>
     // <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
     //   <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">

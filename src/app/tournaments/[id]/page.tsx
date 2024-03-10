@@ -91,7 +91,7 @@ export default function Tournaments({
       closeOnClick: true,
       draggable: false,
       type: "error",
-      toastId: 45,
+      toastId: 50,
     });
   }
 

@@ -5,7 +5,11 @@ import { gameCategory } from "@/server/db/schema";
 
 export const gameCategoryRouter = createTRPCRouter({
     getAllGames: publicProcedure.query(async ({ ctx }) => {
-        return await ctx.db.select().from(gameCategory)
+        try {
+            return await ctx.db.select().from(gameCategory)
+        } catch (error) {
+            throw new Error(error as string)
+        }
     }),
 
     getOnlyGames: publicProcedure.query(async({ ctx }) => {
