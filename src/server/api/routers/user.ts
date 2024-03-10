@@ -484,6 +484,23 @@ export const userRouter = createTRPCRouter({
         throw new Error(error as string)
       }
     }),
+  
+  updateUsersUsername: publicProcedure
+    .input(z.object({
+      userId: z.string().min(1),
+      newUserName: z.string().min(1)
+    }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const doesUserExist = await ctx.db.select().from(users).where(eq(users.id, input.userId));
+
+        if (!doesUserExist) throw new Error("User does not exist")
+
+        await ctx.db.update(users).set({username: input.newUserName}).where(eq(users.id, input.userId))
+      } catch (error) {
+        throw new Error(error as string)
+      }
+    }),
 
   getLatest: publicProcedure.query(({ ctx }) => {
     return ctx.db.query.posts.findFirst({

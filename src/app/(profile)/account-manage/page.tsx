@@ -24,6 +24,7 @@ export default function AccountSettings() {
   const session = useSession();
   const router = useRouter();
   const [currentKey, setCurrentKey] = useState<string>("account_settings");
+  const [changeUsername, setChangeUserName] = useState<string>("")
   const [gamerTags, setGamerTags] = useState<Array<GamerTagsTypes>>([
     { label: "PSN ID", value: "" },
     { label: "Xbox Live ID", value: "" },
@@ -51,6 +52,7 @@ export default function AccountSettings() {
   useEffect(() => {
     // would only be logged when words is changed.
     if (getSingleUser.data && getSingleUser.data?.gamerTags.length > 0) {
+      setChangeUserName(getSingleUser.data.username as string)
       const list = [...gamerTags];
 
       getSingleUser.data.gamerTags.map((gamer, i) => {
@@ -70,6 +72,31 @@ export default function AccountSettings() {
     list[index].value = value;
     setGamerTags(list);
   };
+
+  const updateUsername = api.user.updateUsersUsername.useMutation({
+    onSuccess: async() => {
+      await utils.user.getSingleUserWithAccountInfo.invalidate()
+      toast("Username has been updated", {
+        position: "bottom-right",
+        autoClose: 5000,
+        closeOnClick: true,
+        draggable: false,
+        type: "success",
+        toastId: 55,
+      })
+    },
+
+    onError: () => {
+      toast("There was an error updating your username", {
+        position: "bottom-right",
+        autoClose: 5000,
+        closeOnClick: true,
+        draggable: false,
+        type: "error",
+        toastId: 54,
+      })
+    }
+  })
 
   const updateGamerTag = api.user.updateUsersGamerTags.useMutation({
     onSuccess: async () => {
@@ -161,8 +188,26 @@ export default function AccountSettings() {
                           label="Username"
                           size="sm"
                           placeholder={session.data?.user.username}
+                          onChange={(e) => setChangeUserName(e.target.value)}
                         />
-                        <Button isIconOnly variant="light" className="ml-2">
+                        <Button isIconOnly variant="light" className="ml-2" disabled={updateUsername.isPending || updateGamerTag.isPending} onPress={() => {
+                          if (changeUsername.length <= 0 || changeUsername === session.data?.user.username) {
+                            toast("Please update your username before submitting", {
+                              position: "bottom-right",
+                              autoClose: 5000,
+                              closeOnClick: true,
+                              draggable: false,
+                              type: "error",
+                              toastId: 56,
+                            })
+                          } else {
+                            updateUsername.mutate({
+                              userId: session.data?.user.id!,
+                              newUserName: changeUsername
+                            })
+                          }
+                          
+                        }}>
                           <FaCog className="w-[50px] text-xl sm:text-2xl md:text-3xl" />
                         </Button>
                       </div>
@@ -234,7 +279,7 @@ export default function AccountSettings() {
                   <Button
                     className="mt-4 w-32"
                     color="success"
-                    disabled={updateGamerTag.isPending}
+                    disabled={ updateGamerTag.isPending || updateUsername.isPending }
                     onPress={() =>
                       updateGamerTag.mutate({
                         email: session.data?.user.email as string,
