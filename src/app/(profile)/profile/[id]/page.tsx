@@ -144,7 +144,7 @@ export default function Profile() {
                                             <Link href={"/account-manage#connect-accounts"} className="text-base bg-neutral-300 py-2 px-2 rounded-xl hover:bg-neutral-400 transition-all">Connect Accounts</Link>
                                         </>
                                     ) : (
-                                        <Button color="success" disabled={userSession?.username === user?.username} onClick={(e: { preventDefault: () => void; }) => {
+                                        <Button color="success" disabled={userSession?.username === user?.username || sendRequest.isPending} onClick={(e: { preventDefault: () => void; }) => {
                                             e.preventDefault();
                                             if (areFriends) {
                                                 toast('You are already friends with this user', {

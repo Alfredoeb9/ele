@@ -1,11 +1,11 @@
 import "server-only";
 
 import {
-  createTRPCProxyClient,
   loggerLink,
   TRPCClientError,
 } from "@trpc/client";
-import { callProcedure } from "@trpc/server";
+import { createTRPCNext } from '@trpc/next';
+import { callTRPCProcedure  } from "@trpc/server";
 import { observable } from "@trpc/server/observable";
 import { type TRPCErrorResponse } from "@trpc/server/rpc";
 import { headers } from "next/headers";
@@ -14,7 +14,7 @@ import { cache } from "react";
 import { appRouter, type AppRouter } from "@/server/api/root";
 import { createTRPCContext } from "@/server/api/trpc";
 import { transformer } from "./shared";
-
+import superjson from 'superjson';
 /**
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
  * handling a tRPC call from a React Server Component.
@@ -28,27 +28,25 @@ const createContext = cache(() => {
   });
 });
 
-export const api = createTRPCProxyClient<AppRouter>({
-  transformer,
-  links: [
-    loggerLink({
-      enabled: (op) =>
-        process.env.NODE_ENV === "development" ||
-        (op.direction === "down" && op.result instanceof Error),
-    }),
-    /**
-     * Custom RSC link that lets us invoke procedures without using http requests. Since Server
-     * Components always run on the server, we can just call the procedure as a function.
-     */
-    () =>
-      ({ op }) =>
-        observable((observer) => {
+export const api = createTRPCNext<AppRouter>({
+  config(opts) {
+    return {
+      links: [
+        loggerLink({
+          enabled: (op) => process.env.NODE_ENV === "development" ||
+            (op.direction === "down" && op.result instanceof Error),
+        }),
+        /**
+         * Custom RSC link that lets us invoke procedures without using http requests. Since Server
+         * Components always run on the server, we can just call the procedure as a function.
+         */
+        () => ({ op }) => observable((observer) => {
           createContext()
             .then((ctx) => {
-              return callProcedure({
+              return callTRPCProcedure({
                 procedures: appRouter._def.procedures,
                 path: op.path,
-                rawInput: op.input,
+                getRawInput: op.input as any,
                 ctx,
                 type: op.type,
               });
@@ -61,5 +59,8 @@ export const api = createTRPCProxyClient<AppRouter>({
               observer.error(TRPCClientError.from(cause));
             });
         }),
-  ],
+      ],
+    };
+  },
+  transformer: superjson
 });

@@ -63,6 +63,9 @@ class Tournament {
       const participant1 = this.participants[i];
       const participant2 = this.participants[i + 1];
 
+      console.log("par1", participant1)
+      console.log("par2", participant2)
+
       // Simulate match and increase score of winner
       const winner: Participant = this.simulateMatch(
         participant1,
@@ -157,14 +160,14 @@ export default function Home() {
   //     }
   // }, [session.data])
 
-  const tournamentMatches = api.matches.getAllMatches.useQuery();
+  // const tournamentMatches = api.matches.getAllMatches.useQuery();
 
   const getGames = api.games.getAllGames.useQuery();
 
-  if (tournamentMatches.isError) {
-    setError("Match server is down, please reach out to admin");
-    return null;
-  }
+  // if (tournamentMatches.isError) {
+  //   setError("Match server is down, please reach out to admin");
+  //   return null;
+  // }
   return (
     <main>
       <section className="min-h-128 m-auto flex h-[80vh] w-full max-w-7xl flex-col place-content-center items-start justify-center px-10 sm:h-lvh">

@@ -48,7 +48,7 @@ export default function CreateTeam() {
         })
     }
 
-    if (createTeam.isLoading) return <Spinner label="Loading..." color="warning" />
+    if (createTeam.isPending) return <Spinner label="Loading..." color="warning" />
 
     return (
         <div className="flex bg-stone-900 min-h-screen flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">

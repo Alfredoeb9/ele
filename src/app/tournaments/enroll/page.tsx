@@ -179,7 +179,7 @@ export default function Enroll() {
 
                     <button
                         className='mt-4 flex w-64 justify-center rounded-md m-auto bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-slate-500'
-                        disabled={  (currentUser?.data?.teams && currentUser.data.teams.length <= 0) ?? selectedGames.length <= 0}
+                        disabled={ (enrollTeam.isPending || currentUser?.data?.teams && currentUser.data.teams.length <= 0) ?? selectedGames.length <= 0 }
                     >
                         Enroll 
                     </button>

@@ -158,7 +158,7 @@ export default function SignUp() {
                         />
 
                         <button
-                            disabled={email.length === 0 || username.length === 0 || firstName.length === 0 || lastName.length === 0 || password.length === 0}
+                            disabled={email.length === 0 || username.length === 0 || firstName.length === 0 || lastName.length === 0 || password.length === 0 || createUser.isPending}
                             className="flex w-full justify-center rounded-md mt-4 bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-slate-500"
                         >
                             Sign Up

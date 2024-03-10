@@ -65,6 +65,7 @@ export default function Disband({ open, onOpenChange, teamName, teamId }: Disban
                   Close
                 </Button>
                 <Button color="primary" 
+                  disabled={disbandTeam.isPending}
                   onPress={() => {
                     disbandTeam.mutate({
                       teamId: teamId as string

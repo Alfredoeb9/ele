@@ -67,7 +67,8 @@ export default function RemoveFriendModal({ open, onOpenChange, handleModalPath,
                                 <Button color="danger" variant="light" onPress={onClose}>
                                 Close
                                 </Button>
-                                <Button color="primary" 
+                                <Button color="primary"
+                                    disabled={removeFriend.isPending}
                                     onClick={() => { 
                                         removeFriend.mutate({ id: id, email: email})
                                         onClose()

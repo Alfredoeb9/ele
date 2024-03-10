@@ -1,11 +1,12 @@
 import { Spinner } from "@nextui-org/react";
 import {MatchFinderTable} from "./MatchFinderTable"
 import { api } from "@/trpc/react";
+import { queryOptions } from "@tanstack/react-query";
 
 export default function HomeMatchFinder() {
     const tournamentMatches = api.matches.getAllMatches.useQuery()
 
-    if (tournamentMatches.isLoading) return <Spinner label="Loading..." color="warning" />
+    if (tournamentMatches.isPending) return <Spinner label="Loading..." color="warning" />
 
     return (
         <section className="flex flex-col items-center justify-center m-auto p-8 max-w-7xl w-full">

@@ -102,7 +102,7 @@ export default function SendFriendRequest({ open, onOpenChange, handleModalPath 
 
                             <div className="flex gap-2 md:gap-3 xl:gap-4 justify-end mt-2">
                                 <button className="text-red-500" onClick={onClose}>Cancel</button>
-                                <button className="bg-green-500 p-3 rounded-2xl text-white" onClick={(e) => {
+                                <button className="bg-green-500 p-3 rounded-2xl text-white" disabled={sendRequest.isPending} onClick={(e) => {
                                 e.preventDefault();
 
                                 sendRequest.mutate({

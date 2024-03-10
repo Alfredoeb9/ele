@@ -184,7 +184,7 @@ export default function Header() {
                                                     
 
                                                     <div className="flex gap-2 justify-end">
-                                                        <Button variant="solid" size="sm" color="success" onPress={() => {
+                                                        <Button variant="solid" size="sm" color="success" disabled={acceptRequest.isPending || declineFriendRequest.isPending} onPress={() => {
                                                             acceptRequest.mutate({
                                                                 userId: session?.data?.user?.id,
                                                                 targetId: notification.from,
@@ -196,10 +196,10 @@ export default function Header() {
                                                                 targetEmail: session.data?.user.email as string,
                                                                 userName: session.data.user.username
                                                             })
-                                                            }}>
+                                                        }}>
                                                                 Accept
                                                         </Button>
-                                                        <Button variant="solid" size="sm" color="danger" onPress={() => {
+                                                        <Button variant="solid" size="sm" color="danger" disabled={acceptRequest.isPending || declineFriendRequest.isPending} onPress={() => {
                                                             declineFriendRequest.mutate({
                                                                 userId: session?.data?.user?.id,
                                                                 targetId: notification.from,

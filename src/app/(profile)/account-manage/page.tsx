@@ -235,6 +235,7 @@ export default function AccountSettings() {
                   <Button
                     className="mt-4 w-32"
                     color="success"
+                    disabled={updateGamerTag.isPending}
                     onPress={() =>
                       updateGamerTag.mutate({
                         email: session.data?.user.email as string,

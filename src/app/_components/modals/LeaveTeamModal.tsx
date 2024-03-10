@@ -73,7 +73,7 @@ export default function LeaveTeamModal({ open, onOpenChange, handleModalPath, te
                                 <Button color="danger" variant="light" onPress={onClose}>
                                 Close
                                 </Button>
-                                <Button color="primary" onPress={() => leaveTeam.mutate({
+                                <Button color="primary" disabled={leaveTeam.isPending} onPress={() => leaveTeam.mutate({
                                     userEmail: userEmail,
                                     teamId: teamId
                                 })}>
