@@ -1,11 +1,10 @@
 "use client";
 import { api } from "@/trpc/react";
 import { useSession } from "next-auth/react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Tabs, Tab, Card, CardBody, Input, Button } from "@nextui-org/react";
 import { FaCog } from "react-icons/fa";
-import { ChangeEvent, ReactNode, useEffect, useState } from "react";
-import { gameIdsInputs } from "@/lib/sharedData";
+import { ChangeEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 // import { toast } from "react-toastify";
 
@@ -36,7 +35,7 @@ export default function AccountSettings() {
     { label: "Steam Friend Code", value: "" },
   ]);
 
-  if (session.status === "unauthenticated") return router.push("/");
+  if (session.status === "unauthenticated") router.push("/");
 
   // useEffect(() => {
   //     if (gamerTags.length < currentInput) {
@@ -60,7 +59,7 @@ export default function AccountSettings() {
         setGamerTags(list);
       });
     }
-  }, [gamerTags, getSingleUser.data]);
+  }, [getSingleUser.data]);
 
   const appendGamerTag = (e: ChangeEvent<HTMLInputElement>, index: number) => {
     const { ariaLabel, value } = e.target;
