@@ -148,12 +148,12 @@ export default function AccountSettings() {
                 </div>
               }
             >
-              <Card className="w-[65%]">
+              <Card className="w-full sm:w-[65%]">
                 <CardBody>
                   <h3 className="pb-4 text-xl font-semibold">ACCOUNT INFO</h3>
 
-                  <div className="flex w-full gap-6">
-                    <div className="w-[49%]">
+                  <div className="block sm:flex w-full gap-6">
+                    <div className="w-[95%] sm:w-[49%]">
                       <div className="flex items-center">
                         <Input
                           type="text"
@@ -166,13 +166,13 @@ export default function AccountSettings() {
                         <CustomUpdateUsernameButton newUsername={changeUsername} oldUsername={session.data?.user.username as string} session={session} credits={getSingleUser.data?.credits} />
                       </div>
 
-                      <p className="pt-4 text-sm text-neutral-400">
-                        Updating username requires 5 credits. If you do not have enough credits, you will be sent to the 
+                      <p className="pb-4 pt-2 sm:pt-4 text-sm text-neutral-400 w-[90%]">
+                        Updating username requires <span className="text-red-600 font-semibold">5 credits</span>. If you do not have enough credits, you will be sent to the 
                         buy credits page.
                       </p>
                     </div>
 
-                    <div className="w-[50%]">
+                    <div className="w-[95%] sm:w-[50%]">
                       <div className="flex items-center">
                         <Input
                           type="text"
@@ -192,7 +192,7 @@ export default function AccountSettings() {
                       type="text"
                       label="Phone Number"
                       size="sm"
-                      className="w-[35%]"
+                      className="w-[95%] sm:w-[35%]"
                       placeholder={"(000) 000-0000"}
                     />
                     <Button variant="bordered" color="success" className="ml-2">
@@ -212,7 +212,7 @@ export default function AccountSettings() {
                 </div>
               }
             >
-              <Card className="w-[65%]">
+              <Card className="w-full sm:w-[65%]">
                 <CardBody>
                   By entering your Game IDs, you acknowledge that you are the
                   owner of these accounts and that all your game IDs will be
@@ -254,7 +254,7 @@ export default function AccountSettings() {
                 </div>
               }
             >
-              <Card className="w-[65%]">
+              <Card className="w-full sm:w-[65%]">
                 <CardBody>
                   Excepteur sint occaecat cupidatat non proident, sunt in culpa
                   qui officia deserunt mollit anim id est laborum.
