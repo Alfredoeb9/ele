@@ -21,12 +21,9 @@ export default function SendTeamInvite({ open, onOpenChange, oldUsername, newUse
 
     const session = useSession();
 
-    const id = session.data?.user.id
-    const senderUser = session.data?.user.username
-
     const updateUsername = api.user.updateUsersUsername.useMutation({
         onSuccess: async() => {
-            await session.update({ username: newUsername })
+          await session.update({ username: newUsername })
           await utils.user.getSingleUserWithAccountInfo.invalidate()
           toast("Username has been updated", {
             position: "bottom-right",
@@ -36,8 +33,6 @@ export default function SendTeamInvite({ open, onOpenChange, oldUsername, newUse
             type: "success",
             toastId: 55,
           })
-
-        //   revalidatePath("/account-manage")
         },
     
         onError: () => {
@@ -68,27 +63,27 @@ export default function SendTeamInvite({ open, onOpenChange, oldUsername, newUse
                         <>
                             <ModalHeader className="flex flex-col gap-1 text-red-600">Update Username</ModalHeader>
                             <ModalBody>
-                                FROM
-                            <Input 
-                                type="text" 
-                                isReadOnly
-                                label="Old Username"
-                                placeholder={oldUsername}
-                            /> 
+                              FROM
+                              <Input 
+                                  type="text" 
+                                  isReadOnly
+                                  label="Old Username"
+                                  placeholder={oldUsername}
+                              /> 
 
                                 <p>-------------{">"}</p>
 
-                                TO
-                                <Input 
-                                    type="text"
-                                    isReadOnly
-                                    label="New Username"
-                                    placeholder={newUsername}
-                                />
+                              TO
+                              <Input 
+                                  type="text"
+                                  isReadOnly
+                                  label="New Username"
+                                  placeholder={newUsername}
+                              />
 
                                 <div className="flex gap-2 md:gap-3 xl:gap-4 justify-end mt-2">
-                                    <Button className="text-red-500" onPress={onClose}>Cancel</Button>
-                                    <Button className="bg-green-500 p-3 rounded-2xl text-white" onPress={() => {
+                                  <Button className="text-red-500" onPress={onClose}>Cancel</Button>
+                                  <Button className="bg-green-500 p-3 rounded-2xl text-white" onPress={() => {
                                     if (newUsername.length <= 0 || newUsername === oldUsername) {
                                         toast("Please update your username before submitting", {
                                           position: "bottom-right",

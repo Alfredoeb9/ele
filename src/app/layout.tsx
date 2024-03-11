@@ -9,9 +9,7 @@ import Header from "./_components/header";
 import ReduxProvider from "./_components/providers/ReduxProvider";
 import { getServerSession } from "next-auth/next";
 import { NextUiProvider } from "./_components/providers/NextUIProvider";
-import { db } from "@/server/db";
 import { ToastContainer } from "react-toastify";
-import { and, eq } from "drizzle-orm";
 import Footer from "./_components/Footer";
 
 

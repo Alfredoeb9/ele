@@ -64,25 +64,15 @@ export default function Tournaments({
     id: string;
   };
 }) {
-  const pathname = usePathname();
-  const router = useRouter();
+
   const [tournamentId, setTournamentId] = useState<string>(id);
-  // const [days, setDays] = useState(0);
-  // const [hours, setHours] = useState(0);
-  // const [minutes, setMinutes] = useState(0);
-  // const [seconds, setSeconds] = useState(0);
   const [prize, setPrize] = useState<number>(0);
   const [prizeTest, setPrizeTest] = useState<number[]>([5, 0, 0]);
-  const session = useSession();
 
   const tournament = api.matches.getSingleMatch.useQuery(
     { id: tournamentId },
     { enabled: tournamentId.length >= 0 },
   );
-
-  // console.log("tour", tournament.data)
-
-  // if (tournament.data === undefined) return null;
 
   if (tournament.isError) {
     toast("There was an error returning tournament data", {
@@ -104,8 +94,6 @@ export default function Tournaments({
       );
     }
   }, [tournament?.data]);
-
-  console.log("prizes", prize);
 
   // const t1 = new Date(
   //   `${tournament.data && tournament.data[0]?.start_time}`,

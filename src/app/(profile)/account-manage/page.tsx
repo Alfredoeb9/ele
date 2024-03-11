@@ -7,14 +7,7 @@ import { FaCog } from "react-icons/fa";
 import { ChangeEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import UpdateUsernameModal from "@/app/_components/modals/UpdateUsernameModal";
-import { Session } from "next-auth";
-// import { toast } from "react-toastify";
 
-// const CustomToastWithLink = () => (
-//     <div>
-//         User needs to <Link href="/sign-in" className="text-blue-600 hover:text-blue-500">sign in</Link> to subscribe.
-//     </div>
-// );
 
 export interface GamerTagsTypes {
   label: string;
@@ -75,8 +68,6 @@ export default function AccountSettings() {
     setGamerTags(list);
   };
 
-  
-
   const updateGamerTag = api.user.updateUsersGamerTags.useMutation({
     onSuccess: async () => {
       await utils.user.getSingleUserWithAccountInfo.invalidate();
@@ -130,8 +121,6 @@ export default function AccountSettings() {
     return null;
   }
 
-  console.log("user", session.data?.user)
-
   return (
     <div className="container m-auto py-4">
       <h1 className="text-xl text-white sm:text-2xl md:text-4xl">
@@ -176,9 +165,8 @@ export default function AccountSettings() {
                       </div>
 
                       <p className="pt-4 text-sm text-neutral-400">
-                        Name Change package is required to edit. If you do not
-                        have one in your inventory, you will be prompted to
-                        purchase one before continuing.
+                        Updating username requires 5 credits. If you do not have enough credits, you will be sent to the 
+                        buy credits page.
                       </p>
                     </div>
 
