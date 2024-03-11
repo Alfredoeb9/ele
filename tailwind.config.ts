@@ -9,6 +9,11 @@ export default {
   ],
   theme: {
     extend: {
+      colors: {
+        'elg-blue': '#002D72',
+        'elg-red': '#D50032',
+        'elg-white': '#fff'
+      },
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },

@@ -131,7 +131,7 @@ export default function Header() {
         <header className="nav">
             <nav className="w-full h-16 px-4 flex items-center justify-between bg-gray-200 dark:bg-gray-800 rounded-b-lg">
                 <nav className="h-12 flex gap-x-4 items-center">
-                    <Link className="text-md font-semibold text-zinc-300" href={"/"}>ELE</Link>
+                    <Link className="text-md font-semibold text-zinc-300" href={"/"}><span className="text-elg-blue">E</span><span className="text-elg-red">L</span><span className="text-elg-white">E</span></Link>
                     <Link className="text-md font-bold text-zinc-900" href="/">Home</Link>
                     <Link className="text-md font-bold text-zinc-900" href={`/profile/${session.data?.user.username}`}>Profile</Link>
                     {/* <Link className="text-md font-bold text-zinc-900" href="/protected">Protected</Link> */}
@@ -223,8 +223,13 @@ export default function Header() {
                                     <Avatar
                                     isBordered
                                     as="button"
-                                    className="transition-transform"
-                                    color="secondary"
+                                    className="transition-transform text-elg-white"
+                                    classNames={{
+                                        base: "bg-elg-red",
+                                        // img: "bg-elg-white",
+                                        icon: "text-elg-white"
+                                    }}
+                                    // color="success"
                                     name={session?.data?.user?.firstName + ' ' + session?.data?.user?.lastName}
                                     size="sm"
                                     />
