@@ -86,9 +86,9 @@ export default function SendTeamInvite({ open, onOpenChange, oldUsername, newUse
                     placeholder={newUsername}
                   />
 
-                  <div className="flex gap-2 md:gap-3 xl:gap-4 justify-end mt-2">
-                    <Button className="text-red-500" onPress={onClose}>Cancel</Button>
-                    <Button className="bg-green-500 p-3 rounded-2xl text-white" 
+                  <div className="flex gap-8 md:gap-3 xl:gap-4 justify-end mt-2">
+                    <Button className="text-red-500 text-xl" onPress={onClose}>Cancel</Button>
+                    <Button className="bg-green-500 p-3 rounded-2xl text-white text-xl" 
                       onPress={() => {
                         if (newUsername.length <= 0 || newUsername === oldUsername) {
                           toast("Please update your username before submitting", {
