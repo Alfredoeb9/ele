@@ -133,8 +133,6 @@ export default function AccountSettings() {
     return null;
   }
 
-  console.log("usedr", getSingleUser.data);
-
   return (
     <div className="container m-auto py-4">
       <h1 className="text-xl text-white sm:text-2xl md:text-4xl">
