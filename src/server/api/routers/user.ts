@@ -496,7 +496,7 @@ export const userRouter = createTRPCRouter({
 
         if (!doesUserExist) throw new Error("User does not exist")
 
-        await ctx.db.update(users).set({username: input.newUserName}).where(eq(users.id, input.userId))
+        await ctx.db.update(users).set({username: input.newUserName, credits: sql`${users.credits} - 5`}).where(eq(users.id, input.userId))
       } catch (error) {
         throw new Error(error as string)
       }

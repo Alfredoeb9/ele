@@ -141,7 +141,6 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     jwt({token, account, user, trigger, session}) {
-        console.log("session", session)
         if (user){
             return {
                 ...token,

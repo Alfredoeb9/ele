@@ -121,6 +121,8 @@ export default function AccountSettings() {
     return null;
   }
 
+  console.log("usedr", getSingleUser.data)
+
   return (
     <div className="container m-auto py-4">
       <h1 className="text-xl text-white sm:text-2xl md:text-4xl">
@@ -161,7 +163,7 @@ export default function AccountSettings() {
                           onChange={(e) => setChangeUserName(e.target.value)}
                         />
                         
-                        <CustomUpdateUsernameButton newUsername={changeUsername} oldUsername={session.data?.user.username as string} session={session} />
+                        <CustomUpdateUsernameButton newUsername={changeUsername} oldUsername={session.data?.user.username as string} session={session} credits={getSingleUser.data?.credits} />
                       </div>
 
                       <p className="pt-4 text-sm text-neutral-400">
@@ -262,7 +264,6 @@ export default function AccountSettings() {
           </Tabs>
         </div>
       </div>
-      
     </div>
   );
 }
@@ -271,21 +272,32 @@ export default function AccountSettings() {
 interface CustomeLeaveTeamButtonTypes {
   newUsername: string;
   oldUsername: string;
-  session: SessionContextValue
+  session: SessionContextValue;
+  credits: number | null | undefined;
 }
 
-function CustomUpdateUsernameButton({ oldUsername, newUsername, session }: CustomeLeaveTeamButtonTypes) {
+function CustomUpdateUsernameButton({ oldUsername, newUsername, credits }: CustomeLeaveTeamButtonTypes) {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
+  const router = useRouter()
 
   return (
-      <>
-          <Button isIconOnly variant="light" className="ml-2" onPress={() => {
-          onOpen()
-          }}>
-              <FaCog className="w-[50px] text-xl sm:text-2xl md:text-3xl" />
-            </Button>
+    <>
+      <Button 
+        isIconOnly 
+        variant="light" 
+        className="ml-2" 
+        onPress={() => {
+          if (Number(5) > Number(credits)) {
+            router.push("/pricing")
+          } else {
+            onOpen()
+          }
+        }}
+      >
+        <FaCog className="w-[50px] text-xl sm:text-2xl md:text-3xl" />
+      </Button>
 
-          <UpdateUsernameModal open={isOpen} onOpenChange={onOpenChange} newUsername={newUsername} oldUsername={oldUsername}  />
-      </>
+      <UpdateUsernameModal open={isOpen} onOpenChange={onOpenChange} newUsername={newUsername} oldUsername={oldUsername}  />
+    </>
   )
 }
