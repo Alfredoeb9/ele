@@ -8,43 +8,47 @@ import {
   useDisclosure,
   Input,
 } from "@nextui-org/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "@/trpc/react";
 import { ToastContainer, toast } from "react-toastify";
-import { useSession } from "next-auth/react";
+import { SessionContextValue, useSession } from "next-auth/react";
 
 interface SendTeamInvite {
   open: boolean;
   onOpenChange: () => void;
-  newUsername: string;
-  oldUsername: string;
+  newEmail: string;
+  oldEmail: string;
+  session: SessionContextValue;
 }
 
 export default function SendTeamInvite({
   open,
   onOpenChange,
-  oldUsername,
-  newUsername,
+  oldEmail,
+  newEmail,
+  session,
 }: SendTeamInvite) {
   const { onClose } = useDisclosure();
   const [size] = useState<string>("md");
-  const [userName, setUserName] = useState<string>("");
+  const [userNewEmail, setNewEmail] = useState<string>(newEmail);
 
   const utils = api.useUtils();
 
-  const session = useSession();
+  useEffect(() => {
+    setNewEmail(newEmail);
+  }, [open]);
 
-  const updateUsername = api.user.updateUsersUsername.useMutation({
+  const updateUsername = api.user.updateUsersEmail.useMutation({
     onSuccess: async () => {
-      await session.update({ username: newUsername });
+      await session.update({ email: newEmail });
       await utils.user.getSingleUserWithAccountInfo.invalidate();
-      toast("Username has been updated", {
+      toast("Email has been updated", {
         position: "bottom-right",
         autoClose: 3400,
         closeOnClick: true,
         draggable: false,
         type: "success",
-        toastId: 55,
+        toastId: 59,
       });
 
       setTimeout(() => {
@@ -52,15 +56,26 @@ export default function SendTeamInvite({
       }, 3500);
     },
 
-    onError: () => {
-      toast("There was an error updating your username", {
-        position: "bottom-right",
-        autoClose: 5000,
-        closeOnClick: true,
-        draggable: false,
-        type: "error",
-        toastId: 54,
-      });
+    onError: (e) => {
+      if (e.data?.stack?.includes("User does not exist")) {
+        toast("User does not exist", {
+          position: "bottom-right",
+          autoClose: 3500,
+          closeOnClick: true,
+          draggable: false,
+          type: "error",
+          toastId: 60,
+        });
+      } else {
+        toast("There was an error updating email, please try again", {
+          position: "bottom-right",
+          autoClose: 3500,
+          closeOnClick: true,
+          draggable: false,
+          type: "error",
+          toastId: 58,
+        });
+      }
     },
   });
 
@@ -70,7 +85,7 @@ export default function SendTeamInvite({
         size={size as "md"}
         isOpen={open}
         onClose={() => {
-          setUserName("");
+          setNewEmail("");
           onClose();
         }}
         onOpenChange={onOpenChange}
@@ -78,57 +93,52 @@ export default function SendTeamInvite({
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="text- flex flex-col gap-1 text-red-600">
-                UPDATE USERNAME
+              <ModalHeader className="flex flex-col gap-1 text-2xl font-bold text-elg-blue">
+                UPDATE EMAIL
               </ModalHeader>
               <ModalBody>
-                <div>
-                  <span className="font-semibold text-red-600">NOTE:</span>
-                  <p className="text-sm text-neutral-400">
-                    Please make sure the following username is as wanted as
-                    there is no refund for this update.
-                  </p>
-                </div>
-
                 <span className="font-semibold">FROM:</span>
                 <Input
                   type="text"
                   isReadOnly
-                  label="Old Username"
-                  placeholder={oldUsername}
+                  label="Old Email"
+                  placeholder={oldEmail}
                 />
 
                 <span className="font-semibold">TO:</span>
                 <Input
                   type="text"
                   isReadOnly
-                  label="New Username"
-                  placeholder={newUsername}
+                  label="New Email"
+                  placeholder={userNewEmail}
                 />
 
                 <div className="mt-2 flex justify-end gap-8 md:gap-3 xl:gap-4">
-                  <Button className="text-lg text-red-500" onPress={onClose}>
+                  <Button
+                    className="text-lg text-red-500 sm:text-xl"
+                    onPress={() => {
+                      setNewEmail("");
+                      onClose();
+                    }}
+                  >
                     Cancel
                   </Button>
                   <Button
-                    className="rounded-2xl bg-green-500 p-3 text-lg text-white"
+                    className="rounded-2xl bg-green-500 p-3 text-lg text-white sm:text-xl"
                     onPress={() => {
-                      if (
-                        newUsername.length <= 0 ||
-                        newUsername === oldUsername
-                      ) {
+                      if (newEmail.length <= 0 || newEmail === oldEmail) {
                         toast("Please update your username before submitting", {
                           position: "bottom-right",
                           autoClose: 5000,
                           closeOnClick: true,
                           draggable: false,
                           type: "error",
-                          toastId: 57,
+                          toastId: 56,
                         });
                       } else {
                         updateUsername.mutate({
                           userId: session.data?.user.id!,
-                          newUserName: newUsername,
+                          newEmail: newEmail,
                         });
                       }
                     }}

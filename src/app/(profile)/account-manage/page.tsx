@@ -2,12 +2,23 @@
 import { api } from "@/trpc/react";
 import { SessionContextValue, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Tabs, Tab, Card, CardBody, Input, Button, useDisclosure } from "@nextui-org/react";
+import {
+  Tabs,
+  Tab,
+  Card,
+  CardBody,
+  Input,
+  Button,
+  useDisclosure,
+} from "@nextui-org/react";
 import { FaCog } from "react-icons/fa";
 import { ChangeEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import UpdateUsernameModal from "@/app/_components/modals/UpdateUsernameModal";
-
+import UpdateEmailModal from "@/app/_components/modals/UpdateEmailModal";
+import { Session } from "next-auth";
+import CustomUpdateUserEmailButton from "@/app/_components/modals/modalButtons/CustomUpdateEmailButton";
+import CustomUpdateUsernameButton from "@/app/_components/modals/modalButtons/CutsomUpdateUserName";
 
 export interface GamerTagsTypes {
   label: string;
@@ -19,7 +30,8 @@ export default function AccountSettings() {
   const session = useSession();
   const router = useRouter();
   const [currentKey, setCurrentKey] = useState<string>("account_settings");
-  const [changeUsername, setChangeUserName] = useState<string>("")
+  const [changeUsername, setChangeUserName] = useState<string>("");
+  const [changeEmail, setChangeEmail] = useState<string>("");
   const [gamerTags, setGamerTags] = useState<Array<GamerTagsTypes>>([
     { label: "PSN ID", value: "" },
     { label: "Xbox Live ID", value: "" },
@@ -47,7 +59,7 @@ export default function AccountSettings() {
   useEffect(() => {
     // would only be logged when words is changed.
     if (getSingleUser.data && getSingleUser.data?.gamerTags.length > 0) {
-      setChangeUserName(getSingleUser.data.username as string)
+      setChangeUserName(getSingleUser.data.username as string);
       const list = [...gamerTags];
 
       getSingleUser.data.gamerTags.map((gamer, i) => {
@@ -121,7 +133,7 @@ export default function AccountSettings() {
     return null;
   }
 
-  console.log("usedr", getSingleUser.data)
+  console.log("usedr", getSingleUser.data);
 
   return (
     <div className="container m-auto py-4">
@@ -152,7 +164,7 @@ export default function AccountSettings() {
                 <CardBody>
                   <h3 className="pb-4 text-xl font-semibold">ACCOUNT INFO</h3>
 
-                  <div className="block sm:flex w-full gap-6">
+                  <div className="block w-full gap-6 sm:flex">
                     <div className="w-[95%] sm:w-[49%]">
                       <div className="flex items-center">
                         <Input
@@ -162,13 +174,22 @@ export default function AccountSettings() {
                           placeholder={session.data?.user.username}
                           onChange={(e) => setChangeUserName(e.target.value)}
                         />
-                        
-                        <CustomUpdateUsernameButton newUsername={changeUsername} oldUsername={session.data?.user.username as string} session={session} credits={getSingleUser.data?.credits} />
+
+                        <CustomUpdateUsernameButton
+                          newUsername={changeUsername}
+                          oldUsername={session.data?.user.username as string}
+                          session={session}
+                          credits={getSingleUser.data?.credits}
+                        />
                       </div>
 
-                      <p className="pb-4 pt-2 sm:pt-4 text-sm text-neutral-400 w-[90%]">
-                        Updating username requires <span className="text-red-600 font-semibold">5 credits</span>. If you do not have enough credits, you will be sent to the 
-                        buy credits page.
+                      <p className="w-[90%] pb-4 pt-2 text-sm text-neutral-400 sm:pt-4">
+                        Updating username requires{" "}
+                        <span className="font-semibold text-red-600">
+                          5 credits
+                        </span>
+                        . If you do not have enough credits, you will be sent to
+                        the buy credits page.
                       </p>
                     </div>
 
@@ -179,10 +200,13 @@ export default function AccountSettings() {
                           label="Email"
                           size="sm"
                           placeholder={session.data?.user.email as string}
+                          onChange={(e) => setChangeEmail(e.target.value)}
                         />
-                        <Button isIconOnly variant="light" className="ml-2">
-                          <FaCog className="w-[50px] text-xl sm:text-2xl md:text-3xl" />
-                        </Button>
+                        <CustomUpdateUserEmailButton
+                          newEmail={changeEmail}
+                          oldEmail={session.data?.user.email as string}
+                          session={session}
+                        />
                       </div>
                     </div>
                   </div>
@@ -232,7 +256,7 @@ export default function AccountSettings() {
                   <Button
                     className="mt-4 w-32"
                     color="success"
-                    disabled={ updateGamerTag.isPending }
+                    disabled={updateGamerTag.isPending}
                     onPress={() =>
                       updateGamerTag.mutate({
                         email: session.data?.user.email as string,
@@ -266,38 +290,4 @@ export default function AccountSettings() {
       </div>
     </div>
   );
-}
-
-
-interface CustomeLeaveTeamButtonTypes {
-  newUsername: string;
-  oldUsername: string;
-  session: SessionContextValue;
-  credits: number | null | undefined;
-}
-
-function CustomUpdateUsernameButton({ oldUsername, newUsername, credits }: CustomeLeaveTeamButtonTypes) {
-  const {isOpen, onOpen, onOpenChange} = useDisclosure();
-  const router = useRouter()
-
-  return (
-    <>
-      <Button 
-        isIconOnly 
-        variant="light" 
-        className="ml-2" 
-        onPress={() => {
-          if (Number(5) > Number(credits)) {
-            router.push("/pricing")
-          } else {
-            onOpen()
-          }
-        }}
-      >
-        <FaCog className="w-[50px] text-xl sm:text-2xl md:text-3xl" />
-      </Button>
-
-      <UpdateUsernameModal open={isOpen} onOpenChange={onOpenChange} newUsername={newUsername} oldUsername={oldUsername}  />
-    </>
-  )
 }

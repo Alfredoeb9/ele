@@ -2,36 +2,50 @@ import { z } from "zod";
 import { and, eq, sql } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { followsTables, gamerTags, notificationsTable, teamMembersTable, users, usersRecordTable, verificationTokens } from "@/server/db/schema";
+import {
+  followsTables,
+  gamerTags,
+  notificationsTable,
+  teamMembersTable,
+  users,
+  usersRecordTable,
+  verificationTokens,
+} from "@/server/db/schema";
 import { createToken, emailRegx } from "@/lib/utils/utils";
 import { sentVerifyUserEmail } from "@/app/api/auth/[...nextauth]/mailer";
 
 export const userRouter = createTRPCRouter({
   create: publicProcedure
-    .input(z.object({ 
-      email: z.string().min(1), 
-      password: z.string().min(1), 
-      username: z.string().min(1),
-      firstName: z.string().min(1),
-      lastName: z.string().min(1),
-    }))
+    .input(
+      z.object({
+        email: z.string().min(1),
+        password: z.string().min(1),
+        username: z.string().min(1),
+        firstName: z.string().min(1),
+        lastName: z.string().min(1),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
-
-      if (input.email.length <= 0) throw new Error("Please provide a proper email")
-      if (input.password.length <= 0) throw new Error("Please provide a proper password");
-      if (input.username.length <= 0) throw new Error("Please provide a proper username");
-      if (input.firstName.length <= 0) throw new Error("Please provide a proper first name");
-      if (input.lastName.length <= 0) throw new Error("Please provide a proper last name");
+      if (input.email.length <= 0)
+        throw new Error("Please provide a proper email");
+      if (input.password.length <= 0)
+        throw new Error("Please provide a proper password");
+      if (input.username.length <= 0)
+        throw new Error("Please provide a proper username");
+      if (input.firstName.length <= 0)
+        throw new Error("Please provide a proper first name");
+      if (input.lastName.length <= 0)
+        throw new Error("Please provide a proper last name");
 
       try {
         const isEmailValid = await emailRegx(input.email);
 
         if (!isEmailValid) {
-          throw new Error("Please provide a proper email")
+          throw new Error("Please provide a proper email");
         }
 
         const salt = await bcrypt.genSalt();
-        
+
         const hashedPassword = await bcrypt.hash(input.password, salt);
 
         await ctx.db.insert(users).values({
@@ -41,11 +55,15 @@ export const userRouter = createTRPCRouter({
           username: input.username,
           firstName: input.firstName,
           lastName: input.lastName,
-        })
+        });
 
-        const newUser = await ctx.db.select().from(users).where(eq(users.email, input.email))
+        const newUser = await ctx.db
+          .select()
+          .from(users)
+          .where(eq(users.email, input.email));
 
-        if (newUser[0] === null || newUser[0] === undefined) throw new Error("Error occured signing up")
+        if (newUser[0] === null || newUser[0] === undefined)
+          throw new Error("Error occured signing up");
 
         const token = await createToken(newUser[0].id);
 
@@ -57,87 +75,94 @@ export const userRouter = createTRPCRouter({
           id: newUser[0].id,
         });
 
-        await sentVerifyUserEmail(newUser[0].email, fullName, link)
-        return 'success';
-    } catch (error) {
-      throw new Error(error as string)
-    } 
-  }),
+        await sentVerifyUserEmail(newUser[0].email, fullName, link);
+        return "success";
+      } catch (error) {
+        throw new Error(error as string);
+      }
+    }),
 
   verifyUser: publicProcedure
-    .input(z.object({ 
-      token: z.string().min(1),
-    }))
+    .input(
+      z.object({
+        token: z.string().min(1),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       try {
-        const dbUser = await ctx.db.select().from(verificationTokens).where(eq(verificationTokens.token, input.token))
-        if (!dbUser[0]) throw new Error("Error: New such user found Please sign up")
-  
+        const dbUser = await ctx.db
+          .select()
+          .from(verificationTokens)
+          .where(eq(verificationTokens.token, input.token));
+        if (!dbUser[0])
+          throw new Error("Error: New such user found Please sign up");
+
         await ctx.db
           .update(users)
           .set({ isVerified: true })
-          .where(eq(users.id, dbUser[0].id))
-          
+          .where(eq(users.id, dbUser[0].id));
+
         await ctx.db
           .update(verificationTokens)
-          .set({updatedAt: new Date()})
+          .set({ updatedAt: new Date() })
           .where(eq(verificationTokens.token, input.token));
-        
-        await ctx.db
-          .insert(usersRecordTable)
-          .values({
-            userId: dbUser[0].id,
-          })
-          
-        return "success"
+
+        await ctx.db.insert(usersRecordTable).values({
+          userId: dbUser[0].id,
+        });
+
+        return "success";
       } catch (error) {
-        throw new Error(error as string)
+        throw new Error(error as string);
       }
-      
     }),
-    
+
   getSingleUser: publicProcedure
-    .input(z.object({
-      email: z.string().min(1)
-    }))
+    .input(
+      z.object({
+        email: z.string().min(1),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       try {
-
         const currentUser = await ctx.db.query.users.findFirst({
           where: eq(users.email, input.email),
           columns: {
-            password: false
+            password: false,
           },
           with: {
-            subscription: true
-          }
+            subscription: true,
+          },
         });
 
-        if (!currentUser) throw new Error("No user with such credentials")
-        
+        if (!currentUser) throw new Error("No user with such credentials");
+
         return currentUser;
       } catch (error) {
-        throw new Error(error as string)
+        throw new Error(error as string);
       }
     }),
-  
+
   getSingleUserByTeamId: publicProcedure
-    .input(z.object({
-      email: z.string().min(1),
-      gameId: z.string().min(1)
-    }))
-    .query(async({ ctx, input }) => {
-      try { 
+    .input(
+      z.object({
+        email: z.string().min(1),
+        gameId: z.string().min(1),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
         const userWithSpecificTeam = await ctx.db.query.users.findFirst({
           where: eq(users.email, input.email),
           columns: {
-            password: false
+            password: false,
           },
           with: {
             teamMembers: {
-              where: (teamMembers, {eq}) => eq(teamMembers.game, input.gameId)
-            }
-          }
+              where: (teamMembers, { eq }) =>
+                eq(teamMembers.game, input.gameId),
+            },
+          },
         });
 
         // return data that is only needed
@@ -151,23 +176,25 @@ export const userRouter = createTRPCRouter({
           email: userWithSpecificTeam?.email,
           credits: userWithSpecificTeam?.credits,
           teamId: userWithSpecificTeam?.teamId,
-          teams: userWithSpecificTeam?.teamMembers       
-        }
+          teams: userWithSpecificTeam?.teamMembers,
+        };
       } catch (error) {
-        throw new Error(error as string)
+        throw new Error(error as string);
       }
     }),
 
   getSingleUserWithTeams: publicProcedure
-    .input(z.object({
-      email: z.string().min(1).optional(),
-      username: z.string().min(1).optional(),
-      path: z.string().min(1).optional()
-    }))
+    .input(
+      z.object({
+        email: z.string().min(1).optional(),
+        username: z.string().min(1).optional(),
+        path: z.string().min(1).optional(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
-      try {        
+      try {
         if (input.username) {
-          if (input.path === 'profile') {
+          if (input.path === "profile") {
             const currentUser = await ctx.db.query.users.findFirst({
               where: eq(users.username, input.username),
               columns: {
@@ -176,57 +203,58 @@ export const userRouter = createTRPCRouter({
               with: {
                 follows: true,
                 userRecord: true,
-                matches: true
-              }
+                matches: true,
+              },
             });
 
-            if (!currentUser) throw new Error("No user with such credentials")
+            if (!currentUser) throw new Error("No user with such credentials");
 
             await ctx.db
               .update(users)
               .set({
-                profileViews: sql`${users.profileViews} + 1`
+                profileViews: sql`${users.profileViews} + 1`,
               })
-              .where(eq(users.username, input.username))
+              .where(eq(users.username, input.username));
 
-            return currentUser
+            return currentUser;
           } else {
             const currentUser = await ctx.db.query.users.findFirst({
               where: eq(users.username, input.username),
               with: {
                 teams: true,
-              }
+              },
             });
 
-            if (!currentUser) throw new Error("No user with such credentials")
-  
+            if (!currentUser) throw new Error("No user with such credentials");
+
             return currentUser;
           }
         } else if (input.email) {
-
           const currentUser = await ctx.db.query.users.findFirst({
             where: eq(users.email, input.email),
             columns: {
               password: false,
             },
             with: {
-              teams: true
-            }
+              teams: true,
+            },
           });
-  
-          if (!currentUser) throw new Error("No user with such credentials")
-  
+
+          if (!currentUser) throw new Error("No user with such credentials");
+
           return currentUser;
         }
       } catch (error) {
-        throw new Error(error as string)
+        throw new Error(error as string);
       }
     }),
 
   getSingleUserWithTeamMembers: publicProcedure
-    .input(z.object({
-      email: z.string().min(1),
-    }))
+    .input(
+      z.object({
+        email: z.string().min(1),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       try {
         const currentUserWithTeamMembers = await ctx.db.query.users.findFirst({
@@ -237,24 +265,27 @@ export const userRouter = createTRPCRouter({
           with: {
             teamMembers: {
               with: {
-                record: true
-              }
-            }
-          }
-        })
+                record: true,
+              },
+            },
+          },
+        });
 
-        if (!currentUserWithTeamMembers) throw new Error("Error occured getting user data")
+        if (!currentUserWithTeamMembers)
+          throw new Error("Error occured getting user data");
 
         return currentUserWithTeamMembers;
       } catch (error) {
-        throw new Error(error as string)
+        throw new Error(error as string);
       }
     }),
 
   getSingleUserWithAccountInfo: publicProcedure
-    .input(z.object({
-      email: z.string().min(1)
-    }))
+    .input(
+      z.object({
+        email: z.string().min(1),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       try {
         const currentUserWithAccountInfo = await ctx.db.query.users.findFirst({
@@ -264,241 +295,326 @@ export const userRouter = createTRPCRouter({
           },
           with: {
             gamerTags: true,
-          }
-        })
+          },
+        });
 
-        if (!currentUserWithAccountInfo) throw new Error("No user with such credentials")
+        if (!currentUserWithAccountInfo)
+          throw new Error("No user with such credentials");
 
-        return currentUserWithAccountInfo
+        return currentUserWithAccountInfo;
       } catch (error) {
-        throw new Error(error as string)
+        throw new Error(error as string);
       }
     }),
-  
+
   sendFriendRequest: publicProcedure
-    .input(z.object({
-      userName: z.string().min(1),
-      id: z.string().min(1),
-      senderUserName: z.string().min(1),
-    }))
+    .input(
+      z.object({
+        userName: z.string().min(1),
+        id: z.string().min(1),
+        senderUserName: z.string().min(1),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       try {
+        const isUserActive = await ctx.db
+          .select()
+          .from(users)
+          .where(eq(users.username, input.userName));
 
-        const isUserActive = await ctx.db.select().from(users).where(eq(users.username, input.userName))
+        if (isUserActive.length <= 0) throw new Error("No user found");
 
-        if (isUserActive.length <= 0) throw new Error("No user found")
+        const isFriendRequestSent = await ctx.db
+          .select()
+          .from(notificationsTable)
+          .where(
+            and(
+              eq(notificationsTable.type, "invite"),
+              eq(notificationsTable.from, input.id),
+              eq(notificationsTable.userName, input.senderUserName),
+            ),
+          );
 
-        const isFriendRequestSent = await ctx.db.select().from(notificationsTable).where(and(eq(notificationsTable.type, 'invite'),eq(notificationsTable.from, input.id),eq(notificationsTable.userName, input.senderUserName)))
+        if (isFriendRequestSent)
+          throw new Error("You have already sent user a friend request");
 
-        if (isFriendRequestSent) throw new Error("You have already sent user a friend request")
-        
         const sentRequest = await ctx.db.insert(notificationsTable).values({
           userId: isUserActive[0].id, // target
           from: input.id,
           isRead: false,
           type: "invite",
           id: crypto.randomUUID(),
-          userName: input.senderUserName
-        })
+          userName: input.senderUserName,
+        });
 
         return sentRequest;
       } catch (error) {
-        throw new Error(error as string)
+        throw new Error(error as string);
       }
     }),
 
   acceptFriendRequest: publicProcedure
-    .input(z.object({
-      targetId: z.string().min(1),
-      userId: z.string().min(1),
-      id: z.string().min(1),
-      type: z.string().min(1),
-      teamName: z.string().min(1),
-      game: z.string().min(1),
-      teamId: z.string().min(1),
-      targetEmail: z.string().min(1),
-      userName: z.string().min(1)
-    }))
+    .input(
+      z.object({
+        targetId: z.string().min(1),
+        userId: z.string().min(1),
+        id: z.string().min(1),
+        type: z.string().min(1),
+        teamName: z.string().min(1),
+        game: z.string().min(1),
+        teamId: z.string().min(1),
+        targetEmail: z.string().min(1),
+        userName: z.string().min(1),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       try {
         switch (input.type) {
           case "invite":
             await ctx.db.insert(followsTables).values({
               targetUser: input.targetId,
-              userId: input.userId
-            })
-    
+              userId: input.userId,
+            });
+
             // remove from notification table
-    
-            await ctx.db.delete(notificationsTable).where(eq(notificationsTable.id, input.id))
-    
-            return "user is now your friend"
+
+            await ctx.db
+              .delete(notificationsTable)
+              .where(eq(notificationsTable.id, input.id));
+
+            return "user is now your friend";
             break;
-      
+
           case "team-invite":
-              const t = await ctx.db.insert(teamMembersTable).values({
-                userId: input.targetEmail,
-                inviteId: input.userId,
-                teamName: input.teamName,
-                game: input.game,
-                teamId: input.teamId,
-                userName: input.userName
-              })
-      
-              // remove from notification table
-      
-              await ctx.db.delete(notificationsTable).where(eq(notificationsTable.id, input.id))
-      
-              return t
-              break;
+            const t = await ctx.db.insert(teamMembersTable).values({
+              userId: input.targetEmail,
+              inviteId: input.userId,
+              teamName: input.teamName,
+              game: input.game,
+              teamId: input.teamId,
+              userName: input.userName,
+            });
+
+            // remove from notification table
+
+            await ctx.db
+              .delete(notificationsTable)
+              .where(eq(notificationsTable.id, input.id));
+
+            return t;
+            break;
           default:
             break;
         }
-        
       } catch (error) {
-        throw new Error(error as string)
+        throw new Error(error as string);
       }
     }),
 
   declineRequest: publicProcedure
-    .input(z.object({
-      targetId: z.string().min(1),
-      userId: z.string().min(1),
-      notificationID: z.string().min(1)
-    }))
+    .input(
+      z.object({
+        targetId: z.string().min(1),
+        userId: z.string().min(1),
+        notificationID: z.string().min(1),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       try {
-
         // remove from notification table
-        await ctx.db.delete(notificationsTable).where(eq(notificationsTable.id, input.notificationID))
+        await ctx.db
+          .delete(notificationsTable)
+          .where(eq(notificationsTable.id, input.notificationID));
 
-        return "user declined request"
+        return "user declined request";
       } catch (error) {
-        throw new Error(error as string)
+        throw new Error(error as string);
       }
     }),
 
   getNotifications: publicProcedure
-    .input(z.object({
-      id: z.string().min(1),
-    }))
+    .input(
+      z.object({
+        id: z.string().min(1),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       try {
-        const getNotification = await ctx.db.select().from(notificationsTable).where(eq(notificationsTable.userId, input.id))
+        const getNotification = await ctx.db
+          .select()
+          .from(notificationsTable)
+          .where(eq(notificationsTable.userId, input.id));
 
         return getNotification;
       } catch (error) {
-        throw new Error(error as string)
+        throw new Error(error as string);
       }
     }),
 
   messageRead: publicProcedure
-    .input(z.object({
-      isRead: z.boolean(),
-      notificationId: z.string().min(1)
-    }))
-    .mutation(async ({ ctx, input}) => {
+    .input(
+      z.object({
+        isRead: z.boolean(),
+        notificationId: z.string().min(1),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
       try {
-        await ctx.db.update(notificationsTable).set({
-          isRead: input.isRead
-        }).where(eq(notificationsTable.id, input.notificationId))
+        return await ctx.db
+          .update(notificationsTable)
+          .set({
+            isRead: input.isRead,
+          })
+          .where(eq(notificationsTable.id, input.notificationId));
       } catch (error) {
-        throw new Error(error as string)
+        throw new Error(error as string);
       }
     }),
 
   getUserWithFriends: publicProcedure
-    .input(z.object({
-      id: z.string().min(1),
-    }))
+    .input(
+      z.object({
+        id: z.string().min(1),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       try {
-        const userWithFriends = await ctx.db.select().from(followsTables).where(eq(followsTables.userId, input.id))
+        const userWithFriends = await ctx.db
+          .select()
+          .from(followsTables)
+          .where(eq(followsTables.userId, input.id));
 
         if (!userWithFriends) {
-          throw new Error("No friends found")
+          throw new Error("No friends found");
         }
 
         // get all users profiles
         const allFriendsProfiles = await Promise.all(
           userWithFriends.map(async (followingUser) => {
-            return await ctx.db.select().from(users).where(eq(users.id, followingUser.targetUser)) // change this to
-          })
-        )
+            return await ctx.db
+              .select()
+              .from(users)
+              .where(eq(users.id, followingUser.targetUser)); // change this to
+          }),
+        );
 
-        return allFriendsProfiles
+        return allFriendsProfiles;
       } catch (error) {
-        throw new Error(error as string)
+        throw new Error(error as string);
       }
     }),
 
   updateUsersGamerTags: publicProcedure
-    .input(z.object({
-      email: z.string().min(1),
-      gamerTags: z.array(z.object({
-        label: z.string(),
-        value: z.string()
-      }))
-    }))
+    .input(
+      z.object({
+        email: z.string().min(1),
+        gamerTags: z.array(
+          z.object({
+            label: z.string(),
+            value: z.string(),
+          }),
+        ),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       try {
-        
         const currentUserWithGamerTags = await ctx.db.query.users.findFirst({
           where: eq(users.email, input.email),
           columns: {
             password: false,
           },
           with: {
-            gamerTags: true
-          }
-        })
+            gamerTags: true,
+          },
+        });
 
-        if (!currentUserWithGamerTags) throw new Error("No user with such credentials")        
+        if (!currentUserWithGamerTags)
+          throw new Error("No user with such credentials");
 
-        if(currentUserWithGamerTags.gamerTags.length <= 0) {
-
-          await Promise.all(input.gamerTags.map(async (tag) => {
-            return await ctx.db.insert(gamerTags).values({
-              userId: currentUserWithGamerTags.id,
-              gamerTag: tag.value,
-              type: tag.label,
-
-            })
-          }))
-          
+        if (currentUserWithGamerTags.gamerTags.length <= 0) {
+          await Promise.all(
+            input.gamerTags.map(async (tag) => {
+              return await ctx.db.insert(gamerTags).values({
+                userId: currentUserWithGamerTags.id,
+                gamerTag: tag.value,
+                type: tag.label,
+              });
+            }),
+          );
         } else if (currentUserWithGamerTags.gamerTags.length > 0) {
-          await Promise.all(input.gamerTags.map(async (tag) => {
-            return await ctx.db.update(gamerTags).set({
-              userId: currentUserWithGamerTags.id,
-              gamerTag: tag.value,
-              type: tag.label,
-            }).where(
-              and(
-                eq(gamerTags.type, tag.label),
-                eq(gamerTags.userId, currentUserWithGamerTags.id)
-              )
-            )
-          }))
+          await Promise.all(
+            input.gamerTags.map(async (tag) => {
+              return await ctx.db
+                .update(gamerTags)
+                .set({
+                  userId: currentUserWithGamerTags.id,
+                  gamerTag: tag.value,
+                  type: tag.label,
+                })
+                .where(
+                  and(
+                    eq(gamerTags.type, tag.label),
+                    eq(gamerTags.userId, currentUserWithGamerTags.id),
+                  ),
+                );
+            }),
+          );
         }
       } catch (error) {
-        throw new Error(error as string)
+        throw new Error(error as string);
       }
     }),
-  
+
   updateUsersUsername: publicProcedure
-    .input(z.object({
-      userId: z.string().min(1),
-      newUserName: z.string().min(1)
-    }))
+    .input(
+      z.object({
+        userId: z.string().min(1),
+        newUserName: z.string().min(1),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       try {
-        const doesUserExist = await ctx.db.select().from(users).where(eq(users.id, input.userId));
+        const doesUserExist = await ctx.db
+          .select()
+          .from(users)
+          .where(eq(users.id, input.userId));
 
-        if (!doesUserExist) throw new Error("User does not exist")
+        if (!doesUserExist) throw new Error("User does not exist");
 
-        await ctx.db.update(users).set({username: input.newUserName, credits: sql`${users.credits} - 5`}).where(eq(users.id, input.userId))
+        return await ctx.db
+          .update(users)
+          .set({
+            username: input.newUserName,
+            credits: sql`${users.credits} - 5`,
+          })
+          .where(eq(users.id, input.userId));
       } catch (error) {
-        throw new Error(error as string)
+        throw new Error(error as string);
+      }
+    }),
+
+  updateUsersEmail: publicProcedure
+    .input(
+      z.object({
+        userId: z.string().min(1),
+        newEmail: z.string().min(1),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const doesUserExist = await ctx.db
+          .select()
+          .from(users)
+          .where(eq(users.id, input.userId));
+
+        if (!doesUserExist) throw new Error("User does not exist");
+
+        return await ctx.db
+          .update(users)
+          .set({ username: input.newEmail })
+          .where(eq(users.id, input.userId));
+      } catch (error) {
+        throw new Error(error as string);
       }
     }),
 
@@ -509,26 +625,31 @@ export const userRouter = createTRPCRouter({
   }),
 
   removeFriend: publicProcedure
-    .input(z.object({
-      email: z.string().min(1),
-      id: z.string().min(1)
-    }))
+    .input(
+      z.object({
+        email: z.string().min(1),
+        id: z.string().min(1),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       try {
+        const userExist = await ctx.db
+          .select()
+          .from(users)
+          .where(eq(users.email, input.email));
 
-        const userExist = await ctx.db.select().from(users).where(eq(users.email, input.email))
+        if (!userExist) throw new Error("User does not exist");
 
-        if (!userExist) throw new Error("User does not exist")
+        const friendRemoved = ctx.db
+          .delete(followsTables)
+          .where(eq(followsTables.targetUser, userExist[0].id));
 
-        const friendRemoved = ctx.db.delete(followsTables).where(eq(followsTables.targetUser, userExist[0].id))
-
-        return friendRemoved
+        return friendRemoved;
       } catch (error) {
-        throw new Error(error as string)
+        throw new Error(error as string);
       }
-    })
+    }),
 });
-
 
 /*
 
