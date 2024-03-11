@@ -364,8 +364,8 @@ import { useRouter } from "next/navigation";
     if (userFriendData.data === undefined) return null
   
     return (
-      <div className="flex h-full flex-col items-start justify-center place-content-center m-auto max-w-7xl px-10 mt-2">
-        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2">My Friends</h1>
+      <div className="flex h-full flex-col items-start justify-center place-content-center m-auto max-w-7xl px-2 sm:px-10 mt-2">
+        <h1 className="text-4xl md:text-3xl lg:text-4xl font-bold text-white mb-2">My Friends</h1>
         <Table
           isCompact
           removeWrapper

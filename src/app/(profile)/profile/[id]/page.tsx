@@ -114,7 +114,7 @@ export default function Profile() {
             <div className="w-full h-[300px] object-cover bg-mw3_team_background bg-no-repeat bg-cover after:relative after:block after:top-0 after:left-0 after:w-full after:h-full after:bg-gradient-to-br from-white to-neutral-400 after:opacity-50 z-0 relative"></div>
 
             <div className="relative mt-[-150px] ">
-                <div className="container m-auto relative z-20">
+                <div className="m-auto relative z-20">
 
                     {getUserData.isError ? (
                         <p>{error}</p>
@@ -126,19 +126,19 @@ export default function Profile() {
                                     <Avatar />
                                     <div className="text-white pl-2">
                                         <h2 className="text-3xl mb-2 font-bold">{user?.username}</h2>
-                                        <p className="font-semibold">PROFILE VIEWS: {user?.profileViews}</p>
+                                        <p><span className="font-semibold">PROFILE VIEWS:</span> {user?.profileViews}</p>
                                         <p className="font-semibold">JOINED: 02/12/24</p>
                                         <div className="flex">
                                             <h4 className="pr-1 font-semibold">Game ID:</h4>
-                                            <div>
-                                                <p>Playstation: {user?.username}</p>
-                                                <p>Battlenet: {user?.username}</p>
+                                            <div className="">
+                                                <p className="flex"><span className="font-semibold">Playstation:</span> {user?.username}</p>
+                                                <p className="flex"><span className="font-semibold">Battlenet:</span> {user?.username}</p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col gap-1">
+                                <div className="flex flex-col gap-1 text-center">
                                     { userSession?.username === user?.username ? (
                                         <>
                                             <Link href={"/account-manage#connect-accounts"} className="text-base bg-neutral-300 py-2 px-2 rounded-xl hover:bg-neutral-400 transition-all">Connect Accounts</Link>
