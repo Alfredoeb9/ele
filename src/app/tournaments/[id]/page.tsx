@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Button,
@@ -57,6 +57,358 @@ console.log(tournament);
 
 */
 
+// class Participant {
+//   name: string;
+//   score: number;
+//   constructor(name: string) {
+//     this.name = name;
+//     this.score = 0;
+//   }
+
+//   // Method to increase score
+//   increaseScore() {
+//     this.score++;
+//   }
+// }
+
+// class Tournament {
+//   participants: Participant[];
+
+//   constructor(participants: Participant[]) {
+//     this.participants = participants;
+//   }
+
+//   // Method to simulate a single round of the tournament
+//   playRound() {
+//     // Randomly shuffle participants for fairness
+//     this.shuffleParticipants();
+
+//     // Pair participants for matches
+//     for (let i = 0; i < this.participants.length - 1; i += 2) {
+//       const participant1 = this.participants[i];
+//       const participant2 = this.participants[i + 1];
+
+//       // Check if there is an odd number of participants
+//       if (this.participants.length % 2 !== 0) {
+//         // One participant gets a bye
+//         const byeParticipant = this.participants[this.participants.length - 1];
+//         console.log("bye", byeParticipant);
+//         byeParticipant.increaseScore();
+//       }
+
+//       console.log("par1", participant1);
+//       console.log("--- vs ---");
+//       console.log("par2", participant2);
+
+//       // Simulate match and increase score of winner
+//       const winner: Participant = this.simulateMatch(
+//         participant1,
+//         participant2,
+//       );
+//       winner.increaseScore();
+//     }
+//   }
+
+//   // Method to shuffle participants
+//   shuffleParticipants() {
+//     for (let i = this.participants.length - 1; i > 0; i--) {
+//       const j = Math.floor(Math.random() * (i + 1));
+//       [this.participants[i], this.participants[j]] = [
+//         this.participants[j],
+//         this.participants[i],
+//       ];
+//     }
+//   }
+
+//   // Method to simulate a match between two participants
+//   simulateMatch(participant1: Participant, participant2: Participant) {
+//     // Simulate match result (assuming participant1 wins with 50% probability)
+//     const randomNumber = Math.random();
+//     return randomNumber < 0.5 ? participant1 : participant2;
+//   }
+
+//   // Method to display the scores of all participants
+//   displayScores() {
+//     console.log("Tournament Results:");
+//     this.participants.forEach(
+//       (participant: { name: string; score: number }) => {
+//         console.log(`${participant.name}: ${participant.score} points`);
+//       },
+//     );
+//   }
+
+//   // Method to check if there is a single winner
+//   hasSingleWinner() {
+//     return this.participants.length === 1;
+//   }
+
+//   // Method to get the winner
+//   getWinner() {
+//     return this.participants[0];
+//   }
+// }
+
+// function playNextRound(
+//   remainingParticipants: Participant[],
+//   setWinner: (arg0: Participant) => void,
+//   round: number,
+// ) {
+//   if (remainingParticipants == undefined) return null;
+//   round++;
+//   console.log("re", remainingParticipants);
+//   console.log("round", round);
+//   for (let i = 0; i < remainingParticipants.length - 1; i += 2) {
+//     const part1 = remainingParticipants[i];
+//     const part2 = remainingParticipants[i + 1];
+
+//     // Simulate match and increase score of winner
+//     const winningParticipant = Math.random() < 0.5 ? part1 : part2;
+//     console.log("iwn", winningParticipant.score);
+//     winningParticipant.score = winningParticipant.score + 1;
+
+//     console.log("winnin", winningParticipant);
+//   }
+//   // round = round + 1;
+//   console.log(remainingParticipants);
+
+//   // Check if there is an odd number of participants
+//   if (remainingParticipants.length % 2 !== 0) {
+//     // One participant gets a bye
+//     const byeParticipant =
+//       remainingParticipants[remainingParticipants.length - 1];
+//     byeParticipant.score++;
+//   }
+
+//   // Check if there is a single winner
+//   const remainingParticipants2 = remainingParticipants.filter(
+//     (participant) => participant.score > round,
+//   );
+
+//   console.log("rem2", remainingParticipants2);
+//   if (remainingParticipants2.length === 1) {
+//     console.log(remainingParticipants2[0]);
+//     setWinner(remainingParticipants2[0]);
+//   } else {
+//     playNextRound(remainingParticipants, setWinner, (round = round + 1));
+//   }
+// }
+
+interface Participant {
+  name: string;
+  score: number;
+}
+
+const ParticipantComponent: React.FC<{
+  participant: Participant;
+  increaseScore: () => void;
+}> = ({ participant, increaseScore }) => {
+  return (
+    <div>
+      <h3>{participant.name}</h3>
+      <p>Score: {participant.score}</p>
+      <button onClick={increaseScore}>Increase Score</button>
+    </div>
+  );
+};
+
+const Tournament: React.FC<{ participants: Participant[] }> = ({
+  participants,
+}) => {
+  const [winner, setWinner] = useState<Participant | null>(null);
+  const [round, setRound] = useState(0);
+  const [reaminingTeams, setReaminingTeams] = useState<Participant[]>([]);
+
+  const playRound = () => {
+    // Shuffle participants
+    const shuffledParticipants = [...participants].sort(
+      () => Math.random() - 0.5,
+    );
+
+    // Check if there is an odd number of participants
+    if (shuffledParticipants.length % 2 !== 0) {
+      // One participant gets a bye
+      if (round === 0) {
+        const byeParticipant =
+          shuffledParticipants[shuffledParticipants.length - 1];
+        byeParticipant.score++;
+      } else if (reaminingTeams.length % 2 !== 0) {
+        const byeParticipant = reaminingTeams[reaminingTeams.length - 1];
+        byeParticipant.score++;
+      }
+    }
+
+    // Pair participants for matches
+    if (round === 0) {
+      for (let i = 0; i < shuffledParticipants.length - 1; i += 2) {
+        if (
+          shuffledParticipants[i].score === round &&
+          shuffledParticipants[i + 1].score === round
+        ) {
+          const participant1 = shuffledParticipants[i];
+          const participant2 = shuffledParticipants[i + 1];
+
+          // Simulate match and increase score of winner
+          const winningParticipant =
+            Math.random() >= 0.5 ? participant1 : participant2;
+
+          winningParticipant.score = winningParticipant.score + 1;
+        }
+      }
+    } else {
+      for (let i = 0; i < reaminingTeams.length - 1; i += 2) {
+        if (
+          reaminingTeams[i].score === round &&
+          reaminingTeams[i + 1].score === round
+        ) {
+          const participant1 = reaminingTeams[i];
+          const participant2 = reaminingTeams[i + 1];
+
+          // Simulate match and increase score of winner
+          const winningParticipant =
+            Math.random() >= 0.5 ? participant1 : participant2;
+
+          winningParticipant.score = winningParticipant.score + 1;
+        }
+      }
+    }
+    // Check if there is a single winner
+
+    if (round === 0) {
+      const remainingParticipants = shuffledParticipants.filter(
+        (participant) => participant.score > round,
+      );
+
+      setReaminingTeams(remainingParticipants);
+
+      setRound(round + 1);
+
+      if (remainingParticipants.length === 1) {
+        console.log(remainingParticipants[0]);
+        setWinner(remainingParticipants[0]);
+      }
+    } else {
+      const remainingParticipants = reaminingTeams.filter(
+        (participant) => participant.score > round,
+      );
+
+      setReaminingTeams(remainingParticipants);
+
+      setRound(round + 1);
+
+      if (remainingParticipants.length === 1) {
+        console.log(remainingParticipants[0]);
+        setWinner(remainingParticipants[0]);
+      }
+    }
+
+    // else {
+    //   // while (remainingParticipants.length > 1) {
+    //   playNextRound(remainingParticipants, setWinner, round);
+    //   // }
+    // }
+    // else {
+    //   for (let i = 0; i < remainingParticipants.length - 1; i += 2) {
+    //     const part1 = remainingParticipants[i];
+    //     const part2 = remainingParticipants[i + 1];
+
+    //     // Simulate match and increase score of winner
+    //     const winningParticipant = Math.random() < 0.5 ? part1 : part2;
+    //     console.log("iwn", winningParticipant.score);
+    //     winningParticipant.score = winningParticipant.score + 1;
+
+    //     console.log("winnin", winningParticipant);
+    //   }
+
+    //   console.log(remainingParticipants);
+
+    //   // Check if there is an odd number of participants
+    //   if (remainingParticipants.length % 2 !== 0) {
+    //     // One participant gets a bye
+    //     const byeParticipant =
+    //       remainingParticipants[remainingParticipants.length - 1];
+    //     byeParticipant.score++;
+    //   }
+
+    //   // Check if there is a single winner
+    //   const remainingParticipants2 = remainingParticipants.filter(
+    //     (participant) => participant.score > 1,
+    //   );
+
+    //   console.log("rem2", remainingParticipants2);
+    //   if (remainingParticipants2.length === 1) {
+    //     console.log(remainingParticipants2[0]);
+    //     setWinner(remainingParticipants2[0]);
+    //   } else {
+    //     for (let i = 0; i < remainingParticipants2.length - 1; i += 2) {
+    //       const part1 = remainingParticipants2[i];
+    //       const part2 = remainingParticipants2[i + 1];
+
+    //       // Simulate match and increase score of winner
+    //       const winningParticipant = Math.random() < 0.5 ? part1 : part2;
+    //       console.log("iwn", winningParticipant.score);
+    //       winningParticipant.score = winningParticipant.score + 1;
+
+    //       console.log("winnin", winningParticipant);
+    //     }
+
+    //     // Check if there is an odd number of participants
+    //     if (remainingParticipants2.length % 2 !== 0) {
+    //       // One participant gets a bye
+    //       const byeParticipant =
+    //         remainingParticipants2[remainingParticipants2.length - 1];
+    //       byeParticipant.score++;
+    //     }
+
+    //     // Check if there is a single winner
+    //     const remainingParticipants3 = remainingParticipants2.filter(
+    //       (participant) => participant.score > 2,
+    //     );
+
+    //     console.log("rem2", remainingParticipants3);
+    //     if (remainingParticipants3.length === 1) {
+    //       console.log(remainingParticipants3[0]);
+    //       setWinner(remainingParticipants3[0]);
+    //     }
+    //   }
+    // }
+  };
+
+  return (
+    <div>
+      <h2>Tournament</h2>
+      <p>Round: {round}</p>
+      {participants.map((participant) => (
+        <ParticipantComponent
+          key={participant.name}
+          participant={participant}
+          increaseScore={() => participant.score++}
+        />
+      ))}
+      <button
+        onClick={() => {
+          !winner && playRound();
+        }}
+      >
+        Play Round
+      </button>
+      {winner && <h2>Winner: {winner.name}</h2>}
+    </div>
+  );
+};
+
+// Example usage
+const participants: Participant[] = [
+  { name: "Player 1", score: 0 },
+  { name: "Player 2", score: 0 },
+  { name: "Player 3", score: 0 },
+  { name: "Player 4", score: 0 },
+  { name: "Player 5", score: 0 },
+  { name: "Player 6", score: 0 },
+  { name: "Player 7", score: 0 },
+  { name: "Player 8", score: 0 },
+  { name: "Player 9", score: 0 },
+];
+
 export default function Tournaments({
   params: { id },
 }: {
@@ -64,17 +416,16 @@ export default function Tournaments({
     id: string;
   };
 }) {
+  const [tournamentId] = useState<string>(id);
+  const [, setPrize] = useState<number>(0);
+  const [prizeTest] = useState<number[]>([5, 0, 0]);
 
-  const [tournamentId, setTournamentId] = useState<string>(id);
-  const [prize, setPrize] = useState<number>(0);
-  const [prizeTest, setPrizeTest] = useState<number[]>([5, 0, 0]);
-
-  const tournament = api.matches.getSingleMatch.useQuery(
+  const tournamentData = api.matches.getSingleMatch.useQuery(
     { id: tournamentId },
     { enabled: tournamentId.length >= 0 },
   );
 
-  if (tournament.isError) {
+  if (tournamentData.isError) {
     toast("There was an error returning tournament data", {
       position: "bottom-right",
       autoClose: 5000,
@@ -86,30 +437,23 @@ export default function Tournaments({
   }
 
   useEffect(() => {
-    if (tournament.data) {
-      tournament?.data.map(
+    if (tournamentData.data) {
+      tournamentData?.data.map(
         (tourney: { prize: React.SetStateAction<number> }) => {
           setPrize(tourney.prize);
         },
       );
     }
-  }, [tournament?.data]);
+  }, [tournamentData?.data]);
 
-  // const t1 = new Date(
-  //   `${tournament.data && tournament.data[0]?.start_time}`,
-  // ).valueOf(); // end
-  // const t2 = new Date().valueOf();
+  if (tournamentData.data === undefined) return null;
 
-  if (tournament.data === undefined) return null;
-
-  // function formatTime(time: any) {
-  //     return time < 10 ? `0${time}` : time
-  // }
-
-  if (tournament.isLoading)
+  if (tournamentData.isLoading)
     return <Spinner label="Loading..." color="warning" />;
 
-  const d1 = new Date(`${tournament.data && tournament.data[0]?.start_time}`),
+  const d1 = new Date(
+      `${tournamentData.data && tournamentData.data[0]?.start_time}`,
+    ),
     d2 = new Date();
 
   const pstDate = d1.toLocaleString("en-US", {
@@ -119,7 +463,7 @@ export default function Tournaments({
   return (
     <div>
       <div
-        className={`h-[300px] w-full bg-${tournament?.data && tournament?.data[0].game.toLowerCase()}_team_background bg-cover bg-fixed bg-center bg-no-repeat`}
+        className={`h-[300px] w-full bg-${tournamentData?.data && tournamentData?.data[0].game.toLowerCase()}_team_background bg-cover bg-fixed bg-center bg-no-repeat`}
       />
 
       <main className=" relative mt-[-150px] px-4">
@@ -129,7 +473,7 @@ export default function Tournaments({
             className="rounded-xl bg-slate-400  p-1"
           >
             <div className="block sm:flex">
-              {tournament.data?.map((tournament) => (
+              {tournamentData.data?.map((tournament) => (
                 <div key={tournament.id} className="flex">
                   <Card
                     isFooterBlurred
@@ -321,8 +665,7 @@ export default function Tournaments({
               <Tab key="bracket" title="BRACKET">
                 <Card>
                   <CardBody>
-                    Excepteur sint occaecat cupidatat non proident, sunt in
-                    culpa qui officia deserunt mollit anim id est laborum.
+                    <Tournament participants={participants} />
                   </CardBody>
                 </Card>
               </Tab>
@@ -342,8 +685,10 @@ export default function Tournaments({
         </div>
         <div className="tournament_details_tab_prizes"></div>
 
-        {tournament.isError && (
-          <p className="font-bold text-red-400">{tournament.error.message}</p>
+        {tournamentData.isError && (
+          <p className="font-bold text-red-400">
+            {tournamentData.error.message}
+          </p>
         )}
       </main>
     </div>

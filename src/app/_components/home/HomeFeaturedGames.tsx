@@ -1,9 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import type { GameCategoryType } from "@/server/db/schema";
 
 interface HomeDataProps {
-  data: any;
+  data: GameCategoryType[];
   error: string;
 }
 

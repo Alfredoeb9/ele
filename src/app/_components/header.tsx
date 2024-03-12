@@ -158,13 +158,14 @@ export default function Header() {
           <Link className="text-md font-bold text-zinc-900" href="/">
             Home
           </Link>
-          <Link
-            className="text-md font-bold text-zinc-900"
-            href={`/profile/${session.data?.user.username}`}
-          >
-            Profile
-          </Link>
-          {/* <Link className="text-md font-bold text-zinc-900" href="/protected">Protected</Link> */}
+          {session.status === "authenticated" && (
+            <Link
+              className="text-md font-bold text-zinc-900"
+              href={`/profile/${session.data?.user.username}`}
+            >
+              Profile
+            </Link>
+          )}
         </nav>
         <div>
           {session.status !== "authenticated" ? (

@@ -33,78 +33,6 @@ import { ToastContainer, toast } from "react-toastify";
 //   return rounds;
 // }
 
-class Participant {
-  name: string;
-  score: number;
-  constructor(name: string) {
-    this.name = name;
-    this.score = 0;
-  }
-
-  // Method to increase score
-  increaseScore() {
-    this.score++;
-  }
-}
-
-class Tournament {
-  participants: Participant[];
-
-  constructor(participants: Participant[]) {
-    this.participants = participants;
-  }
-
-  // Method to simulate a single round of the tournament
-  playRound() {
-    // Randomly shuffle participants for fairness
-    this.shuffleParticipants();
-
-    // Pair participants for matches
-    for (let i = 0; i < this.participants.length; i += 2) {
-      const participant1 = this.participants[i];
-      const participant2 = this.participants[i + 1];
-
-      console.log("par1", participant1)
-      console.log("par2", participant2)
-
-      // Simulate match and increase score of winner
-      const winner: Participant = this.simulateMatch(
-        participant1,
-        participant2,
-      );
-      winner.increaseScore();
-    }
-  }
-
-  // Method to shuffle participants
-  shuffleParticipants() {
-    for (let i = this.participants.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [this.participants[i], this.participants[j]] = [
-        this.participants[j],
-        this.participants[i],
-      ];
-    }
-  }
-
-  // Method to simulate a match between two participants
-  simulateMatch(participant1: Participant, participant2: Participant) {
-    // Simulate match result (assuming participant1 wins with 50% probability)
-    const randomNumber = Math.random();
-    return randomNumber < 0.5 ? participant1 : participant2;
-  }
-
-  // Method to display the scores of all participants
-  displayScores() {
-    console.log("Tournament Results:");
-    this.participants.forEach(
-      (participant: { name: string; score: number }) => {
-        console.log(`${participant.name}: ${participant.score} points`);
-      },
-    );
-  }
-}
-
 export default function Home() {
   noStore();
   // const hello = await api.post.hello.query({ text: "from tRPC" });
@@ -119,20 +47,7 @@ export default function Home() {
   // console.log('tie', tournament);
 
   // Example usage
-  const participants = [
-    new Participant("Player 1"),
-    new Participant("Player 2"),
-    new Participant("Player 3"),
-    new Participant("Player 4"),
-  ];
 
-  const tournament = new Tournament(participants);
-
-  // Play a single round
-  tournament.playRound();
-
-  // Display scores after the round
-  tournament.displayScores();
   // const { data, isPending, isError, isSuccess } = useQuery<any>({
   //   queryKey: ["game-finder"],
   //   queryFn: () =>
@@ -171,14 +86,14 @@ export default function Home() {
   // }
 
   if (getGames.isError) {
-    toast('There was an error with getting all games service', {
+    toast("There was an error with getting all games service", {
       position: "bottom-right",
       autoClose: 5000,
       closeOnClick: true,
       draggable: false,
       type: "error",
-      toastId: 53
-  })
+      toastId: 53,
+    });
   }
   return (
     <main>
@@ -207,7 +122,7 @@ export default function Home() {
       </section>
 
       <HomeFeaturedGames
-        data={getGames?.isSuccess && getGames?.data}
+        data={getGames.isSuccess ? getGames?.data : []}
         error={error}
       />
 
