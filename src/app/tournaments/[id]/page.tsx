@@ -20,6 +20,7 @@ import { toast } from "react-toastify";
 import { statusGameMap, trophys } from "@/lib/sharedData";
 import { GrTrophy } from "react-icons/gr";
 import MatchTimer from "@/app/_components/MatchTimer";
+import BracketGenerator from "@/app/_components/BracketGenerator";
 
 // ANOTHER WAY TO DO TOURNAMENTS
 /*
@@ -193,7 +194,7 @@ console.log(tournament);
 //   }
 // }
 
-interface Participant {
+export interface Participant {
   name: string;
   score: number;
 }
@@ -206,7 +207,7 @@ const ParticipantComponent: React.FC<{
     <div>
       <h3>{participant.name}</h3>
       <p>Score: {participant.score}</p>
-      <button onClick={increaseScore}>Increase Score</button>
+      {/* <button onClick={increaseScore}>Increase Score</button> */}
     </div>
   );
 };
@@ -215,10 +216,21 @@ const Tournament: React.FC<{ participants: Participant[] }> = ({
   participants,
 }) => {
   const [winner, setWinner] = useState<Participant | null>(null);
+  const [totalRounds, setTotalRounds] = useState(0);
   const [round, setRound] = useState(0);
   const [reaminingTeams, setReaminingTeams] = useState<Participant[]>([]);
+  const [activateTournament, setActivateTournament] = useState<boolean>(false);
+
+  function getRoundsCount(participants: Participant[]) {
+    const tRounds = Math.ceil(Math.log(participants.length) / Math.log(2));
+
+    return tRounds;
+  }
 
   const playRound = () => {
+    // const count = getRoundsCount(participants);
+
+    setActivateTournament(true);
     // Shuffle participants
     const shuffledParticipants = [...participants].sort(
       () => Math.random() - 0.5,
@@ -235,6 +247,9 @@ const Tournament: React.FC<{ participants: Participant[] }> = ({
         const byeParticipant = reaminingTeams[reaminingTeams.length - 1];
         byeParticipant.score++;
       }
+    } else if (reaminingTeams.length % 2 !== 0) {
+      const byeParticipant = reaminingTeams[reaminingTeams.length - 1];
+      byeParticipant.score++;
     }
 
     // Pair participants for matches
@@ -300,90 +315,38 @@ const Tournament: React.FC<{ participants: Participant[] }> = ({
         setWinner(remainingParticipants[0]);
       }
     }
-
-    // else {
-    //   // while (remainingParticipants.length > 1) {
-    //   playNextRound(remainingParticipants, setWinner, round);
-    //   // }
-    // }
-    // else {
-    //   for (let i = 0; i < remainingParticipants.length - 1; i += 2) {
-    //     const part1 = remainingParticipants[i];
-    //     const part2 = remainingParticipants[i + 1];
-
-    //     // Simulate match and increase score of winner
-    //     const winningParticipant = Math.random() < 0.5 ? part1 : part2;
-    //     console.log("iwn", winningParticipant.score);
-    //     winningParticipant.score = winningParticipant.score + 1;
-
-    //     console.log("winnin", winningParticipant);
-    //   }
-
-    //   console.log(remainingParticipants);
-
-    //   // Check if there is an odd number of participants
-    //   if (remainingParticipants.length % 2 !== 0) {
-    //     // One participant gets a bye
-    //     const byeParticipant =
-    //       remainingParticipants[remainingParticipants.length - 1];
-    //     byeParticipant.score++;
-    //   }
-
-    //   // Check if there is a single winner
-    //   const remainingParticipants2 = remainingParticipants.filter(
-    //     (participant) => participant.score > 1,
-    //   );
-
-    //   console.log("rem2", remainingParticipants2);
-    //   if (remainingParticipants2.length === 1) {
-    //     console.log(remainingParticipants2[0]);
-    //     setWinner(remainingParticipants2[0]);
-    //   } else {
-    //     for (let i = 0; i < remainingParticipants2.length - 1; i += 2) {
-    //       const part1 = remainingParticipants2[i];
-    //       const part2 = remainingParticipants2[i + 1];
-
-    //       // Simulate match and increase score of winner
-    //       const winningParticipant = Math.random() < 0.5 ? part1 : part2;
-    //       console.log("iwn", winningParticipant.score);
-    //       winningParticipant.score = winningParticipant.score + 1;
-
-    //       console.log("winnin", winningParticipant);
-    //     }
-
-    //     // Check if there is an odd number of participants
-    //     if (remainingParticipants2.length % 2 !== 0) {
-    //       // One participant gets a bye
-    //       const byeParticipant =
-    //         remainingParticipants2[remainingParticipants2.length - 1];
-    //       byeParticipant.score++;
-    //     }
-
-    //     // Check if there is a single winner
-    //     const remainingParticipants3 = remainingParticipants2.filter(
-    //       (participant) => participant.score > 2,
-    //     );
-
-    //     console.log("rem2", remainingParticipants3);
-    //     if (remainingParticipants3.length === 1) {
-    //       console.log(remainingParticipants3[0]);
-    //       setWinner(remainingParticipants3[0]);
-    //     }
-    //   }
-    // }
   };
 
   return (
     <div>
       <h2>Tournament</h2>
       <p>Round: {round}</p>
-      {participants.map((participant) => (
-        <ParticipantComponent
-          key={participant.name}
-          participant={participant}
-          increaseScore={() => participant.score++}
-        />
-      ))}
+      {activateTournament && (
+        <>
+          <BracketGenerator
+            participants={participants}
+            totalRounds={totalRounds}
+            reaminingTeams={reaminingTeams}
+          />
+          {/* {participants.map((participant) => (
+            <ParticipantComponent
+              key={participant.name}
+              participant={participant}
+              increaseScore={() => participant.score++}
+            />
+          ))} */}
+        </>
+      )}
+
+      <button
+        onClick={() => {
+          setTotalRounds(getRoundsCount(participants));
+          setActivateTournament(true);
+        }}
+      >
+        Start Tournament
+      </button>
+
       <button
         onClick={() => {
           !winner && playRound();
@@ -407,6 +370,9 @@ const participants: Participant[] = [
   { name: "Player 7", score: 0 },
   { name: "Player 8", score: 0 },
   { name: "Player 9", score: 0 },
+  { name: "Player 10", score: 0 },
+  { name: "Player 11", score: 0 },
+  { name: "Player 12", score: 0 },
 ];
 
 export default function Tournaments({
@@ -526,7 +492,7 @@ export default function Tournaments({
                             "Cross Platform"
                           ) : (
                             <span className="text-bold text-small capitalize">
-                              {tournament?.platform as any}
+                              {tournament?.platform as string}
                             </span>
                           )}
                         </p>
@@ -558,7 +524,7 @@ export default function Tournaments({
                     </div>
 
                     <div className="mt-4 flex w-full flex-wrap justify-evenly">
-                      <div className="">
+                      <div>
                         <h5 className="font-bold">ENTRY/PLAYER</h5>
                         <p>{tournament?.entry}</p>
                       </div>
@@ -566,7 +532,7 @@ export default function Tournaments({
                         orientation="vertical"
                         className="mx-1 h-20 w-0.5 bg-white text-white"
                       />
-                      <div className="">
+                      <div>
                         <h5 className="font-bold">TEAM SIZE</h5>
                         <p>{tournament?.team_size}</p>
                       </div>
@@ -574,7 +540,7 @@ export default function Tournaments({
                         orientation="vertical"
                         className="mx-1 h-20 w-0.5 bg-white text-white"
                       />
-                      <div className="">
+                      <div>
                         <h5 className="font-bold">MAX TEAMS</h5>
                         <p>{tournament?.max_teams}</p>
                       </div>
@@ -582,7 +548,7 @@ export default function Tournaments({
                         orientation="vertical"
                         className="mx-1 h-20 w-0.5 bg-white text-white"
                       />
-                      <div className="">
+                      <div>
                         <h5 className="font-bold">ENROLLED</h5>
                         <p>{tournament?.enrolled}</p>
                       </div>
