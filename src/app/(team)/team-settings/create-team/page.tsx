@@ -27,17 +27,23 @@ export default function CreateTeam() {
       if (
         // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         e.data?.stack?.includes("rpc error: code = AlreadyExists") ||
-        e.message.includes("'ele_team.team_name_idx'")
+        e.message.includes("'ele_team.ele_team_game_id_team_name_unique'")
       ) {
         setError("Team name already exists");
-        toast(`Team name already exists`, {
-          position: "bottom-right",
-          autoClose: 3500,
-          closeOnClick: true,
-          draggable: false,
-          type: "error",
-          toastId: 61,
-        });
+        setTeamName("");
+        setSelectedGame("");
+        setSelectedGameId("");
+        toast(
+          `Team name ${teamName} already exists for ${selectedGame}, please choose another`,
+          {
+            position: "bottom-right",
+            autoClose: 3500,
+            closeOnClick: true,
+            draggable: false,
+            type: "error",
+            toastId: 61,
+          },
+        );
       }
     },
   });
