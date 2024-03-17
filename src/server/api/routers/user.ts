@@ -203,7 +203,12 @@ export const userRouter = createTRPCRouter({
               with: {
                 follows: true,
                 userRecord: true,
-                matches: true,
+                teams: {
+                  with: {
+                    tournamentsEnrolled: true,
+                  },
+                },
+                // matches: true,
               },
             });
 
