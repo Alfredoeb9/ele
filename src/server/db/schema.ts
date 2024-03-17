@@ -15,6 +15,7 @@ import {
   uniqueIndex,
   varchar,
 } from "drizzle-orm/mysql-core";
+import { now } from "moment";
 import { type AdapterAccount } from "next-auth/adapters";
 
 /**
@@ -75,6 +76,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   matches: many(matches),
   payments: many(payments),
   gamerTags: many(gamerTags),
+  moneyMatch: many(moneyMatch),
   subscription: one(subscription),
   userRecord: one(usersRecordTable),
 }));
@@ -212,10 +214,41 @@ export const gameRelations = relations(tournaments, ({ one }) => ({
   }),
 }));
 
+export const moneyMatch = createTable(
+  "money_match",
+  {
+    matchId: varchar("match_id", { length: 255 }).notNull(),
+    createdBy: varchar("created_by", { length: 255 }).notNull(),
+    matchName: varchar("match_name", { length: 255 }).notNull(),
+    matchType: varchar("match_type", { length: 255 }).notNull(),
+    entry: int("entry").notNull(),
+    teamSize: varchar("team_size", { length: 255 }).notNull(),
+    startTime: varchar("start_time", { length: 300 }).notNull(),
+    rules: json("rules").notNull().notNull(),
+    createdAt: timestamp("created_at")
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at").onUpdateNow(),
+  },
+  (match) => ({
+    // makes sure a player can only create a match for the same given time
+    groupGameIdWithNameIdx: unique().on(match.createdBy, match.createdAt),
+  }),
+);
+
+// the team.id will reference the moneyMatch.createdBy
+export const moneyMatchRelation = relations(moneyMatch, ({ one }) => ({
+  teams: one(teams, {
+    fields: [moneyMatch.createdBy],
+    references: [teams.id],
+  }),
+}));
+
 export const teams = createTable(
   "team",
   {
     id: varchar("id", { length: 255 }).notNull(),
+    userId: varchar("user_id", { length: 255 }).notNull(),
     gameId: varchar("game_id", { length: 255 }).notNull(),
     gameTitle: varchar("game_title", { length: 255 }).notNull(),
     team_name: varchar("team_name", { length: 255 }).notNull(),
@@ -316,15 +349,22 @@ export type TeamMembersType = typeof teamMembersTable.$inferSelect;
 export type Users = typeof users.$inferSelect;
 export type Tournament = typeof tournaments.$inferInsert;
 
-// // A team can have many team Members
+// // A team can have many team Members, invites to the team, and moneyMatches
 export const teamsRelations = relations(teams, ({ one, many }) => ({
   members: many(teamMembersTable),
   invites: many(teamInvites),
+  matches: many(matches),
+  moneyMatches: many(moneyMatch),
+  tournamentsEnrolled: many(tournamentsToTeams),
 
   // A team can only have one team record
   record: one(teamRecordTable, {
     fields: [teams.id],
     references: [teamRecordTable.teamId],
+  }),
+  user: one(users, {
+    fields: [teams.userId],
+    references: [users.id],
   }),
 }));
 
@@ -341,12 +381,9 @@ export const teamsRelations = relations(teams, ({ one, many }) => ({
 // }))
 
 // // A team can only have one user per id
-export const teamssRelations = relations(teams, ({ one }) => ({
-  user: one(users, {
-    fields: [teams.id],
-    references: [users.teamId],
-  }),
-}));
+// export const teamssRelations = relations(teams, ({ one }) => ({
+
+// }));
 
 export const teamInvites = createTable("team_invites", {
   id: varchar("id", { length: 255 }).notNull(),
@@ -387,6 +424,8 @@ export const tournamentTeamsEnrolled = createTable(
   }),
 );
 
+export type TournamentTeamsEnrolled =
+  typeof tournamentTeamsEnrolled.$inferSelect;
 // CREATE TOURNAMENT ROUND
 export const tournamentStages = createTable("tournament_stages", {
   id: varchar("id", { length: 255 }).primaryKey(),
@@ -501,9 +540,10 @@ export const matches = createTable("matches", {
 export const matchesRelations = relations(matches, ({ one, many }) => ({
   teams: many(teamsToMatches),
   users: many(usersToMatches),
-  author: one(users, {
+  moneyMatches: many(moneyMatch),
+  author: one(teams, {
     fields: [matches.teamId],
-    references: [users.id],
+    references: [teams.id], // TODO: FIX THIS WTO WHERE IT GRABS THE TEAM_ID
   }),
 }));
 
@@ -548,9 +588,9 @@ export const teamsToMatches = createTable(
 );
 
 export const teamsToMatchesRelations = relations(teamsToMatches, ({ one }) => ({
-  users: one(users, {
+  teams: one(teams, {
     fields: [teamsToMatches.team_id],
-    references: [users.id],
+    references: [teams.id],
   }),
   match: one(matches, {
     fields: [teamsToMatches.match_id],
