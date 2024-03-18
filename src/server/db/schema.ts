@@ -252,6 +252,7 @@ export const teams = createTable(
     gameId: varchar("game_id", { length: 255 }).notNull(),
     gameTitle: varchar("game_title", { length: 255 }).notNull(),
     team_name: varchar("team_name", { length: 255 }).notNull(),
+    teamCategory: varchar("team_category", { length: 50 }).notNull(),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
