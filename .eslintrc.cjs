@@ -27,6 +27,7 @@ const config = {
     "@typescript-eslint/no-unsafe-return": "warn",
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
+    "@typescript-eslint/prefer-nullish-coalescing": "off",
     "@typescript-eslint/consistent-type-imports": [
       "warn",
       {
