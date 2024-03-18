@@ -3,7 +3,9 @@ import { api } from "@/trpc/react";
 import { Select, SelectItem, Spinner } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import { teamCategory } from "@/lib/sharedData";
+import type { TeamCategoryTypes } from "@/lib/sharedData";
+import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 
 export default function CreateTeam() {
@@ -14,6 +16,8 @@ export default function CreateTeam() {
   const [error, setError] = useState<string>("");
   const [selectedGameId, setSelectedGameId] = useState<string>("");
   const [selectedGame, setSelectedGame] = useState<string>("");
+  const [teamCategoryPicked, setTeamCategoryPicked] = useState<TeamCategoryTypes[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   if (session.status === "unauthenticated") router.push("/sign-in");
 
@@ -25,14 +29,11 @@ export default function CreateTeam() {
 
     onError: (e) => {
       if (
-        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         e.data?.stack?.includes("rpc error: code = AlreadyExists") ||
         e.message.includes("'ele_team.ele_team_game_id_team_name_unique'")
       ) {
+        
         setError("Team name already exists");
-        setTeamName("");
-        setSelectedGame("");
-        setSelectedGameId("");
         toast(
           `Team name ${teamName} already exists for ${selectedGame}, please choose another`,
           {
@@ -45,6 +46,26 @@ export default function CreateTeam() {
           },
         );
       }
+
+      if (e.data?.zodError?.fieldErrors.teamName) {
+        const errorMessage = e.data?.zodError?.fieldErrors.teamName[0]
+        setError(`Team name: ${errorMessage}`);
+        toast(
+          `Team Name: ${errorMessage}`,
+          {
+            position: "bottom-right",
+            autoClose: 3500,
+            closeOnClick: true,
+            draggable: false,
+            type: "error",
+            toastId: 62,
+          },
+        );
+      }
+
+      setTeamName("");
+      setSelectedGame("");
+      setSelectedGameId("");
     },
   });
 
@@ -61,6 +82,33 @@ export default function CreateTeam() {
       toastId: 12,
     });
   }
+
+  const arrById = gameCategory.data?.filter(filterByID);
+
+  useEffect(() => {
+    if (arrById === undefined) return;
+
+    if (selectedGame.length > 0) {
+      teamCategory.find((ele) => {
+        arrById.map((arr) => {
+          //@ts-expect-error ehh types are weird
+          setTeamCategoryPicked(ele[arr?.game])
+        })
+      });
+    }
+  }, [arrById, selectedGame]);
+
+  function filterByID(item: { game: string }) {
+    if (selectedGame === item?.game) {
+      return true;
+    }
+  }
+
+  function handleRuleChange(e: string) {
+    setSelectedCategory(e)
+  }
+
+  if (teamCategoryPicked == undefined) return null
 
   if (createTeam.isPending)
     return <Spinner label="Loading..." color="warning" />;
@@ -126,11 +174,27 @@ export default function CreateTeam() {
           value={teamName}
         />
 
+        <div className='mb-2'>
+          <label className='block text-sm font-medium leading-6'>Rules:</label>
+          
+          {Object?.entries(teamCategoryPicked)?.map((rule: any[], key: number) => (
+            <Select label={rule[0].charAt(0).toUpperCase() + rule[0].slice(1)} key={key} id={`${key}`} className='flex'>
+                {rule[1].map((option: string, i: number) => (
+                  <SelectItem value={option} key={i} onPress={(e) => handleRuleChange((e.target as HTMLElement).innerText)}>
+                    {option}
+                  </SelectItem>
+                ))}
+            </Select>
+          ))}
+        </div>
+
         <button
           disabled={
             gameCategory.isError ||
             selectedGame === "" ||
-            selectedGame.length <= 0
+            selectedGame.length <= 0 ||
+            selectedCategory.length <= 0 ||
+            teamName.length <=0
           }
           onClick={() => {
             createTeam.mutate({
