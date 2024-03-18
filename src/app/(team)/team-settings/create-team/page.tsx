@@ -198,6 +198,7 @@ export default function CreateTeam() {
           }
           onClick={() => {
             createTeam.mutate({
+              teamCategory: selectedCategory,
               userId: session.data?.user.id!,
               gameId: selectedGameId,
               gameText: selectedGame,

@@ -12,6 +12,7 @@ export const createRouter = createTRPCRouter({
         gameText: z.string().min(1),
         userName: z.string().min(1),
         userId: z.string().min(1),
+        teamCategory: z.string().min(1),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -20,6 +21,7 @@ export const createRouter = createTRPCRouter({
 
         // create the team
         await tx.insert(teams).values({
+          teamCategory: input.teamCategory,
           userId: input.userId,
           gameId: input.gameId,
           gameTitle: input.gameText,
