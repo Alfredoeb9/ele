@@ -188,3 +188,16 @@ export const trophys = [
     color: "#cd7f32",
   },
 ];
+
+export interface TeamCategoryTypes {
+  "id": {
+    "category": string[]
+  }
+}
+
+export const teamCategory = [
+  {
+    "mw3": {"category":["solo", "duo", "trios", "quads"]},
+    "fornite": ["solo", "duo", "trios", "quads"],
+  },
+];
