@@ -261,7 +261,7 @@ export const teams = createTable(
   (team) => ({
     // userIdIdx: index("team_userId_idx").on(team.id),
     // makes sure name coming in is unique based on gameId
-    groupGameIdWithNameIdx: unique().on(team.gameId, team.team_name),
+    groupGameIdWithNameIdx: unique().on(team.gameId, team.team_name, team.teamCategory),
   }),
 );
 
