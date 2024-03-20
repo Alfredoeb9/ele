@@ -12,8 +12,6 @@ import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 
-import "react-toastify/dist/ReactToastify.css";
-
 export default function TeamSettings() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const session = useSession();
@@ -27,7 +25,7 @@ export default function TeamSettings() {
   if (session.status === "unauthenticated") router.push("/sign-in");
 
   const currentUser = api.user.getSingleUserWithTeamMembers.useQuery(
-    { email: session.data?.user?.email as string },
+    { email: session.data?.user?.email! },
     { enabled: session.status === "authenticated" },
   );
 
@@ -59,28 +57,36 @@ export default function TeamSettings() {
   if (currentUser.isLoading)
     return <Spinner label="Loading..." color="warning" />;
 
+  if (currentUser.isError || currentUser.data === undefined) {
+    return null
+  }
+
+  const teams = currentUser.data.teams
+
   return (
     <div className="mx-auto flex min-h-screen items-center justify-center bg-stone-900 px-6 py-8 md:h-screen lg:py-0">
       <div className="flex min-h-full w-96 flex-1 flex-col px-5 py-8 sm:py-4 lg:px-7">
         <h1 className="mb-2 text-3xl font-bold text-white">MY TEAMS</h1>
         <div className="mb-4 flex flex-wrap justify-between gap-2">
-          {currentUser.data && currentUser.data?.teamMembers.length <= 0 ? (
+          {teams.length <= 0 ? (
             <div className="text-lg text-white">
               No teams found. Go ahead and create a team
             </div>
           ) : (
             <>
-              {currentUser.data?.teamMembers?.map((team) => (
+              {teams.map((team) => (
                 <div
                   className="w-[100%] rounded-xl bg-slate-800 p-2 text-white sm:w-[32.2%]"
-                  key={team?.teamId}
+                  key={team?.id}
                 >
                   <div className="tournament_info ml-4 w-full">
-                    <h1 className="text-lg font-bold md:text-xl lg:text-2xl">
-                      {team.teamName}
+                    <h1 className="text-lg font-bold md:text-xl lg:text-2xl mb-2">
+                      {team.team_name}
                     </h1>
+                    <p><span className="font-semibold">Team Category:</span> {team.teamCategory.toUpperCase()}</p>
                     <p className="font-semibold">
-                      {team.game === "mw3" && statusGameMap[team?.game]}
+                      {team.gameTitle === "mw3" && statusGameMap[team?.gameTitle]}
+                      {team.gameTitle === "fornite" && statusGameMap[team?.gameTitle]}
                     </p>
 
                     <div>
@@ -89,10 +95,10 @@ export default function TeamSettings() {
                     </div>
 
                     <div className="mt-4 flex flex-wrap justify-start gap-2 md:gap-3 lg:gap-4">
-                      {team.role === "member" && (
+                      {team.members[0].role === "member" && (
                         <>
                           <Button className="text-green-500" variant="bordered">
-                            <Link href={`/team/${team?.teamId}`}>View</Link>
+                            <Link href={`/team/${team?.id}`}>View</Link>
                           </Button>
                           <Button
                             className="text-red-500"
@@ -100,7 +106,7 @@ export default function TeamSettings() {
                             onPress={() => {
                               onOpen();
                               setModalPath("member");
-                              setTeamName(team.teamName);
+                              setTeamName(team.team_name);
                             }}
                           >
                             Leave Team
@@ -108,18 +114,18 @@ export default function TeamSettings() {
                         </>
                       )}
 
-                      {team.role === "owner" && (
+                      {team.members[0].role === "owner" && (
                         <>
                           <Button className="text-green-500" variant="bordered">
-                            <Link href={`/team/${team?.teamId}`}>Manage</Link>
+                            <Link href={`/team/${team?.id}`}>Manage</Link>
                           </Button>
                           <Button
                             className="text-red-500"
                             variant="bordered"
                             onPress={() => {
                               onOpen(), setModalPath("owner");
-                              setTeamName(team.teamName);
-                              setTeamId(team.teamId);
+                              setTeamName(team.team_name);
+                              setTeamId(team.id);
                             }}
                           >
                             Disband
@@ -143,7 +149,7 @@ export default function TeamSettings() {
             open={isOpen}
             onOpenChange={onOpenChange}
             handleModalPath={handleModalPath}
-            userEmail={session.data?.user.email as string}
+            userEmail={session.data?.user.email!}
             teamName={teamName}
             teamId={teamId}
           />
