@@ -78,6 +78,8 @@ export default function Team() {
     //@ts-expect-error members should be present
     teamRecord: TeamRecordType = team?.record;
 
+  console.log("team", team)
+
   type User = typeof members;
 
   const items = useMemo(() => {
@@ -117,9 +119,9 @@ export default function Team() {
   //     )
   // })
 
-  const renderCell = useCallback((user: any, columnKey: React.Key) => {
+  const renderCell = useCallback((user: { [x: string]: any; userName: string; }, columnKey: React.Key) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const cellValue = user[columnKey as keyof User];
+    const cellValue = user[columnKey as number];
 
     switch (columnKey) {
       case "userId":
@@ -217,8 +219,9 @@ export default function Team() {
             <div className="flex justify-between pb-2">
               <div className="flex">
                 <Avatar />
-                <div className="text-white">
+                <div className="text-white ml-2">
                   <h2 className="mb-2 text-3xl font-bold">{team?.team_name}</h2>
+                  <p className="font-semibold"><span className="font-bold">Team Category:</span> {team?.teamCategory.toUpperCase()}</p>
                   <p className="font-semibold">
                     EST. {team?.createdAt.toLocaleDateString()}
                   </p>
@@ -333,7 +336,7 @@ export default function Team() {
                   )}
                 </TableHeader>
                 <TableBody items={items ?? []} emptyContent={"No users found"}>
-                  {(item: { userId: string }) => (
+                  {(item) => (
                     <TableRow key={item?.userId}>
                       {(columnKey: Key) => (
                         <TableCell className="text-center">
