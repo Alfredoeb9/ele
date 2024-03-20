@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { eq, gte } from "drizzle-orm";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { gameCategory } from "@/server/db/schema";
+import { gameCategory, tournaments } from "@/server/db/schema";
 
 export const gameCategoryRouter = createTRPCRouter({
     getAllGames: publicProcedure.query(async ({ ctx }) => {
@@ -29,7 +29,9 @@ export const gameCategoryRouter = createTRPCRouter({
                 const data = await ctx.db.query.gameCategory.findMany({
                     where: eq(gameCategory.game, input.gameName),
                     with: {
-                        tournaments: true
+                        tournaments: {
+                            where: gte(tournaments.start_time, new Date() as unknown as string)
+                        }
                     }
                 })
 
@@ -37,7 +39,7 @@ export const gameCategoryRouter = createTRPCRouter({
 
                 return data
             } catch (error) {
-                throw new Error("Error retrieving game information")
+                throw new Error(error as string)
             }
         })
 })

@@ -9,6 +9,7 @@ import { tabs } from "@/lib/sharedData"
 import GameTabs from "./GameTabs";
 import Link from "next/link";
 import Image from "next/image";
+import { ToastContainer, toast } from "react-toastify";
   
 export default function Game() {
     const [value, setValue] = useState("Community Tournaments")
@@ -31,7 +32,7 @@ export default function Game() {
     // };
 
     // get data from params
-    const gameData = api.games.getSingleGame.useQuery({ gameName: gameFromPath})
+    const gameData = api.games.getSingleGame.useQuery({ gameName: gameFromPath}, { enabled: gameFromPath.length > 0})
 
     // if (gameData.data === undefined) return null 
 
@@ -68,7 +69,16 @@ export default function Game() {
     }, [value, gameData.data])
 
     
-
+    if (gameData.isError) {
+        toast('There was an error was this service, please refresh or submit a support ticket', {
+            position: "bottom-right",
+            autoClose: 5000,
+            closeOnClick: true,
+            draggable: false,
+            type: "error",
+            toastId: 63,
+          })
+    }
     // console.log("dat", renderData)
 
     // useEffect(() => {
@@ -145,6 +155,8 @@ export default function Game() {
                     </div>
                 </div>
             </div>
+
+            <ToastContainer containerId={"game-toast-container"} />
         </main>
     )
 }
