@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 
 import { Inter } from "next/font/google";
-
+import { Analytics } from "@vercel/analytics/react"
 import { TRPCReactProvider } from "@/trpc/react";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import Provider from "./_components/providers/SessionProvider";
@@ -72,7 +72,7 @@ export default async function RootLayout({
           </ReduxProvider>
           
         </Provider>
-
+        <Analytics />
       </body>
     </html>
   );
