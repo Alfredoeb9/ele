@@ -78,8 +78,6 @@ export default function Team() {
     //@ts-expect-error members should be present
     teamRecord: TeamRecordType = team?.record;
 
-  console.log("team", team)
-
   type User = typeof members;
 
   const items = useMemo(() => {
@@ -242,6 +240,14 @@ export default function Team() {
                       ]}
                     >
                       Find Match
+                    </Button>
+                    <Button
+                      color="success"
+                      onPress={() => [
+                        router.push(`/match/create/${team?.gameTitle.toLowerCase()}`),
+                      ]}
+                    >
+                      Create Money Match
                     </Button>
                     <CustomButton
                       teamName={team?.team_name!}
