@@ -218,21 +218,20 @@ export const moneyMatch = createTable(
   "money_match",
   {
     matchId: varchar("match_id", { length: 255 }).notNull(),
+    teamName: varchar("team_name", { length: 255 }).notNull(),
     createdBy: varchar("created_by", { length: 255 }).notNull(),
     matchName: varchar("match_name", { length: 255 }).notNull(),
     matchType: varchar("match_type", { length: 255 }).notNull(),
-    entry: int("entry").notNull(),
+    matchEntry: int("entry").notNull(),
     teamSize: varchar("team_size", { length: 255 }).notNull(),
     startTime: varchar("start_time", { length: 300 }).notNull(),
     rules: json("rules").notNull().notNull(),
-    createdAt: timestamp("created_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
+    createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
     updatedAt: timestamp("updated_at").onUpdateNow(),
   },
   (match) => ({
     // makes sure a player can only create a match for the same given time
-    groupGameIdWithNameIdx: unique().on(match.createdBy, match.createdAt),
+    groupGameIdWithNameIdx: unique().on(match.createdBy, match.startTime),
   }),
 );
 
@@ -261,7 +260,11 @@ export const teams = createTable(
   (team) => ({
     // userIdIdx: index("team_userId_idx").on(team.id),
     // makes sure name coming in is unique based on gameId
-    groupGameIdWithNameIdx: unique().on(team.gameId, team.team_name, team.teamCategory),
+    groupGameIdWithNameIdx: unique().on(
+      team.gameId,
+      team.team_name,
+      team.teamCategory,
+    ),
   }),
 );
 
