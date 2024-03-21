@@ -7,6 +7,7 @@ import {
 } from "@/server/api/trpc";
 import {
   matches,
+  moneyMatch,
   posts,
   teamsToMatches,
   tournamentTeamsEnrolled,
@@ -138,17 +139,18 @@ export const matchRouter = createTRPCRouter({
             team_id: input.teamId,
           });
 
+          // FIX THIS TO THE TOURNAMENT MATCHES AND MOVE THIS TO MONEY MATCHES
           // insert new enrolled team into respectable team tables
-          const matchId = crypto.randomUUID();
-          await tx.insert(matches).values({
-            id: matchId,
-            teamId: input.teamId,
-          });
+          // const matchId = crypto.randomUUID();
+          // await tx.insert(matches).values({
+          //   id: matchId,
+          //   teamId: input.teamId,
+          // });
 
-          await tx.insert(teamsToMatches).values({
-            match_id: matchId,
-            team_id: input.teamId,
-          });
+          // await tx.insert(teamsToMatches).values({
+          //   match_id: matchId,
+          //   team_id: input.teamId,
+          // });
 
           return true;
         } catch (error) {
@@ -169,4 +171,42 @@ export const matchRouter = createTRPCRouter({
         .from(tournamentTeamsEnrolled)
         .where(eq(tournamentTeamsEnrolled.id, input.tournamentId));
     }),
+
+  // createMoneyMatch: publicProcedure
+  //   .input(
+  //     z.object({
+  //       matchName: z.string().min(1),
+  //       matchType: z.string().min(1),
+  //       teamSize: z.string().min(1),
+  //       entry: z.number().min(1),
+  //       rules: z.array(z.any()),
+  //       startTime: z.string().min(1),
+  //       teamId: z.string().min(1),
+  //     }),
+  //   )
+  //   .mutation(async ({ ctx, input }) => {
+  //     await ctx.db.transaction(async (tx) => {
+  //       try {
+  //         const matchId = crypto.randomUUID();
+
+  //         await tx.insert(moneyMatch).values({
+  //           matchId: matchId,
+  //           createdBy: input.teamId,
+  //           matchName: input.matchName,
+  //           matchType: input.matchType,
+  //           entry: input.entry,
+  //           teamSize: input.teamSize,
+  //           startTime: input.startTime,
+  //           rules: input.rules,
+  //         });
+
+  //         await tx.insert(matches).values({
+  //           id: matchId,
+  //           teamId: input.teamId,
+  //         });
+  //       } catch (error) {
+  //         throw new Error(error as string);
+  //       }
+  //     });
+  //   }),
 });

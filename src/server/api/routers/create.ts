@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { teamMembersTable, teamRecordTable, teams } from "@/server/db/schema";
+import {
+  moneyMatch,
+  teamMembersTable,
+  teamRecordTable,
+  teams,
+} from "@/server/db/schema";
 
 export const createRouter = createTRPCRouter({
   createTeam: protectedProcedure
@@ -46,5 +51,40 @@ export const createRouter = createTRPCRouter({
 
         return true;
       });
+    }),
+
+  createMoneyMatch: protectedProcedure
+    .input(
+      z.object({
+        gameTitle: z.string().min(1),
+        matchTitle: z.string().min(1),
+        teamName: z.string().min(1),
+        teamCategory: z.string().min(1),
+        teamSize: z.string().min(1),
+        matchEntry: z.number().min(1),
+        startTime: z.string().min(1),
+        rules: z.array(z.any()),
+        createdBy: z.string().min(1),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const matchId = crypto.randomUUID();
+        await ctx.db.transaction(async (tx) => {
+          await tx.insert(moneyMatch).values({
+            matchId: matchId,
+            teamName: input.teamName,
+            createdBy: input.createdBy,
+            matchName: input.matchTitle,
+            matchType: input.teamCategory,
+            matchEntry: input.matchEntry,
+            teamSize: input.teamSize,
+            startTime: input.startTime,
+            rules: input.rules,
+          });
+        });
+      } catch (error) {
+        throw new Error(error as string);
+      }
     }),
 });
