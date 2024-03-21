@@ -201,3 +201,36 @@ export const teamCategory = [
     "fornite": ["solo", "duo", "trios", "quads"],
   },
 ];
+
+export const gameTitles = [
+  {
+    "mw3": {
+      "solo": ["CDL Search and Destory", "CDL Hardpoint", "CDL Variant", "Rio Only SND"],
+      "duo": ["CDL Search and Destory", "CDL Hardpoint", "CDL Variant", "Rio Only SND", "CDL Control"],
+      "trios": ["CDL Search and Destory", "CDL Hardpoint", "CDL Variant", "Rio Only SND", "CDL Control"],
+      "quads": ["CDL Search and Destory", "CDL Hardpoint", "CDL Variant", "Rio Only SND", "CDL Control"],
+    }
+  }
+]
+
+export const Rules = [
+  {
+    "mw3": {
+      "pc_player": ["Allowed", "Not Allowed"],
+      "snaking": ["Allowed", "Not Allowed"],
+      "snipers": ["Allowed", "Not Allowed"],
+      "allowed_input": ["Controller", "MKB", "Controller + MKB"]
+    },
+
+    "fornite": {
+      "pc_player": ["Allowed", "Not Allowed"],
+      "smg":  ["Allowed", "Not Allowed"]
+    },
+    
+    "warzone": {
+      "pc_player": ["Allowed", "Not Allowed"],
+      "snipers": ["Allowed", "Not Allowed"],
+      "helicopters": ["Allowed", "Not Allowed"],
+    },
+  }
+]
