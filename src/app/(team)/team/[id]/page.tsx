@@ -117,60 +117,63 @@ export default function Team() {
   //     )
   // })
 
-  const renderCell = useCallback((user: { [x: string]: any; userName: string; }, columnKey: React.Key) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const cellValue = user[columnKey as number];
+  const renderCell = useCallback(
+    (user: { [x: string]: any; userName: string }, columnKey: React.Key) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      const cellValue = user[columnKey as number];
 
-    switch (columnKey) {
-      case "userId":
-        return (
-          <div>
-            {cellValue}
-            {/* <Image
+      switch (columnKey) {
+        case "userId":
+          return (
+            <div>
+              {cellValue}
+              {/* <Image
                             src={`/images/${user.game}.png`} // Route of the image file
                             height={40} // Desired size with correct aspect ratio
                             width={40} // Desired size with correct aspect ratio
                             alt={`${user.game} placeholder image`}
                         /> */}
-          </div>
-        );
-      case "role":
-        return <div className="flex flex-col">{cellValue}</div>;
-      case "actions":
-        return (
-          <div className="relative flex items-center justify-end gap-2">
-            <Dropdown className="border-1 border-default-200 bg-background">
-              <DropdownTrigger>
-                <Button isIconOnly radius="full" size="sm" variant="light">
-                  <VerticalDotsIcon className="text-default-400" />
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu aria-label="teammates">
-                <DropdownItem
-                  href={`/profile/${user?.userName}`}
-                  aria-label="view"
-                >
-                  View
-                </DropdownItem>
-                <DropdownItem
-                  //   onPress={ () => {
-                  //     onOpen()
-                  //     setUsername(user.username)
-                  //     setEmail(user.email)
-                  //     setUserId(user.id)
-                  //   }}
-                  aria-label="delete"
-                >
-                  Delete
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-        );
-      default:
-        return cellValue;
-    }
-  }, []);
+            </div>
+          );
+        case "role":
+          return <div className="flex flex-col">{cellValue}</div>;
+        case "actions":
+          return (
+            <div className="relative flex items-center justify-end gap-2">
+              <Dropdown className="border-1 border-default-200 bg-background">
+                <DropdownTrigger>
+                  <Button isIconOnly radius="full" size="sm" variant="light">
+                    <VerticalDotsIcon className="text-default-400" />
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu aria-label="teammates">
+                  <DropdownItem
+                    href={`/profile/${user?.userName}`}
+                    aria-label="view"
+                  >
+                    View
+                  </DropdownItem>
+                  <DropdownItem
+                    //   onPress={ () => {
+                    //     onOpen()
+                    //     setUsername(user.username)
+                    //     setEmail(user.email)
+                    //     setUserId(user.id)
+                    //   }}
+                    aria-label="delete"
+                  >
+                    Delete
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </div>
+          );
+        default:
+          return cellValue;
+      }
+    },
+    [],
+  );
 
   const bottomContent = useMemo(() => {
     return (
@@ -217,9 +220,12 @@ export default function Team() {
             <div className="flex justify-between pb-2">
               <div className="flex">
                 <Avatar />
-                <div className="text-white ml-2">
+                <div className="ml-2 text-white">
                   <h2 className="mb-2 text-3xl font-bold">{team?.team_name}</h2>
-                  <p className="font-semibold"><span className="font-bold">Team Category:</span> {team?.teamCategory.toUpperCase()}</p>
+                  <p className="font-semibold">
+                    <span className="font-bold">Team Category:</span>{" "}
+                    {team?.teamCategory.toUpperCase()}
+                  </p>
                   <p className="font-semibold">
                     EST. {team?.createdAt.toLocaleDateString()}
                   </p>
@@ -244,7 +250,9 @@ export default function Team() {
                     <Button
                       color="success"
                       onPress={() => [
-                        router.push(`/match/create/${team?.gameTitle.toLowerCase()}`),
+                        router.push(
+                          `/match/create/${team?.gameTitle.toLowerCase()}?teamId=${team?.id}&teamCategory=${team?.teamCategory}`,
+                        ),
                       ]}
                     >
                       Create Money Match
