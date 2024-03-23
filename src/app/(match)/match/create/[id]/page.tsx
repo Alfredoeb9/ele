@@ -3,11 +3,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 "use client";
 import { useEffect, useState } from "react";
-import { Select, SelectItem } from "@nextui-org/react";
+import { Input, Select, SelectItem } from "@nextui-org/react";
 import { api } from "@/trpc/react";
 import { usePathname, useRouter } from "next/navigation";
-import { Rules, gameTitles } from "@/lib/sharedData";
+import { Rules, gameTitles, teamSizeRender } from "@/lib/sharedData";
 import { useSession } from "next-auth/react";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function CreateMatch() {
   const pathname = usePathname();
@@ -17,8 +18,6 @@ export default function CreateMatch() {
   const searchParams = new URLSearchParams(location.search);
   const formattedParmas = searchParams.toString().split("&");
 
-  console.log("formattedParmas", formattedParmas);
-
   const [selected, setSelected] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
@@ -27,17 +26,17 @@ export default function CreateMatch() {
     pathname.split("/")[3],
   );
 
-  const [teamId, setTeamId] = useState(formattedParmas[0]?.split("=")[1]);
-  const [teamCat, setTeamCat] = useState(formattedParmas[1]?.split("=")[1]);
-
-  console.log("cat", teamCat);
+  const [teamId, setTeamId] = useState(formattedParmas[0]?.split("=")[1] || "");
+  const [teamCat, setTeamCat] = useState(
+    formattedParmas[1]?.split("=")[1] || "",
+  );
 
   const [subCategory, setSubCategory] = useState<string[]>([]);
   const [confirmedGameRules, setConfirmedGameRules] = useState<any>([]);
-  const [gameRules, setGameRules] = useState<any[]>([]);
+  const [gameRules, setGameRules] = useState<any>([]);
   const [gameTitle, setGameTitles] = useState<any[]>([]);
   const [teamSize, setTeamSize] = useState<string>("");
-  const [matchEntry, setMatchEntry] = useState<number>(1);
+  const [matchEntry, setMatchEntry] = useState<number | string>(1);
   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
   const [startTime, setStartTime] = useState(
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
@@ -63,8 +62,33 @@ export default function CreateMatch() {
       router.refresh();
     },
 
-    onError: (error: { message: string }) => {
-      console.log("error", error.message);
+    onError: (error) => {
+      if (
+        error.message.includes(
+          "ele_money_match.ele_money_match_created_by_start_time_unique",
+        )
+      ) {
+        toast("Team alreay has a match for following time and team", {
+          position: "bottom-right",
+          autoClose: 3500,
+          closeOnClick: true,
+          draggable: false,
+          type: "error",
+          toastId: 64,
+        });
+      } else {
+        toast(
+          "Create money match service is down please refresh and try again",
+          {
+            position: "bottom-right",
+            autoClose: 3500,
+            closeOnClick: true,
+            draggable: false,
+            type: "error",
+            toastId: 65,
+          },
+        );
+      }
     },
   });
 
@@ -120,8 +144,12 @@ export default function CreateMatch() {
       gameTitles.find((title: any) =>
         setGameTitles(title[arrById[0]?.game][teamCat as any]),
       );
+      //@ts-expect-error using dynamic values to render value
+      setTeamSize(teamSizeRender[0][`${selectedGames}`][teamCat]);
     }
   }, [selectedGames, gameRules, arrById, teamCat]);
+
+  if (teamId?.length <= 0 || teamCat?.length <= 0) return null;
 
   return (
     <div className="m-auto flex min-h-full w-96 flex-1 flex-col justify-center px-6 py-12 dark:bg-slate-800 lg:px-8">
@@ -148,7 +176,7 @@ export default function CreateMatch() {
 
         <div className="mb-2">
           <label
-            className="block text-sm font-medium leading-6"
+            className="block text-lg font-medium leading-6 text-white sm:text-xl"
             htmlFor={"start-time"}
           >
             Start Time:
@@ -167,12 +195,44 @@ export default function CreateMatch() {
           )}
         </div>
 
+        <div className="mt-2 text-white">
+          <label
+            className="block pb-2 text-lg font-medium leading-6 text-white sm:text-xl"
+            htmlFor={"start-time"}
+          >
+            Match Entry:
+          </label>
+          <Input
+            placeholder="0.00"
+            min={1}
+            defaultValue={"1"}
+            value={matchEntry as string}
+            onChange={(e) => setMatchEntry(e.target.value)}
+            startContent={
+              <div className="pointer-events-none flex items-center">
+                <span className="text-small text-default-500">$</span>
+              </div>
+            }
+            type="number"
+          />
+        </div>
+
+        <div className="mt-2">
+          <Input
+            label="Team Size"
+            type="text"
+            readOnly
+            //@ts-expect-error using dynamic values to render value
+            value={teamSizeRender[0][`${selectedGames}`][teamCat]}
+          />
+        </div>
+
         <div className="my-4">
-          <label className="block pb-2 text-xl font-medium leading-6 text-white">
+          <label className="block pb-2 text-lg font-medium leading-6 text-white sm:text-xl">
             Rules:
           </label>
 
-          {Object?.entries(gameRules)?.map((rule, key: number) => (
+          {Object?.entries(gameRules)?.map((rule: any, key: number) => (
             <Select
               label={rule[0].charAt(0).toUpperCase() + rule[0].slice(1)}
               key={key}
@@ -205,22 +265,24 @@ export default function CreateMatch() {
         <button
           className="mt-4 flex w-full justify-center rounded-md bg-indigo-600 px-3 py-3 text-lg font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-slate-500"
           disabled={
-            game.length === 0 ||
-            selected.length === 0 ||
-            loading ||
-            error.includes("Please change the name")
+            selectedGames.length === 0 ||
+            gameRules.length <= 0 ||
+            selectedGameTitle === null ||
+            selectedGameTitle.length <= 0 ||
+            matchEntry === 0 ||
+            loading
           }
           onClick={(e) => {
             e.preventDefault();
             createGame.mutate({
-              gameTitle: game,
+              gameTitle: selectedGames,
               matchTitle: selectedGameTitle!,
-              rules: gameRules,
+              rules: confirmedGameRules,
               teamCategory: teamCat,
               teamName: teamId,
               createdBy: session?.data?.user.username!,
-              teamSize: teamSize,
-              matchEntry: matchEntry,
+              teamSize: String(teamSize),
+              matchEntry: Number(matchEntry),
               startTime: startTime,
             });
           }}
@@ -230,6 +292,8 @@ export default function CreateMatch() {
 
         {error && <div className="pt-2 font-bold text-red-600">{error}</div>}
       </section>
+
+      <ToastContainer containerId={"create-money-match"} />
     </div>
   );
 }
