@@ -206,9 +206,9 @@ export const gameTitles = [
   {
     "mw3": {
       "solo": ["CDL Search and Destory", "CDL Hardpoint", "CDL Variant", "Rio Only SND"],
-      "duo": ["CDL Search and Destory", "CDL Hardpoint", "CDL Variant", "Rio Only SND", "CDL Control"],
-      "trios": ["CDL Search and Destory", "CDL Hardpoint", "CDL Variant", "Rio Only SND", "CDL Control"],
-      "quads": ["CDL Search and Destory", "CDL Hardpoint", "CDL Variant", "Rio Only SND", "CDL Control"],
+      "duo": ["CDL Search and Destory (duo)", "CDL Hardpoint (duo)", "CDL Variant (duo)", "Rio Only SND (duo)", "CDL Control (duo)"],
+      "trios": ["CDL Search and Destory (trios)", "CDL Hardpoint (trios)", "CDL Variant (trios)", "Rio Only SND (trios)", "CDL Control (trios)"],
+      "quads": ["CDL Search and Destory (quads)", "CDL Hardpoint (quads)", "CDL Variant (quads)", "Rio Only SND (quads)", "CDL Control (quads)"],
     }
   }
 ]
@@ -234,3 +234,20 @@ export const Rules = [
     },
   }
 ]
+
+export const teamSizeRender = [
+  {
+    "mw3": {
+      "solo": "1",
+      "duo": 2,
+      "trios": 3,
+      "quads": 4
+    },
+    "fornite": {
+      "solo": 1,
+      "duo": 2,
+      "trios": 3,
+      "quads": 4
+    },
+  },
+];
