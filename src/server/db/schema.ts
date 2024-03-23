@@ -225,7 +225,7 @@ export const moneyMatch = createTable(
     matchEntry: int("entry").notNull(),
     teamSize: varchar("team_size", { length: 255 }).notNull(),
     startTime: varchar("start_time", { length: 300 }).notNull(),
-    rules: json("rules").notNull().notNull(),
+    rules: json("rules").notNull(),
     createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
     updatedAt: timestamp("updated_at").onUpdateNow(),
   },
