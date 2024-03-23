@@ -14,24 +14,19 @@ export default function CreateMatch() {
   const pathname = usePathname();
   const router = useRouter();
   const session = useSession();
-  const [game, setGame] = useState<string>("");
   const searchParams = new URLSearchParams(location.search);
   const formattedParmas = searchParams.toString().split("&");
-
-  const [selected, setSelected] = useState<string[]>([]);
+  // const [selected, setSelected] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-  const [previousGameName, setPreviousGameName] = useState<string>("");
+  // const [previousGameName, setPreviousGameName] = useState<string>("");
   const [selectedGames, setSelectedGames] = useState<string>(
     pathname.split("/")[3],
   );
-
   const [teamId, setTeamId] = useState(formattedParmas[0]?.split("=")[1] || "");
   const [teamCat, setTeamCat] = useState(
     formattedParmas[1]?.split("=")[1] || "",
   );
-
-  const [subCategory, setSubCategory] = useState<string[]>([]);
   const [confirmedGameRules, setConfirmedGameRules] = useState<any>([]);
   const [gameRules, setGameRules] = useState<any>([]);
   const [gameTitle, setGameTitles] = useState<any[]>([]);
@@ -44,22 +39,43 @@ export default function CreateMatch() {
   );
   const [selectedGameTitle, setSelectedGameTitle] = useState<string | null>("");
 
+  if (session.status === "unauthenticated") {
+    toast("Player must be signed in", {
+      position: "bottom-right",
+      autoClose: 2800,
+      closeOnClick: true,
+      draggable: false,
+      type: "error",
+      toastId: 66,
+    });
+    setTimeout(() => {
+      router.push("/sign-in");
+    });
+  }
+
   const getSingleGame = api.games.getSingleGame.useQuery(
     { gameName: selectedGames },
-    { enabled: selectedGames.length > 0 },
+    { enabled: selectedGames.length > 0 && session.status === "authenticated" },
   );
 
   const createGame = api.create.createMoneyMatch.useMutation({
     onSuccess: () => {
-      setGame("");
-      setPreviousGameName(""), setSubCategory([]);
-      setSelected([]);
-      const allSubs = document.querySelectorAll(".sub-category-child");
-
-      allSubs.forEach((sub) => {
-        sub.remove();
+      toast("Money match created", {
+        position: "bottom-right",
+        autoClose: 3500,
+        closeOnClick: true,
+        draggable: false,
+        type: "success",
+        toastId: 67,
       });
-      router.refresh();
+      setTeamSize("");
+      setGameTitles([]);
+      setConfirmedGameRules([]);
+      setMatchEntry(1);
+      setStartTime(`${new Date().toISOString().slice(0, -8)}`);
+      setTimeout(() => {
+        router.push(`/team/${teamId}`);
+      });
     },
 
     onError: (error) => {
@@ -290,7 +306,7 @@ export default function CreateMatch() {
           Create Money Match
         </button>
 
-        {error && <div className="pt-2 font-bold text-red-600">{error}</div>}
+        {/* {error && <div className="pt-2 font-bold text-red-600">{error}</div>} */}
       </section>
 
       <ToastContainer containerId={"create-money-match"} />
