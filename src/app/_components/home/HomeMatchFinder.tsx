@@ -1,27 +1,30 @@
 import { Spinner } from "@nextui-org/react";
-import {MatchFinderTable} from "./MatchFinderTable"
+import { MatchFinderTable } from "./MatchFinderTable";
 import { api } from "@/trpc/react";
-import { queryOptions } from "@tanstack/react-query";
 
 export default function HomeMatchFinder() {
-    const tournamentMatches = api.matches.getAllMatches.useQuery()
+  const tournamentMatches = api.matches.getAllTournaments.useQuery();
 
-    if (tournamentMatches.isPending) return <Spinner label="Loading..." color="warning" />
+  if (tournamentMatches.isPending)
+    return <Spinner label="Loading..." color="warning" />;
 
-    return (
-        <section className="flex flex-col items-center justify-center m-auto p-8 max-w-7xl w-full">
-            <div className="flex flex-row justify-center m-auto max-w-7xl w-full">
-                <div className="bg-red-400 h-10 w-2 mr-4" />
+  return (
+    <section className="m-auto flex w-full max-w-7xl flex-col items-center justify-center p-8">
+      <div className="m-auto flex w-full max-w-7xl flex-row justify-center">
+        <div className="mr-4 h-10 w-2 bg-red-400" />
 
-                <div className="text-white w-full overflow-auto">
-                    <h2 className="text-3xl lg:text-4xl">MatchFinder</h2>
-                    <p className="text-base mb-2">Head to head matches where you pick the game, rules and prize.</p>
+        <div className="w-full overflow-auto text-white">
+          <h2 className="text-3xl lg:text-4xl">MatchFinder</h2>
+          <p className="mb-2 text-base">
+            Head to head matches where you pick the game, rules and prize.
+          </p>
 
-                    { tournamentMatches.isSuccess && <MatchFinderTable data={tournamentMatches.data} />}
-                    { tournamentMatches.isError && <p>Please refresh again!</p>}
-                    
-                </div>
-            </div>
-        </section>
-    )
+          {tournamentMatches.isSuccess && (
+            <MatchFinderTable data={tournamentMatches.data} />
+          )}
+          {tournamentMatches.isError && <p>Please refresh again!</p>}
+        </div>
+      </div>
+    </section>
+  );
 }
