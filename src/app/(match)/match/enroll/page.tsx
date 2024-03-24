@@ -14,12 +14,14 @@ export default function Enroll() {
   const session = useSession();
   // const [error, setError] = useState<any>(null);
   const [gameIdError, setGameIdError] = useState<boolean>(false);
+  const [pathname] = useState<string>("enroll");
   const [selectedGames, setSelectedGames] = useState<string>("");
   const [teamName, setTeamName] = useState<string>("");
 
   if (session.status === "unauthenticated") router.push("/sign-in");
 
   const search = searchParams.get("id");
+  const category = searchParams.get("cat");
 
   if (!search) {
     toast("There was a problem returning data", {
@@ -34,14 +36,14 @@ export default function Enroll() {
     return null;
   }
 
-  const tournament = api.matches.getSingleTournament.useQuery(
-    { id: search },
+  const moneyMatch = api.matches.getSingleMoneyMatch.useQuery(
+    { matchId: search },
     { enabled: search.length > 0 },
   );
 
   useEffect(() => {
-    if (tournament.isError) {
-      if (tournament.error.message.includes("Tournament was not found")) {
+    if (moneyMatch.isError) {
+      if (moneyMatch.error.message.includes("Tournament was not found")) {
         setGameIdError(true);
         toast(`Please enroll in a supported match`, {
           position: "bottom-right",
@@ -53,18 +55,21 @@ export default function Enroll() {
         });
       }
     }
-  }, [tournament.isError]);
+  }, [moneyMatch.isError]);
 
   const currentUser = api.user.getSingleUserByTeamId.useQuery(
     {
-      email: session?.data?.user.email as string,
-      gameId: tournament.data && (tournament?.data[0]?.game as string | any),
+      email: session?.data?.user.email!,
+      gameId:
+        moneyMatch.data && (moneyMatch?.data[0]?.gameTitle as string | any),
+      pathname: pathname,
+      cat: category!,
     },
     {
       enabled:
-        tournament.data !== undefined &&
+        moneyMatch.data !== undefined &&
         gameIdError === false &&
-        tournament.data.length > 0,
+        moneyMatch.data.length > 0,
     },
   );
 
@@ -84,10 +89,10 @@ export default function Enroll() {
     }
   }, [currentUser.isError]);
 
-  const enrollTeam = api.matches.enrollTeamToTournament.useMutation({
+  const enrollTeam = api.matches.enrollTeamToMoneyMatch.useMutation({
     onSuccess: () => {
       toast(
-        `${teamName} has been enrolled into ${tournament?.data![0]?.name} tournament`,
+        `${teamName} has been enrolled into ${moneyMatch?.data![0]?.matchName} money match`,
         {
           position: "bottom-right",
           autoClose: 3500,
@@ -105,9 +110,9 @@ export default function Enroll() {
     },
 
     onError: (error) => {
-      if (error.message.includes("cannot enroll team in tournament")) {
+      if (error.message.includes("cannot enroll team in money match")) {
         toast(
-          `${teamName} is already enrolled into ${tournament?.data![0]?.name} tournament`,
+          `${teamName} is already enrolled into ${moneyMatch?.data![0]?.matchName} money match`,
           {
             position: "bottom-right",
             autoClose: 5000,
@@ -131,10 +136,9 @@ export default function Enroll() {
     </div>
   );
 
-  if (currentUser?.data && tournament?.data) {
+  if (currentUser?.data && moneyMatch?.data) {
     if (
-      Number(tournament.data[0].entry.replace(/[^0-9]/g, "")) >
-      Number(currentUser.data.credits)
+      Number(moneyMatch.data[0].matchEntry) > Number(currentUser.data.credits)
     ) {
       router.push("/pricing");
     }
@@ -162,7 +166,7 @@ export default function Enroll() {
         <p className="mb-2 text-white">
           This Match/ Tournament will cost{" "}
           <span className="font-semibold text-blue-500">
-            {tournament?.data && tournament?.data[0]?.entry}
+            {moneyMatch?.data && moneyMatch?.data[0]?.matchEntry}
           </span>
         </p>
 
@@ -172,7 +176,7 @@ export default function Enroll() {
             if (
               selectedGames.length <= 0 ||
               teamName.length <= 0 ||
-              (tournament.data && tournament?.data[0]?.id.length <= 0)
+              (moneyMatch.data && moneyMatch?.data[0]?.matchId.length <= 0)
             ) {
               toast(`Please fill in necessary details to enter`, {
                 position: "bottom-right",
@@ -184,12 +188,13 @@ export default function Enroll() {
               });
               return null;
             } else {
-              enrollTeam.mutate({
-                tournamentId:
-                  tournament.data && (tournament.data[0]?.id as string | any),
-                teamId: selectedGames,
-                teamName: teamName,
-              });
+              // enrollTeam.mutate({
+              //   matchId:
+              //     moneyMatch.data &&
+              //     (moneyMatch.data[0]?.matchId as string | any),
+              //   acceptingTeamId: selectedGames,
+              //   teamName: teamName,
+              // });
             }
           }}
         >
@@ -217,17 +222,17 @@ export default function Enroll() {
               required
             >
               {
-                currentUser.data?.teams?.map((match) => (
+                currentUser.data?.teams?.map((team) => (
                   <SelectItem
                     //@ts-expect-error id is present
-                    key={match.teamId}
-                    //@ts-expect-error teamName is present
-                    onClick={() => setTeamName(match.teamName)}
-                    //@ts-expect-error teamName is present
-                    value={match.teamName}
+                    key={team.id}
+                    //@ts-expect-error team_name is present
+                    onClick={() => setTeamName(team.team_name)}
+                    //@ts-expect-error team_name is present
+                    value={team.team_name}
                   >
-                    {/* @ts-expect-error teamName is present */}
-                    {match.teamName}
+                    {/* @ts-expect-error id is present */}
+                    {team.team_name}
                   </SelectItem>
                 )) as []
               }

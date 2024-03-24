@@ -21,6 +21,7 @@ import { statusGameMap, trophys } from "@/lib/sharedData";
 import { GrTrophy } from "react-icons/gr";
 import MatchTimer from "@/app/_components/MatchTimer";
 import BracketGenerator from "@/app/_components/BracketGenerator";
+import { match } from "assert";
 
 export interface Participant {
   teamId?: string;
@@ -41,6 +42,7 @@ export default function Tournaments({
   const [matchId] = useState<string>(id);
   const [, setPrize] = useState<number>(0);
   const [prizeTest] = useState<number[]>([5, 0, 0]);
+  const [matchType, setMatchType] = useState("");
 
   const matchData = api.matches.getSingleMoneyMatch.useQuery(
     { matchId: matchId },
@@ -67,6 +69,7 @@ export default function Tournaments({
   useEffect(() => {
     if (matchData.data) {
       matchData?.data.map((match) => {
+        setMatchType(match.matchType);
         console.log("match", match);
       });
     }
@@ -223,7 +226,12 @@ export default function Tournaments({
                 size="lg"
                 radius="md"
               >
-                <Link href={`/tournaments/enroll?id=${matchId}`}>
+                <Link
+                  href={{
+                    pathname: `/match/enroll`,
+                    query: { id: matchId, cat: matchType },
+                  }}
+                >
                   Enroll Now
                 </Link>
               </Button>
