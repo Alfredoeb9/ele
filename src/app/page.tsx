@@ -3,12 +3,12 @@ import { unstable_noStore as noStore } from "next/cache";
 import Link from "next/link";
 import HomeFeaturedGames from "./_components/home/HomeFeaturedGames";
 import LoginBanner from "./_components/LoginBanner";
-import HomeMatchFinder from "./_components/home/HomeMatchFinder";
 import { api } from "@/trpc/react";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { ToastContainer, toast } from "react-toastify";
 import HomeMoneyMatch from "./_components/home/HomeMoneyMatch";
+import HomeTournamentMatchFinder from "./_components/home/HomeTournamentMatchFinder";
 
 // function singleEliminationTournament(players: string | any[]) {
 //   const rounds = [];
@@ -131,7 +131,7 @@ export default function Home() {
 
       <HomeMoneyMatch />
 
-      <HomeMatchFinder />
+      <HomeTournamentMatchFinder />
 
       <ToastContainer containerId={"home-page-toast"} />
     </main>

@@ -45,7 +45,7 @@ const statusColorMap: Record<string, ChipProps["color"]> = {
   "not available": "danger",
 };
 
-export const MatchFinderTable = ({ data }: MatchListProps) => {
+export const TournamentMatchFinderTable = ({ data }: MatchListProps) => {
   if (!data) return null;
 
   type User = typeof data.matches;

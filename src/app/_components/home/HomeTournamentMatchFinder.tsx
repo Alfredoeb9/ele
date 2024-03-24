@@ -1,8 +1,8 @@
 import { Spinner } from "@nextui-org/react";
-import { MatchFinderTable } from "./MatchFinderTable";
+import { TournamentMatchFinderTable } from "./TournamentMatchFinderTable";
 import { api } from "@/trpc/react";
 
-export default function HomeMatchFinder() {
+export default function HomeTournamentMatchFinder() {
   const tournamentMatches = api.matches.getAllTournaments.useQuery();
 
   if (tournamentMatches.isPending)
@@ -14,13 +14,13 @@ export default function HomeMatchFinder() {
         <div className="mr-4 h-10 w-2 bg-red-400" />
 
         <div className="w-full overflow-auto text-white">
-          <h2 className="text-3xl lg:text-4xl">MatchFinder</h2>
+          <h2 className="text-3xl lg:text-4xl">Tournament Match Finder</h2>
           <p className="mb-2 text-base">
             Head to head matches where you pick the game, rules and prize.
           </p>
 
           {tournamentMatches.isSuccess && (
-            <MatchFinderTable data={tournamentMatches.data} />
+            <TournamentMatchFinderTable data={tournamentMatches.data} />
           )}
           {tournamentMatches.isError && <p>Please refresh again!</p>}
         </div>
