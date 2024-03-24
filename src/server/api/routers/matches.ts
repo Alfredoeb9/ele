@@ -1,11 +1,12 @@
 import { z } from "zod";
-import { eq, sql } from "drizzle-orm";
+import { type SQLWrapper, eq, sql } from "drizzle-orm";
 import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
 import {
+  type TournamentType,
   matches,
   moneyMatch,
   posts,
@@ -13,7 +14,6 @@ import {
   tournamentTeamsEnrolled,
   tournaments,
   tournamentsToTeams,
-  usersToMatches,
 } from "@/server/db/schema";
 
 export const matchRouter = createTRPCRouter({
@@ -48,7 +48,7 @@ export const matchRouter = createTRPCRouter({
     return ctx.db.select().from(moneyMatch);
   }),
 
-  getSingleMatch: publicProcedure
+  getSingleTournament: publicProcedure
     .input(z.object({ id: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
       try {
@@ -73,6 +73,19 @@ export const matchRouter = createTRPCRouter({
       }
     }),
 
+  getSingleMoneyMatch: publicProcedure
+    .input(
+      z.object({
+        matchId: z.string().min(1),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.db
+        .select()
+        .from(moneyMatch)
+        .where(eq(moneyMatch.matchId, input.matchId));
+    }),
+
   // getSingle: publicProcedure.query(({ ctx }) => {
   //   return ctx.db.query.tournaments.findFirst({
   //     where: (tournament, { desc }) => [desc(tournament.id)],
@@ -85,6 +98,7 @@ export const matchRouter = createTRPCRouter({
   //   });
   // }),
 
+  // Make this into the money match query
   getLatestUsersMatches: publicProcedure
     .input(
       z.object({
@@ -93,13 +107,13 @@ export const matchRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const data: any[] | PromiseLike<any[]> = [];
+      const data: TournamentType[] | PromiseLike<any[]> = [];
 
-      input.tournamentId.map(async (id: any) => {
-        const house = ctx.db.query.tournaments.findMany({
+      input.tournamentId.map(async (id: { id: string | SQLWrapper }) => {
+        const tourneyMatches = ctx.db.query.tournaments.findMany({
           where: eq(tournaments.id, id.id),
         });
-        return data.push(house);
+        return data.push(...(await tourneyMatches));
       });
 
       return data;
@@ -108,6 +122,41 @@ export const matchRouter = createTRPCRouter({
   getSecretMessage: protectedProcedure.query(() => {
     return "you can now see this secret message!";
   }),
+
+  enrollTeamToMoneyMatch: publicProcedure
+    .input(
+      z.object({
+        matchId: z.string().min(1),
+        createrTeamId: z.string().min(1),
+        acceptingTeamId: z.string().min(1),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.db.transaction(async (tx) => {
+          await tx.insert(matches).values({
+            id: input.matchId,
+            teamId: input.createrTeamId,
+          });
+
+          await tx.insert(matches).values({
+            id: input.matchId,
+            teamId: input.acceptingTeamId,
+          });
+
+          await tx.insert(teamsToMatches).values({
+            match_id: input.matchId,
+            team_id: input.acceptingTeamId,
+          });
+          await tx.insert(teamsToMatches).values({
+            match_id: input.matchId,
+            team_id: input.createrTeamId,
+          });
+        });
+      } catch (error) {
+        throw new Error(error as string);
+      }
+    }),
 
   enrollTeamToTournament: publicProcedure
     .input(
@@ -136,25 +185,10 @@ export const matchRouter = createTRPCRouter({
             .set({ enrolled: sql`${tournaments.enrolled} + 1` })
             .where(eq(tournaments.id, input.tournamentId));
 
-          const tournamentId = crypto.randomUUID();
-
           await tx.insert(tournamentsToTeams).values({
             tournament_id: input.tournamentId,
             team_id: input.teamId,
           });
-
-          // FIX THIS TO THE TOURNAMENT MATCHES AND MOVE THIS TO MONEY MATCHES
-          // insert new enrolled team into respectable team tables
-          // const matchId = crypto.randomUUID();
-          // await tx.insert(matches).values({
-          //   id: matchId,
-          //   teamId: input.teamId,
-          // });
-
-          // await tx.insert(teamsToMatches).values({
-          //   match_id: matchId,
-          //   team_id: input.teamId,
-          // });
 
           return true;
         } catch (error) {
@@ -175,42 +209,4 @@ export const matchRouter = createTRPCRouter({
         .from(tournamentTeamsEnrolled)
         .where(eq(tournamentTeamsEnrolled.id, input.tournamentId));
     }),
-
-  // createMoneyMatch: publicProcedure
-  //   .input(
-  //     z.object({
-  //       matchName: z.string().min(1),
-  //       matchType: z.string().min(1),
-  //       teamSize: z.string().min(1),
-  //       entry: z.number().min(1),
-  //       rules: z.array(z.any()),
-  //       startTime: z.string().min(1),
-  //       teamId: z.string().min(1),
-  //     }),
-  //   )
-  //   .mutation(async ({ ctx, input }) => {
-  //     await ctx.db.transaction(async (tx) => {
-  //       try {
-  //         const matchId = crypto.randomUUID();
-
-  //         await tx.insert(moneyMatch).values({
-  //           matchId: matchId,
-  //           createdBy: input.teamId,
-  //           matchName: input.matchName,
-  //           matchType: input.matchType,
-  //           entry: input.entry,
-  //           teamSize: input.teamSize,
-  //           startTime: input.startTime,
-  //           rules: input.rules,
-  //         });
-
-  //         await tx.insert(matches).values({
-  //           id: matchId,
-  //           teamId: input.teamId,
-  //         });
-  //       } catch (error) {
-  //         throw new Error(error as string);
-  //       }
-  //     });
-  //   }),
 });
