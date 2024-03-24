@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import {
+  matches,
   moneyMatch,
   teamMembersTable,
   teamRecordTable,
@@ -65,6 +66,7 @@ export const createRouter = createTRPCRouter({
         startTime: z.string().min(1),
         rules: z.array(z.any()),
         createdBy: z.string().min(1),
+        platforms: z.array(z.string()),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -81,6 +83,8 @@ export const createRouter = createTRPCRouter({
             teamSize: input.teamSize,
             startTime: input.startTime,
             rules: input.rules,
+            gameTitle: input.gameTitle,
+            platform: input.platforms,
           });
         });
       } catch (error) {
