@@ -218,8 +218,10 @@ export const moneyMatch = createTable(
   "money_match",
   {
     matchId: varchar("match_id", { length: 255 }).notNull(),
+    gameTitle: varchar("game_title", { length: 255 }).notNull(),
     teamName: varchar("team_name", { length: 255 }).notNull(),
     createdBy: varchar("created_by", { length: 255 }).notNull(),
+    platform: json("platforms").notNull(),
     matchName: varchar("match_name", { length: 255 }).notNull(),
     matchType: varchar("match_type", { length: 255 }).notNull(),
     matchEntry: int("entry").notNull(),
