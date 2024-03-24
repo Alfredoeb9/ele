@@ -40,8 +40,12 @@ export const matchRouter = createTRPCRouter({
       });
     }),
 
-  getAllMatches: publicProcedure.query(({ ctx }) => {
+  getAllTournaments: publicProcedure.query(({ ctx }) => {
     return ctx.db.select().from(tournaments);
+  }),
+
+  getAllMoneyMatches: publicProcedure.query(({ ctx }) => {
+    return ctx.db.select().from(moneyMatch);
   }),
 
   getSingleMatch: publicProcedure
