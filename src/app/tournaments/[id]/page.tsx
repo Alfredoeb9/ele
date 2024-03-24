@@ -195,22 +195,26 @@ console.log(tournament);
 // }
 
 export interface Participant {
-  name: string;
+  teamId?: string;
+  teamName: string;
   score: number;
+  createdAt?: Date;
+  updatedAt?: Date | null;
+  id?: string;
 }
 
-const ParticipantComponent: React.FC<{
-  participant: Participant;
-  increaseScore: () => void;
-}> = ({ participant, increaseScore }) => {
-  return (
-    <div>
-      <h3>{participant.name}</h3>
-      <p>Score: {participant.score}</p>
-      {/* <button onClick={increaseScore}>Increase Score</button> */}
-    </div>
-  );
-};
+// const ParticipantComponent: React.FC<{
+//   participant: Participant;
+//   increaseScore: () => void;
+// }> = ({ participant, increaseScore }) => {
+//   return (
+//     <div>
+//       <h3>{participant.teamName}</h3>
+//       <p>Score: {participant.score}</p>
+//       {/* <button onClick={increaseScore}>Increase Score</button> */}
+//     </div>
+//   );
+// };
 
 const Tournament: React.FC<{ participants: Participant[] }> = ({
   participants,
@@ -255,6 +259,8 @@ const Tournament: React.FC<{ participants: Participant[] }> = ({
     // Pair participants for matches
     if (round === 0) {
       for (let i = 0; i < shuffledParticipants.length - 1; i += 2) {
+        shuffledParticipants[i].score = 0;
+        shuffledParticipants[i + 1].score = 0;
         if (
           shuffledParticipants[i].score === round &&
           shuffledParticipants[i + 1].score === round
@@ -354,26 +360,10 @@ const Tournament: React.FC<{ participants: Participant[] }> = ({
       >
         Play Round
       </button>
-      {winner && <h2>Winner: {winner.name}</h2>}
+      {winner && <h2>Winner: {winner.teamName}</h2>}
     </div>
   );
 };
-
-// Example usage
-const participants: Participant[] = [
-  { name: "Player 1", score: 0 },
-  { name: "Player 2", score: 0 },
-  { name: "Player 3", score: 0 },
-  { name: "Player 4", score: 0 },
-  { name: "Player 5", score: 0 },
-  { name: "Player 6", score: 0 },
-  { name: "Player 7", score: 0 },
-  { name: "Player 8", score: 0 },
-  { name: "Player 9", score: 0 },
-  { name: "Player 10", score: 0 },
-  { name: "Player 11", score: 0 },
-  { name: "Player 12", score: 0 },
-];
 
 export default function Tournaments({
   params: { id },
@@ -386,8 +376,14 @@ export default function Tournaments({
   const [, setPrize] = useState<number>(0);
   const [prizeTest] = useState<number[]>([5, 0, 0]);
 
-  const tournamentData = api.matches.getSingleMatch.useQuery(
+  const tournamentData = api.matches.getSingleTournament.useQuery(
     { id: tournamentId },
+    { enabled: tournamentId.length >= 0 },
+  );
+
+  // ENABLE THIS ONLY WHEN THE TOURNAMENT TIMER IS DONE / 0
+  const teamsEnrolled = api.matches.getEnrolledTeams.useQuery(
+    { tournamentId: tournamentId },
     { enabled: tournamentId.length >= 0 },
   );
 
@@ -631,7 +627,7 @@ export default function Tournaments({
               <Tab key="bracket" title="BRACKET">
                 <Card>
                   <CardBody>
-                    <Tournament participants={participants} />
+                    <Tournament participants={teamsEnrolled.data as any} />
                   </CardBody>
                 </Card>
               </Tab>
