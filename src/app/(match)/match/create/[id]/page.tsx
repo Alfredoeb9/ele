@@ -3,7 +3,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 "use client";
 import { useEffect, useState } from "react";
-import { Input, Select, SelectItem } from "@nextui-org/react";
+import {
+  Checkbox,
+  CheckboxGroup,
+  Input,
+  Select,
+  SelectItem,
+} from "@nextui-org/react";
 import { api } from "@/trpc/react";
 import { usePathname, useRouter } from "next/navigation";
 import { Rules, gameTitles, teamSizeRender } from "@/lib/sharedData";
@@ -16,7 +22,6 @@ export default function CreateMatch() {
   const session = useSession();
   const searchParams = new URLSearchParams(location.search);
   const formattedParmas = searchParams.toString().split("&");
-  // const [selected, setSelected] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   // const [previousGameName, setPreviousGameName] = useState<string>("");
@@ -28,6 +33,7 @@ export default function CreateMatch() {
     formattedParmas[1]?.split("=")[1] || "",
   );
   const [confirmedGameRules, setConfirmedGameRules] = useState<any>([]);
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [gameRules, setGameRules] = useState<any>([]);
   const [gameTitle, setGameTitles] = useState<any[]>([]);
   const [teamSize, setTeamSize] = useState<string>("");
@@ -70,6 +76,7 @@ export default function CreateMatch() {
       });
       setTeamSize("");
       setGameTitles([]);
+      setSelectedPlatforms([]);
       setConfirmedGameRules([]);
       setMatchEntry(1);
       setStartTime(`${new Date().toISOString().slice(0, -8)}`);
@@ -143,7 +150,7 @@ export default function CreateMatch() {
     }
   }
 
-  const arrById = getSingleGame.data?.filter(filterByID);
+  const arrById: any = getSingleGame.data?.filter(filterByID);
 
   useEffect(() => {
     if (formattedParmas.length > 0) {
@@ -162,10 +169,14 @@ export default function CreateMatch() {
       );
       //@ts-expect-error using dynamic values to render value
       setTeamSize(teamSizeRender[0][`${selectedGames}`][teamCat]);
+    } else {
+      setSelectedGames(pathname.split("/")[3]);
     }
-  }, [selectedGames, gameRules, arrById, teamCat]);
+  }, [selectedGames, gameRules, arrById, teamCat, pathname]);
 
   if (teamId?.length <= 0 || teamCat?.length <= 0) return null;
+
+  if (arrById === undefined) return null;
 
   return (
     <div className="m-auto flex min-h-full w-96 flex-1 flex-col justify-center px-6 py-12 dark:bg-slate-800 lg:px-8">
@@ -243,6 +254,27 @@ export default function CreateMatch() {
           />
         </div>
 
+        <CheckboxGroup
+          label="Select platforms:"
+          className="block pt-2 text-sm font-medium leading-6"
+          value={selectedPlatforms}
+          onValueChange={setSelectedPlatforms}
+          isRequired
+        >
+          {arrById[0]?.platforms.map((platform: any, i: number) => (
+            <Checkbox
+              key={i}
+              value={platform}
+              className="text-white"
+              classNames={{
+                label: "text-white",
+              }}
+            >
+              {platform}
+            </Checkbox>
+          ))}
+        </CheckboxGroup>
+
         <div className="my-4">
           <label className="block pb-2 text-lg font-medium leading-6 text-white sm:text-xl">
             Rules:
@@ -300,6 +332,7 @@ export default function CreateMatch() {
               teamSize: String(teamSize),
               matchEntry: Number(matchEntry),
               startTime: startTime,
+              platforms: selectedPlatforms,
             });
           }}
         >
