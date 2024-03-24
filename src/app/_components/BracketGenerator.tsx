@@ -78,8 +78,8 @@ export default function BracketGenerator({
           createLiParticipant2.style.borderRadius = "4px";
           createLiParticipant2.style.border = "2px solid #0000FF";
 
-          createLiParticipant1.innerHTML = participants[i].name;
-          createLiParticipant2.innerHTML = participants[i + 1].name;
+          createLiParticipant1.innerHTML = participants[i].teamName;
+          createLiParticipant2.innerHTML = participants[i + 1].teamName;
 
           createVSElement.innerHTML = "VS";
 
@@ -89,12 +89,12 @@ export default function BracketGenerator({
 
           input
             ?.appendChild(createLiParticipant1)
-            .setAttribute("id", participants[i].name);
+            .setAttribute("id", participants[i].teamName);
 
           input?.appendChild(createVSElement);
           input
             ?.appendChild(createLiParticipant2)
-            .setAttribute("id", participants[i + 1].name);
+            .setAttribute("id", participants[i + 1].teamName);
         }
         setLoop(i);
         continue;
@@ -126,7 +126,7 @@ export default function BracketGenerator({
       createLiParticipant1.style.borderRadius = "4px";
       createLiParticipant1.style.border = "2px solid #0000FF";
 
-      createLiParticipant1.innerHTML = participants[loop + 1].name;
+      createLiParticipant1.innerHTML = participants[loop + 1].teamName;
 
       const input = round1Ref.current
         ?.appendChild(createDiv)
@@ -134,7 +134,7 @@ export default function BracketGenerator({
 
       input
         ?.appendChild(createLiParticipant1)
-        .setAttribute("id", participants[loop + 1].name);
+        .setAttribute("id", participants[loop + 1].teamName);
     }
   }, [firstLoop, participants]);
 
@@ -175,7 +175,7 @@ export default function BracketGenerator({
           createLiParticipant2.style.borderRadius = "4px";
           createLiParticipant2.style.border = "2px solid #0000FF";
 
-          createLiParticipant1.innerHTML = reaminingTeams[i].name;
+          createLiParticipant1.innerHTML = reaminingTeams[i].teamName;
 
           createVSElement.innerHTML = "VS";
 
@@ -189,18 +189,18 @@ export default function BracketGenerator({
             input?.appendChild(winnerElement);
             input
               ?.appendChild(createLiParticipant1)
-              .setAttribute("id", reaminingTeams[i].name);
+              .setAttribute("id", reaminingTeams[i].teamName);
           } else {
-            if (reaminingTeams[i + 1]?.name !== undefined) {
-              createLiParticipant2.innerHTML = reaminingTeams[i + 1]?.name;
+            if (reaminingTeams[i + 1]?.teamName !== undefined) {
+              createLiParticipant2.innerHTML = reaminingTeams[i + 1]?.teamName;
               input
                 ?.appendChild(createLiParticipant1)
-                .setAttribute("id", reaminingTeams[i].name);
+                .setAttribute("id", reaminingTeams[i].teamName);
 
               input?.appendChild(createVSElement);
               input
                 ?.appendChild(createLiParticipant2)
-                .setAttribute("id", reaminingTeams[i + 1]?.name);
+                .setAttribute("id", reaminingTeams[i + 1]?.teamName);
             }
           }
           setLoop(i);
@@ -246,12 +246,12 @@ export default function BracketGenerator({
         // );
 
         if (reaminingTeams.length === 1) {
-          createLiParticipant1.innerHTML = reaminingTeams[loop].name;
+          createLiParticipant1.innerHTML = reaminingTeams[loop].teamName;
         } else {
           // console.log("data", reaminingTeams);
           // console.log("inside else", loop);
           createLiParticipant1.innerHTML =
-            reaminingTeams[reaminingTeams.length - 1].name;
+            reaminingTeams[reaminingTeams.length - 1].teamName;
 
           const input = round2Ref.current
             ?.appendChild(createDiv)
@@ -265,7 +265,7 @@ export default function BracketGenerator({
                 loop !== reaminingTeams.length
                   ? loop - reaminingTeams.length
                   : loop - reaminingTeams.length
-              ].name,
+              ].teamName,
             );
 
           setLoop(loop - reaminingTeams.length);
@@ -315,7 +315,7 @@ export default function BracketGenerator({
           createLiParticipant2.style.borderRadius = "4px";
           createLiParticipant2.style.border = "2px solid #0000FF";
 
-          createLiParticipant1.innerHTML = reaminingTeams[i].name;
+          createLiParticipant1.innerHTML = reaminingTeams[i].teamName;
 
           createVSElement.innerHTML = "VS";
 
@@ -329,18 +329,18 @@ export default function BracketGenerator({
             input?.appendChild(winnerElement);
             input
               ?.appendChild(createLiParticipant1)
-              .setAttribute("id", reaminingTeams[i].name);
+              .setAttribute("id", reaminingTeams[i].teamName);
           } else {
-            if (reaminingTeams[i + 1]?.name !== undefined) {
-              createLiParticipant2.innerHTML = reaminingTeams[i + 1]?.name;
+            if (reaminingTeams[i + 1]?.teamName !== undefined) {
+              createLiParticipant2.innerHTML = reaminingTeams[i + 1]?.teamName;
               input
                 ?.appendChild(createLiParticipant1)
-                .setAttribute("id", reaminingTeams[i].name);
+                .setAttribute("id", reaminingTeams[i].teamName);
 
               input?.appendChild(createVSElement);
               input
                 ?.appendChild(createLiParticipant2)
-                .setAttribute("id", reaminingTeams[i + 1].name);
+                .setAttribute("id", reaminingTeams[i + 1].teamName);
             }
           }
 
@@ -379,7 +379,7 @@ export default function BracketGenerator({
         createLiParticipant1.style.border = "2px solid #0000FF";
 
         createLiParticipant1.innerHTML =
-          reaminingTeams[reaminingTeams.length - 1].name;
+          reaminingTeams[reaminingTeams.length - 1].teamName;
 
         const input = round3Ref.current
           ?.appendChild(createDiv)
@@ -393,7 +393,7 @@ export default function BracketGenerator({
               loop !== reaminingTeams.length
                 ? reaminingTeams.length - 1
                 : loop - reaminingTeams.length
-            ].name,
+            ].teamName,
           );
 
         setLoop(loop - reaminingTeams.length);
@@ -408,8 +408,6 @@ export default function BracketGenerator({
       teams.length !== reaminingTeams.length &&
       fourthLoop === "undone"
     ) {
-      console.log("teams", reaminingTeams);
-      console.log("loop", loop);
       for (let i = 0; i <= reaminingTeams.length - 1; i++) {
         if (i % 2 === 0) {
           // console.log("is this running");
@@ -445,7 +443,7 @@ export default function BracketGenerator({
           createLiParticipant2.style.borderRadius = "4px";
           createLiParticipant2.style.border = "2px solid #0000FF";
 
-          createLiParticipant1.innerHTML = reaminingTeams[i].name;
+          createLiParticipant1.innerHTML = reaminingTeams[i].teamName;
 
           createVSElement.innerHTML = "VS";
 
@@ -460,7 +458,7 @@ export default function BracketGenerator({
             input?.appendChild(winnerElement);
             input
               ?.appendChild(createLiParticipant1)
-              .setAttribute("id", reaminingTeams[i].name);
+              .setAttribute("id", reaminingTeams[i].teamName);
 
             input?.classList.add(
               "font-text-2xl",
@@ -468,17 +466,17 @@ export default function BracketGenerator({
               "text-center",
             );
           } else {
-            if (reaminingTeams[i + 1]?.name !== undefined) {
-              createLiParticipant2.innerHTML = reaminingTeams[i + 1]?.name;
+            if (reaminingTeams[i + 1]?.teamName !== undefined) {
+              createLiParticipant2.innerHTML = reaminingTeams[i + 1]?.teamName;
 
               input
                 ?.appendChild(createLiParticipant1)
-                .setAttribute("id", reaminingTeams[i].name);
+                .setAttribute("id", reaminingTeams[i].teamName);
 
               input?.appendChild(createVSElement);
               input
                 ?.appendChild(createLiParticipant2)
-                .setAttribute("id", reaminingTeams[i + 1]?.name);
+                .setAttribute("id", reaminingTeams[i + 1]?.teamName);
             }
           }
 
@@ -516,7 +514,7 @@ export default function BracketGenerator({
         createLiParticipant1.style.borderRadius = "4px";
         createLiParticipant1.style.border = "2px solid #0000FF";
 
-        createLiParticipant1.innerHTML = reaminingTeams[loop - 2].name;
+        createLiParticipant1.innerHTML = reaminingTeams[loop - 2].teamName;
 
         const input = round4Ref.current
           ?.appendChild(createDiv)
@@ -524,7 +522,7 @@ export default function BracketGenerator({
 
         input
           ?.appendChild(createLiParticipant1)
-          .setAttribute("id", reaminingTeams[loop - 2].name);
+          .setAttribute("id", reaminingTeams[loop - 2].teamName);
       }
     }
   }, [thirdLoop, reaminingTeams]);
@@ -573,7 +571,7 @@ export default function BracketGenerator({
           createLiParticipant2.style.borderRadius = "4px";
           createLiParticipant2.style.border = "2px solid #0000FF";
 
-          createLiParticipant1.innerHTML = reaminingTeams[i].name;
+          createLiParticipant1.innerHTML = reaminingTeams[i].teamName;
 
           createVSElement.innerHTML = "VS";
 
@@ -588,7 +586,7 @@ export default function BracketGenerator({
             input?.appendChild(winnerElement);
             input
               ?.appendChild(createLiParticipant1)
-              .setAttribute("id", reaminingTeams[i].name);
+              .setAttribute("id", reaminingTeams[i].teamName);
 
             input?.classList.add(
               "font-text-2xl",
@@ -597,17 +595,17 @@ export default function BracketGenerator({
             );
             // input?.classList.add("text-center");
           } else {
-            if (reaminingTeams[i + 1]?.name !== undefined) {
-              createLiParticipant2.innerHTML = reaminingTeams[i + 1]?.name;
+            if (reaminingTeams[i + 1]?.teamName !== undefined) {
+              createLiParticipant2.innerHTML = reaminingTeams[i + 1]?.teamName;
 
               input
                 ?.appendChild(createLiParticipant1)
-                .setAttribute("id", reaminingTeams[i].name);
+                .setAttribute("id", reaminingTeams[i].teamName);
 
               input?.appendChild(createVSElement);
               input
                 ?.appendChild(createLiParticipant2)
-                .setAttribute("id", reaminingTeams[i + 1]?.name);
+                .setAttribute("id", reaminingTeams[i + 1]?.teamName);
             }
           }
 
@@ -644,7 +642,7 @@ export default function BracketGenerator({
         createLiParticipant1.style.borderRadius = "4px";
         createLiParticipant1.style.border = "2px solid #0000FF";
 
-        createLiParticipant1.innerHTML = reaminingTeams[loop - 2].name;
+        createLiParticipant1.innerHTML = reaminingTeams[loop - 2].teamName;
 
         const input = round5Ref.current
           ?.appendChild(createDiv)
@@ -652,7 +650,7 @@ export default function BracketGenerator({
 
         input
           ?.appendChild(createLiParticipant1)
-          .setAttribute("id", reaminingTeams[loop - 2].name);
+          .setAttribute("id", reaminingTeams[loop - 2].teamName);
       }
     }
   }, [fourthLoop, reaminingTeams]);
