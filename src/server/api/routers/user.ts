@@ -7,6 +7,7 @@ import {
   gamerTags,
   notificationsTable,
   teamMembersTable,
+  teams,
   users,
   usersRecordTable,
   verificationTokens,
@@ -148,36 +149,58 @@ export const userRouter = createTRPCRouter({
       z.object({
         email: z.string().min(1),
         gameId: z.string().min(1),
+        pathname: z.string().min(1).optional(),
+        cat: z.string().min(1).optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
       try {
-        const userWithSpecificTeam = await ctx.db.query.users.findFirst({
-          where: eq(users.email, input.email),
-          columns: {
-            password: false,
-          },
-          with: {
-            teamMembers: {
-              where: (teamMembers, { eq }) =>
-                eq(teamMembers.game, input.gameId),
+        if (input.pathname === "enroll") {
+          const userWithSpecificTeam = await ctx.db.query.users.findFirst({
+            where: eq(users.email, input.email),
+            columns: {
+              password: false,
             },
-          },
-        });
+            with: {
+              teams: {
+                where: (teams, { eq, and }) =>
+                  and(
+                    eq(teams.gameTitle, input.gameId),
+                    eq(teams.teamCategory, input.cat!),
+                  ),
+              },
+            },
+          });
+
+          return userWithSpecificTeam;
+        } else {
+          const userWithSpecificTeam = await ctx.db.query.users.findFirst({
+            where: eq(users.email, input.email),
+            columns: {
+              password: false,
+            },
+            with: {
+              teamMembers: {
+                where: (teamMembers, { eq }) =>
+                  eq(teamMembers.game, input.gameId),
+              },
+            },
+          });
+          return {
+            id: userWithSpecificTeam?.id,
+            username: userWithSpecificTeam?.username,
+            firstName: userWithSpecificTeam?.firstName,
+            lastName: userWithSpecificTeam?.lastName,
+            isVerified: userWithSpecificTeam?.isVerified,
+            role: userWithSpecificTeam?.role,
+            email: userWithSpecificTeam?.email,
+            credits: userWithSpecificTeam?.credits,
+            teamId: userWithSpecificTeam?.teamId,
+            teams: userWithSpecificTeam?.teamMembers,
+          };
+        }
 
         // return data that is only needed
-        return {
-          id: userWithSpecificTeam?.id,
-          username: userWithSpecificTeam?.username,
-          firstName: userWithSpecificTeam?.firstName,
-          lastName: userWithSpecificTeam?.lastName,
-          isVerified: userWithSpecificTeam?.isVerified,
-          role: userWithSpecificTeam?.role,
-          email: userWithSpecificTeam?.email,
-          credits: userWithSpecificTeam?.credits,
-          teamId: userWithSpecificTeam?.teamId,
-          teams: userWithSpecificTeam?.teamMembers,
-        };
       } catch (error) {
         throw new Error(error as string);
       }
@@ -271,9 +294,9 @@ export const userRouter = createTRPCRouter({
             teams: {
               with: {
                 members: true,
-                record: true
-              }
-            }
+                record: true,
+              },
+            },
           },
         });
 
