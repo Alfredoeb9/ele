@@ -20,8 +20,6 @@ import { toast } from "react-toastify";
 import { statusGameMap, trophys } from "@/lib/sharedData";
 import { GrTrophy } from "react-icons/gr";
 import MatchTimer from "@/app/_components/MatchTimer";
-import BracketGenerator from "@/app/_components/BracketGenerator";
-import { match } from "assert";
 
 export interface Participant {
   teamId?: string;
@@ -39,6 +37,7 @@ export default function Tournaments({
     id: string;
   };
 }) {
+  const session = useSession();
   const [matchId] = useState<string>(id);
   const [, setPrize] = useState<number>(0);
   const [prizeTest] = useState<number[]>([5, 0, 0]);
@@ -55,6 +54,16 @@ export default function Tournaments({
   //   { tournamentId: tournamentId },
   //   { enabled: tournamentId.length >= 0 },
   // );
+
+  const CustomToastWithLink = () => (
+    <div>
+      User needs to{" "}
+      <Link href="/sign-in" className="text-blue-600 hover:text-blue-500">
+        sign in
+      </Link>{" "}
+      to accept match.
+    </div>
+  );
 
   if (matchData.isError) {
     toast("There was an error returning tournament data", {
@@ -90,8 +99,6 @@ export default function Tournaments({
 
   const rules = matchData.data[0].rules as [{ value: string }];
 
-  console.log("rule", rules);
-
   return (
     <div>
       <div
@@ -99,7 +106,7 @@ export default function Tournaments({
       />
 
       <main className=" relative mt-[-150px] px-4">
-        <div className="w-full sm:w-[65%]">
+        <div className="w-full">
           <div
             id="tournament_info-block"
             className="rounded-xl bg-slate-400  p-1"
@@ -143,7 +150,6 @@ export default function Tournaments({
                     <div className="mb-4 flex w-full items-center justify-around">
                       <div>
                         <p className="block font-bold">{match?.matchName}</p>
-                        {/* <p className="block">{match?.tournament_type}</p> */}
                       </div>
 
                       <Divider
@@ -224,17 +230,46 @@ export default function Tournaments({
                 </p>
               </div>
               <Button
-                isDisabled={d2.valueOf() <= d1.valueOf() ? false : true}
+                // isDisabled={d2.valueOf() <= d1.valueOf() ? false : true}
                 className="sm:text-lgtext-lg px-4 py-3 text-sm font-bold"
                 color="success"
                 variant="solid"
                 size="lg"
                 radius="md"
+                onPress={() => {
+                  if (session.status === "unauthenticated") {
+                    toast(CustomToastWithLink, {
+                      position: "bottom-right",
+                      autoClose: 4500,
+                      closeOnClick: true,
+                      draggable: false,
+                      type: "error",
+                      toastId: 68,
+                    });
+                  }
+
+                  if (d2.valueOf() >= d1.valueOf()) {
+                    console.log("D2", d2.valueOf());
+                    console.log("d1", d1.valueOf());
+                    toast("Match has rolled passed its time", {
+                      position: "bottom-right",
+                      autoClose: 4500,
+                      closeOnClick: true,
+                      draggable: false,
+                      type: "error",
+                      toastId: 69,
+                    });
+                  }
+                }}
               >
                 <Link
                   href={{
                     pathname: `/match/enroll`,
                     query: { id: matchId, cat: matchType },
+                  }}
+                  style={{
+                    pointerEvents:
+                      session.status === "unauthenticated" ? "none" : "auto",
                   }}
                 >
                   Enroll Now
@@ -284,7 +319,7 @@ export default function Tournaments({
               <Tab key="rules" title="RULES">
                 <Card>
                   <CardBody>
-                    {rules.length > 0 &&
+                    {rules.length > 0 ? (
                       rules.map((rule, i) => (
                         <div key={i}>
                           <p>
@@ -294,7 +329,13 @@ export default function Tournaments({
                             {Object.values(rule)[0]}
                           </p>
                         </div>
-                      ))}
+                      ))
+                    ) : (
+                      <p>
+                        There are no rules posted for this match. That seems
+                        like a problem please report this match.
+                      </p>
+                    )}
                   </CardBody>
                 </Card>
               </Tab>
