@@ -43,6 +43,7 @@ export default function Tournaments({
   const [, setPrize] = useState<number>(0);
   const [prizeTest] = useState<number[]>([5, 0, 0]);
   const [matchType, setMatchType] = useState("");
+  const [matchEntry, setMatchEntry] = useState(0);
 
   const matchData = api.matches.getSingleMoneyMatch.useQuery(
     { matchId: matchId },
@@ -70,7 +71,7 @@ export default function Tournaments({
     if (matchData.data) {
       matchData?.data.map((match) => {
         setMatchType(match.matchType);
-        console.log("match", match);
+        setMatchEntry(match.matchEntry);
       });
     }
   }, [matchData?.data]);
@@ -86,6 +87,10 @@ export default function Tournaments({
   const pstDate = d1.toLocaleString("en-US", {
     timeZone: "America/Los_Angeles",
   });
+
+  const rules = matchData.data[0].rules as [{ value: string }];
+
+  console.log("rule", rules);
 
   return (
     <div>
@@ -252,24 +257,25 @@ export default function Tournaments({
                 <Card>
                   <CardBody className="scrollbar">
                     <p>
-                      <span className="font-semibold">IMPORTANT:</span> Final
-                      prize will be adjusted based on the total number of
-                      eligible teams seeded into the bracket.
+                      <span className="font-semibold">IMPORTANT:</span> Winner
+                      takes prize per teammate.
                     </p>
 
                     <div className="flex justify-evenly ">
-                      {trophys?.map((trophy, i) => (
-                        <div key={trophy.id} className="block text-center">
-                          <GrTrophy
-                            key={trophy.id}
-                            style={{ color: `${trophy.color}` }}
-                            className="h-[175px] w-[175px] border-4 border-solid border-slate-300 p-4 text-8xl"
-                          />
-                          <p className="mt-2 text-2xl font-bold sm:text-5xl">
-                            ${prizeTest[i]}
-                          </p>
-                        </div>
-                      ))}
+                      {trophys
+                        ?.filter((trophy) => trophy.id === "gold")
+                        .map((trophy) => (
+                          <div key={trophy.id} className="block text-center">
+                            <GrTrophy
+                              key={trophy.id}
+                              style={{ color: `${trophy.color}` }}
+                              className="h-[175px] w-[175px] border-4 border-solid border-slate-300 p-4 text-8xl"
+                            />
+                            <p className="mt-2 text-2xl font-bold sm:text-5xl">
+                              ${matchEntry}
+                            </p>
+                          </div>
+                        ))}
                     </div>
                   </CardBody>
                 </Card>
@@ -278,10 +284,17 @@ export default function Tournaments({
               <Tab key="rules" title="RULES">
                 <Card>
                   <CardBody>
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                    laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                    irure dolor in reprehenderit in voluptate velit esse cillum
-                    dolore eu fugiat nulla pariatur.
+                    {rules.length > 0 &&
+                      rules.map((rule, i) => (
+                        <div key={i}>
+                          <p>
+                            <span className="font-semibold uppercase">
+                              {Object.keys(rule)[0]}:
+                            </span>{" "}
+                            {Object.values(rule)[0]}
+                          </p>
+                        </div>
+                      ))}
                   </CardBody>
                 </Card>
               </Tab>
@@ -294,14 +307,14 @@ export default function Tournaments({
                 </Card>
               </Tab> */}
 
-              <Tab key="teams" title="TEAMS">
+              {/* <Tab key="team" title="TEAM">
                 <Card>
                   <CardBody>
                     Excepteur sint occaecat cupidatat non proident, sunt in
                     culpa qui officia deserunt mollit anim id est laborum.
                   </CardBody>
                 </Card>
-              </Tab>
+              </Tab> */}
             </Tabs>
             <div className="tournament_body_info_bar"></div>
             <div className="tournament_body_prizes"></div>
