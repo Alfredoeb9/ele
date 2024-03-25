@@ -41,7 +41,10 @@ export const matchRouter = createTRPCRouter({
     }),
 
   getAllTournaments: publicProcedure.query(({ ctx }) => {
-    return ctx.db.select().from(tournaments);
+    return ctx.db
+      .select()
+      .from(tournaments)
+      .where(gt(tournaments.start_time, new Date().toISOString().slice(0, -8)));
   }),
 
   getAllMoneyMatches: publicProcedure.query(async ({ ctx }) => {
