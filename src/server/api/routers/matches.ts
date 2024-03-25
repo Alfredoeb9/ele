@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { type SQLWrapper, eq, sql } from "drizzle-orm";
+import { type SQLWrapper, eq, sql, gt } from "drizzle-orm";
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -44,8 +44,11 @@ export const matchRouter = createTRPCRouter({
     return ctx.db.select().from(tournaments);
   }),
 
-  getAllMoneyMatches: publicProcedure.query(({ ctx }) => {
-    return ctx.db.select().from(moneyMatch);
+  getAllMoneyMatches: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.db
+      .select()
+      .from(moneyMatch)
+      .where(gt(moneyMatch.startTime, new Date().toISOString().slice(0, -8)));
   }),
 
   getSingleTournament: publicProcedure
