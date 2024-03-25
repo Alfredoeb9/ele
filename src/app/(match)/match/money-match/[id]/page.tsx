@@ -249,8 +249,6 @@ export default function Tournaments({
                   }
 
                   if (d2.valueOf() >= d1.valueOf()) {
-                    console.log("D2", d2.valueOf());
-                    console.log("d1", d1.valueOf());
                     toast("Match has rolled passed its time", {
                       position: "bottom-right",
                       autoClose: 4500,
@@ -267,10 +265,10 @@ export default function Tournaments({
                     pathname: `/match/enroll`,
                     query: { id: matchId, cat: matchType },
                   }}
-                  style={{
-                    pointerEvents:
-                      session.status === "unauthenticated" ? "none" : "auto",
-                  }}
+                  // style={{
+                  //   pointerEvents:
+                  //     session.status === "unauthenticated" ? "none" : "auto",
+                  // }}
                 >
                   Enroll Now
                 </Link>
