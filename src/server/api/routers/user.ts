@@ -168,6 +168,13 @@ export const userRouter = createTRPCRouter({
                     eq(teams.gameTitle, input.gameId),
                     eq(teams.teamCategory, input.cat!),
                   ),
+                with: {
+                  members: {
+                    with: {
+                      user: true,
+                    },
+                  },
+                },
               },
             },
           });
