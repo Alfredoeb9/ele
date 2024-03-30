@@ -13,7 +13,7 @@ import {
 } from "@nextui-org/react";
 import { ToastContainer, toast } from "react-toastify";
 import { FaBell } from "react-icons/fa";
-import type { NotificationType } from "@/server/db/schema";
+import type { NotificationType, UsersType } from "@/server/db/schema";
 
 import "react-toastify/dist/ReactToastify.css";
 import { api } from "@/trpc/react";
@@ -25,8 +25,10 @@ export default function Header() {
 
   const router = useRouter();
 
+  const sessionUser = session.data?.user;
+
   const currentUser = api.user.getSingleUser.useQuery(
-    { email: session.data?.user?.email as string },
+    { email: session.data?.user?.email! },
     { enabled: session.status === "authenticated" ? true : false },
   );
 
@@ -41,8 +43,10 @@ export default function Header() {
     });
   }
 
+  const userData = currentUser?.data;
+
   const usersNotifications = api.user.getNotifications.useQuery(
-    { id: session.data?.user?.id as string },
+    { id: session.data?.user?.id! },
     {
       enabled: currentUser.isSuccess,
       refetchOnMount: true,
@@ -62,7 +66,7 @@ export default function Header() {
     });
   }
 
-  if (currentUser?.data && currentUser?.data?.credits === undefined) {
+  if (userData && userData.credits === undefined) {
     toast(
       `There was problem retrieving your credits, please refresh and try agian. If this problem presist please reach out to customer service`,
       {
@@ -144,7 +148,7 @@ export default function Header() {
     },
   });
 
-  const sub = currentUser.data?.subscription;
+  const sub = userData?.subscription;
 
   return (
     <header className="nav">
@@ -161,7 +165,7 @@ export default function Header() {
           {session.status === "authenticated" && (
             <Link
               className="text-md font-bold text-zinc-900"
-              href={`/profile/${session.data?.user.username}`}
+              href={`/profile/${sessionUser?.username}`}
             >
               Profile
             </Link>
@@ -256,16 +260,15 @@ export default function Header() {
                                 }
                                 onPress={() => {
                                   acceptRequest.mutate({
-                                    userId: session?.data?.user?.id,
+                                    userId: sessionUser?.id!,
                                     targetId: notification.from,
                                     id: notification.id,
                                     type: notification.type,
                                     teamId: notification.metaData.teamId,
                                     game: notification.metaData.game,
                                     teamName: notification.metaData.teamName,
-                                    targetEmail: session.data?.user
-                                      .email as string,
-                                    userName: session.data.user.username,
+                                    targetEmail: sessionUser?.email!,
+                                    userName: sessionUser?.username!,
                                   });
                                 }}
                               >
@@ -310,11 +313,7 @@ export default function Header() {
                       icon: "text-elg-white",
                     }}
                     // color="success"
-                    name={
-                      session?.data?.user?.firstName +
-                      " " +
-                      session?.data?.user?.lastName
-                    }
+                    name={sessionUser?.firstName + " " + sessionUser?.lastName}
                     size="sm"
                   />
                 </DropdownTrigger>
@@ -329,25 +328,25 @@ export default function Header() {
                 >
                   <DropdownItem
                     key="profile"
-                    textValue={session?.data?.user?.email as string}
+                    textValue={sessionUser?.email!}
                     className="h-14 gap-2"
                   >
                     <p className="font-semibold">Signed in as</p>
-                    <p className="font-semibold">{session?.data.user.email}</p>
+                    <p className="font-semibold">{sessionUser?.email}</p>
                   </DropdownItem>
                   <DropdownItem
                     key="credits"
                     textValue={
-                      currentUser.data !== undefined &&
+                      userData !== undefined &&
                       currentUser.isSuccess &&
-                      (currentUser?.data as any).credits
+                      (userData as any).credits
                     }
                   >
                     <span className="font-black">Credits: </span>{" "}
                     <span className="font-semibold">
-                      {currentUser.data == undefined || currentUser.isError
+                      {userData == undefined || currentUser.isError
                         ? "Err"
-                        : (currentUser?.data as any).credits}
+                        : userData.credits}
                     </span>
                   </DropdownItem>
                   <DropdownItem
