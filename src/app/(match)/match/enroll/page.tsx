@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/prefer-for-of */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import {
   Checkbox,
@@ -7,12 +9,18 @@ import {
   Divider,
   Select,
   SelectItem,
+  Spinner,
 } from "@nextui-org/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 import { api } from "@/trpc/react";
 import Link from "next/link";
+import { type MoneyMatchType } from "@/server/db/schema";
+
+interface RulesTypes {
+  value: string;
+}
 
 export default function Enroll() {
   const searchParams = useSearchParams();
@@ -25,14 +33,15 @@ export default function Enroll() {
   const [teamName, setTeamName] = useState<string>("");
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState({});
-  const [availableTeamMembers, setAvailableTeamMembers] = useState<any[]>([]);
+  const [availableTeamMembers, setAvailableTeamMembers] = useState([""]);
+  const [idx] = useState(0);
 
   if (session.status === "unauthenticated") router.push("/sign-in");
 
   const search = searchParams.get("id");
   const category = searchParams.get("cat");
 
-  if (!search) {
+  if (!search || search.length <= 0) {
     toast("There was a problem returning data", {
       position: "bottom-right",
       autoClose: 3000,
@@ -50,76 +59,73 @@ export default function Enroll() {
     { enabled: search.length > 0 },
   );
 
-  useEffect(() => {
-    if (moneyMatch.isError) {
-      if (moneyMatch.error.message.includes("Tournament was not found")) {
-        setGameIdError(true);
-        toast(`Please enroll in a supported match`, {
-          position: "bottom-right",
-          autoClose: 5000,
-          closeOnClick: true,
-          draggable: false,
-          type: "error",
-          toastId: 47,
-        });
-      }
+  if (moneyMatch.isError) {
+    if (moneyMatch.error.message.includes("Match was not found")) {
+      toast(`Please enroll in a supported match`, {
+        position: "bottom-right",
+        autoClose: 4500,
+        closeOnClick: true,
+        draggable: false,
+        type: "error",
+        toastId: 47,
+      });
+    } else {
+      toast("There was a problem retreiving the match data", {
+        position: "bottom-right",
+        autoClose: 4500,
+        closeOnClick: true,
+        draggable: false,
+        type: "error",
+        toastId: 69,
+      });
     }
-  }, [moneyMatch.isError]);
+  }
+
+  const match = moneyMatch?.data as MoneyMatchType[];
+
+  let matchRules: RulesTypes[] = [];
+  let gameT = "";
+
+  if (match !== undefined && match?.length > 0) {
+    for (const ele of match) {
+      matchRules = ele.rules as RulesTypes[];
+      gameT = ele.gameTitle;
+    }
+  }
 
   const currentUser = api.user.getSingleUserByTeamId.useQuery(
     {
       email: session?.data?.user.email!,
-      gameId:
-        moneyMatch.data && (moneyMatch?.data[0]?.gameTitle as string | any),
+      gameId: gameT,
       pathname: pathname,
       cat: category!,
     },
     {
       enabled:
+        gameT.length > 0 &&
         moneyMatch.data !== undefined &&
         gameIdError === false &&
         moneyMatch.data.length > 0,
     },
   );
 
-  function filterByID(item: { team_name: string }) {
-    if (item.team_name === teamName) {
-      console.log("item", item);
-      return true;
+  const arrById = currentUser?.data?.teams?.filter(
+    //@ts-expect-error team_name is there
+    (item: { team_name: string }) => item.team_name === teamName,
+  );
+
+  if (currentUser.isError) {
+    if (currentUser.error.message.includes("gameId")) {
+      toast(`Please enroll in a supported match`, {
+        position: "bottom-right",
+        autoClose: 5000,
+        closeOnClick: true,
+        draggable: false,
+        type: "error",
+        toastId: 46,
+      });
     }
   }
-
-  // @ts-expect-error members is present
-  const arrById: any = currentUser?.data?.teams?.filter(filterByID);
-
-  useEffect(() => {
-    if (currentUser.isError) {
-      if (currentUser.error.message.includes("gameId")) {
-        setGameIdError(true);
-        toast(`Please enroll in a supported match`, {
-          position: "bottom-right",
-          autoClose: 5000,
-          closeOnClick: true,
-          draggable: false,
-          type: "error",
-          toastId: 46,
-        });
-      }
-    }
-  }, [currentUser.isError]);
-
-  // useEffect(() => {
-  //   if (currentUser.data && currentUser.data.teams) {
-  //     currentUser.data.teams.map((team) => {
-  //       // @ts-expect-error team_name is present at this point
-  //       if (team.team_name === teamName) {
-  //         // @ts-expect-error team_name is present at this point
-  //         setAvailableTeamMembers(team.members);
-  //         return setSelectedTeam(team);
-  //       }
-  //     });
-  //   }
-  // }, [currentUser.data, teamName]);
 
   const enrollTeam = api.matches.enrollTeamToMoneyMatch.useMutation({
     onSuccess: () => {
@@ -175,24 +181,6 @@ export default function Enroll() {
       router.push("/pricing");
     }
   }
-
-  // if(currentUser.isLoading) return <Spinner label="Loading..." color="warning" />
-
-  if (moneyMatch.data === undefined) {
-    toast("There was a problem retreiving the match data", {
-      position: "bottom-right",
-      autoClose: 4500,
-      closeOnClick: true,
-      draggable: false,
-      type: "error",
-      toastId: 69,
-    });
-    return null;
-  }
-
-  const matchRules = moneyMatch.data[0].rules as [{ value: string }];
-
-  console.log("va", availableTeamMembers);
 
   return (
     <div className="container m-auto px-4 pt-2">
@@ -289,15 +277,15 @@ export default function Enroll() {
               </Select>
 
               <CheckboxGroup
-                label="Select platforms:"
+                label="Select members to play in match:"
                 className="block pt-2 text-sm font-medium leading-6"
                 value={availableTeamMembers}
                 onValueChange={setAvailableTeamMembers}
                 isRequired
               >
                 {arrById &&
-                  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-                  (arrById[0]?.members.map(
+                  // @ts-expect-error members is part of data
+                  (arrById[idx]?.members.map(
                     (member: { userName: string }, i: number) => (
                       <Checkbox
                         key={i}
@@ -336,16 +324,22 @@ export default function Enroll() {
         <div className="">
           <h3 className="text-xl font-semibold text-red-600">Rules:</h3>
 
-          {matchRules.map((rule, i) => (
-            <div key={i}>
-              <p className="text-white">
-                <span className="font-semibold uppercase text-red-300">
-                  {Object.keys(rule)[0]}:
-                </span>{" "}
-                {Object.values(rule)[0]}
-              </p>
-            </div>
-          ))}
+          {moneyMatch.isPending ? (
+            <Spinner label="Loading..." color="warning" />
+          ) : (
+            <>
+              {matchRules.map((rule, i: number) => (
+                <div key={i}>
+                  <p className="text-white">
+                    <span className="font-semibold uppercase text-red-300">
+                      {Object.keys(rule)[0]}:
+                    </span>{" "}
+                    {Object.values(rule)[0] as unknown as string}
+                  </p>
+                </div>
+              ))}
+            </>
+          )}
         </div>
       </div>
 
