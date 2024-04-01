@@ -6,8 +6,10 @@ import {
   followsTables,
   gamerTags,
   notificationsTable,
+  stripeAccount,
   teamMembersTable,
   teams,
+  tickets,
   users,
   usersRecordTable,
   verificationTokens,
@@ -171,13 +173,20 @@ export const userRouter = createTRPCRouter({
                 with: {
                   members: {
                     with: {
-                      user: true,
+                      user: {
+                        columns: {
+                          password: false,
+                        },
+                      },
                     },
                   },
                 },
               },
             },
           });
+
+          if (!userWithSpecificTeam)
+            throw new Error("Error occured getting team data");
 
           return userWithSpecificTeam;
         } else {
@@ -539,6 +548,56 @@ export const userRouter = createTRPCRouter({
         throw new Error(error as string);
       }
     }),
+
+  getUserDataWithTickets: publicProcedure
+    .input(
+      z.object({
+        id: z.string().min(1),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const userWithTickets = await ctx.db
+          .select()
+          .from(tickets)
+          .where(eq(tickets.userId, input.id));
+
+        if (!userWithTickets) {
+          throw new Error("No friends found");
+        }
+
+        return userWithTickets;
+      } catch (error) {
+        throw new Error(error as string);
+      }
+    }),
+
+  // updateUsersStripeData: publicProcedure
+  //   .input(
+  //     z.object({
+  //       userId: z.string().min(1),
+  //       stripeId: z.string().min(1),
+  //       userName: z.string().min(1),
+  //     }),
+  //   )
+  //   .mutation(async ({ ctx, input }) => {
+  //     try {
+  //       const user = await ctx.db
+  //         .select()
+  //         .from(users)
+  //         .where(eq(users.id, input.userId));
+
+  //       if (!user) throw new Error("User does not exist");
+
+  //       await ctx.db.insert(stripeAccount).values({
+  //         userId: input.userId,
+  //         stripeId: input.stripeId,
+  //         username: input.userName,
+  //       });
+  //     } catch (error) {
+  //       throw new Error(error as string);
+  //     }
+  //   }),
 
   updateUsersGamerTags: publicProcedure
     .input(
