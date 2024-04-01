@@ -203,6 +203,10 @@ export interface Participant {
   id?: string;
 }
 
+interface RulesTypes {
+  value: string;
+}
+
 // const ParticipantComponent: React.FC<{
 //   participant: Participant;
 //   increaseScore: () => void;
@@ -323,6 +327,9 @@ const Tournament: React.FC<{ participants: Participant[] }> = ({
     }
   };
 
+  if (participants.length <= 0)
+    return <p>There are no current Teams enrolled</p>;
+
   return (
     <div>
       <h2>Tournament</h2>
@@ -398,6 +405,8 @@ export default function Tournaments({
     });
   }
 
+  const teamsData = teamsEnrolled?.data!;
+
   useEffect(() => {
     if (tournamentData.data) {
       tournamentData?.data.map(
@@ -409,6 +418,9 @@ export default function Tournaments({
   }, [tournamentData?.data]);
 
   if (tournamentData.data === undefined) return null;
+
+  const tournament = tournamentData.data;
+  const tournamentRules = tournament[0].rules as RulesTypes[];
 
   if (tournamentData.isLoading)
     return <Spinner label="Loading..." color="warning" />;
@@ -422,10 +434,12 @@ export default function Tournaments({
     timeZone: "America/Los_Angeles",
   });
 
+  console.log("data", tournamentData.data);
+
   return (
     <div>
       <div
-        className={`h-[300px] w-full bg-${tournamentData?.data && tournamentData?.data[0].game.toLowerCase()}_team_background bg-cover bg-fixed bg-center bg-no-repeat`}
+        className={`h-[300px] w-full bg-${tournament[0].game.toLowerCase()}_team_background bg-cover bg-fixed bg-center bg-no-repeat`}
       />
 
       <main className=" relative mt-[-150px] px-4">
@@ -435,7 +449,7 @@ export default function Tournaments({
             className="rounded-xl bg-slate-400  p-1"
           >
             <div className="block sm:flex">
-              {tournamentData.data?.map((tournament) => (
+              {tournament?.map((tournament) => (
                 <div key={tournament.id} className="flex">
                   <Card
                     isFooterBlurred
@@ -616,10 +630,16 @@ export default function Tournaments({
               <Tab key="rules" title="RULES">
                 <Card>
                   <CardBody>
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                    laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-                    irure dolor in reprehenderit in voluptate velit esse cillum
-                    dolore eu fugiat nulla pariatur.
+                    {tournamentRules.map((rule, i) => (
+                      <div key={i}>
+                        <p className="text-slate-800">
+                          <span className="font-semibold uppercase text-red-600">
+                            {Object.keys(rule)[0]}:
+                          </span>{" "}
+                          {Object.values(rule)[0] as unknown as string}
+                        </p>
+                      </div>
+                    ))}
                   </CardBody>
                 </Card>
               </Tab>
@@ -627,7 +647,7 @@ export default function Tournaments({
               <Tab key="bracket" title="BRACKET">
                 <Card>
                   <CardBody>
-                    <Tournament participants={teamsEnrolled.data as any} />
+                    <Tournament participants={teamsEnrolled?.data as any} />
                   </CardBody>
                 </Card>
               </Tab>
@@ -635,8 +655,9 @@ export default function Tournaments({
               <Tab key="teams" title="TEAMS">
                 <Card>
                   <CardBody>
-                    Excepteur sint occaecat cupidatat non proident, sunt in
-                    culpa qui officia deserunt mollit anim id est laborum.
+                    {teamsData?.length <= 0 && (
+                      <p>There are no current teams enrolled</p>
+                    )}
                   </CardBody>
                 </Card>
               </Tab>
