@@ -93,6 +93,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   gamerTags: many(gamerTags),
   moneyMatch: many(moneyMatch),
   transactions: many(transactions),
+  tickets: many(tickets),
   stripeAccount: one(stripeAccount),
   subscription: one(subscription),
   userRecord: one(usersRecordTable),
@@ -696,3 +697,31 @@ export type NewPayment = typeof payments.$inferInsert;
 //     references: [stores.id]
 //   }),
 // }))
+
+export const tickets = createTable(
+  "tickets",
+  {
+    id: varchar("id", { length: 255 }).primaryKey(),
+    userId: varchar("user_id", { length: 255 }).notNull(),
+    userEmail: varchar("user_email", { length: 255 }).notNull(),
+    createdById: varchar("created_by_id", { length: 255 }).notNull(),
+    body: text("body").notNull(),
+    category: varchar("category", { length: 255 }).notNull(),
+    status: mysqlEnum("status", ["open", "closed"]).default("open").notNull(),
+    createdAt: timestamp("created_at")
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at").onUpdateNow(),
+  },
+  (ticket) => ({
+    createdByIdIdx: index("createdById_idx").on(ticket.createdById),
+    nameIndex: index("name_idx").on(ticket.createdById),
+  }),
+);
+
+export const ticketRelations = relations(tickets, ({ one }) => ({
+  user: one(users, {
+    fields: [tickets.userId],
+    references: [users.id],
+  }),
+}));
