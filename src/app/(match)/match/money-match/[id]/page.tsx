@@ -99,6 +99,8 @@ export default function Tournaments({
 
   const rules = matchData.data[0].rules as [{ value: string }];
 
+  //http://localhost:3000/match/enroll?id=44c08fc3-b2b5-4fee-ba94-601365c674cd
+
   return (
     <div>
       <div
@@ -226,7 +228,7 @@ export default function Tournaments({
               <div>
                 <p className="text-base sm:text-lg">
                   <span className="font-bold underline">Match Starts in: </span>
-                  <MatchTimer d1={d1} d2={d2} />
+                  <MatchTimer d1={d1} d2={d2} color={"text-slate-800"} />
                 </p>
               </div>
               <Button
