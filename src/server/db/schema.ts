@@ -2,6 +2,7 @@ import { relations, sql } from "drizzle-orm";
 import {
   bigint,
   boolean,
+  decimal,
   index,
   int,
   json,
@@ -65,6 +66,20 @@ export const users = createTable("user", {
   image: varchar("image", { length: 255 }),
 });
 
+export const stripeAccount = createTable("stripe_account", {
+  userId: varchar("user_id", { length: 255 }),
+  stripeId: varchar("stripe_id", { length: 255 }),
+  username: varchar("username", { length: 255 }),
+  balance: decimal("balance").default("0"),
+});
+
+export const stripeAccountRelation = relations(stripeAccount, ({ one }) => ({
+  user: one(users, {
+    fields: [stripeAccount.userId],
+    references: [users.id],
+  }),
+}));
+
 // a user can have many accounts, sessions, teams
 export const usersRelations = relations(users, ({ one, many }) => ({
   accounts: many(accounts),
@@ -77,6 +92,8 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   payments: many(payments),
   gamerTags: many(gamerTags),
   moneyMatch: many(moneyMatch),
+  transactions: many(transactions),
+  stripeAccount: one(stripeAccount),
   subscription: one(subscription),
   userRecord: one(usersRecordTable),
 }));
@@ -164,6 +181,24 @@ export const verificationTokens = createTable(
   }),
 );
 
+export const transactions = createTable("transactions", {
+  transactionId: varchar("transaction_id", { length: 255 }).notNull(),
+  transactionsDate: timestamp("created_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  withdrawAmt: decimal("withdraw_amount"),
+  depositAmt: decimal("deposit_amount").notNull().default("0"),
+  balance: decimal("balance"),
+  accountId: varchar("account_id", { length: 255 }).notNull(),
+});
+
+export const transcationRelations = relations(transactions, ({ one }) => ({
+  user: one(users, {
+    fields: [transactions.accountId],
+    references: [users.id],
+  }),
+}));
+
 export const gameCategory = createTable("gameCategory", {
   id: varchar("id", { length: 256 }).notNull(),
   game: varchar("game", { length: 256 }).notNull(),
@@ -236,6 +271,8 @@ export const moneyMatch = createTable(
     groupGameIdWithNameIdx: unique().on(match.createdBy, match.startTime),
   }),
 );
+
+export type MoneyMatchType = typeof moneyMatch.$inferSelect;
 
 // the team.id will reference the moneyMatch.createdBy
 export const moneyMatchRelation = relations(moneyMatch, ({ one }) => ({
@@ -350,9 +387,9 @@ export const usersToGroupsRelations = relations(
   }),
 );
 
-export type Team = typeof teams.$inferSelect;
+export type TeamTypes = typeof teams.$inferSelect;
 export type TeamMembersType = typeof teamMembersTable.$inferSelect;
-export type Users = typeof users.$inferSelect;
+export type UsersType = typeof users.$inferSelect;
 export type Tournament = typeof tournaments.$inferInsert;
 
 // // A team can have many team Members, invites to the team, and moneyMatches
