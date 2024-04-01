@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import initStripe from "stripe";
 import {
   Avatar,
   Dropdown,
@@ -17,6 +18,9 @@ import type { NotificationType, UsersType } from "@/server/db/schema";
 
 import "react-toastify/dist/ReactToastify.css";
 import { api } from "@/trpc/react";
+import { stripe } from "@/lib/stripe";
+import getStripe from "@/lib/utils/get-stripejs";
+import { createStripeAccountAction, withdrawMoney } from "./actions/actions";
 
 export default function Header() {
   const utils = api.useUtils();
@@ -144,6 +148,30 @@ export default function Header() {
         draggable: false,
         type: "error",
         toastId: 22,
+      });
+    },
+  });
+
+  const withdrawCash = api.user.updateUsersStripeData.useMutation({
+    onSuccess: async () => {
+      toast("Cash has been withdrawn", {
+        position: "bottom-right",
+        autoClose: 3000,
+        closeOnClick: true,
+        draggable: false,
+        type: "success",
+        toastId: 71,
+      });
+    },
+
+    onError: (error) => {
+      toast("Error withdrawing cash", {
+        position: "bottom-right",
+        autoClose: 3000,
+        closeOnClick: true,
+        draggable: false,
+        type: "success",
+        toastId: 72,
       });
     },
   });
@@ -371,6 +399,49 @@ export default function Header() {
                   >
                     Friends
                   </DropdownItem>
+                  {/* <DropdownItem
+                    key="add_cash"
+                    textValue="pricing"
+                    // href={`${process.env.STRIPE_BASE_API}/v1/accounts`}
+                    onPress={() =>
+                      createStripeAccountAction(sessionUser).then(
+                        async (session) => {
+                          const stripe = await getStripe();
+
+                          if (stripe === null)
+                            return toast(
+                              "Stripe service down, please reach out to customer support",
+                              {
+                                position: "bottom-right",
+                                autoClose: 4500,
+                                closeOnClick: true,
+                                draggable: false,
+                                type: "error",
+                                toastId: 70,
+                              },
+                            );
+                          router.push(session);
+                        },
+                      )
+                    }
+                  >
+                    Add Cash
+                  </DropdownItem> */}
+
+                  {/* <DropdownItem
+                    key="add_cash"
+                    textValue="pricing"
+                    // href={`${process.env.STRIPE_BASE_API}/v1/accounts`}
+                    // onPress={() =>
+                    //   withdrawCash.mutate({
+                    //     userId: sessionUser?.id!,
+                    //     userName: sessionUser?.username!,
+                    //     stripeId: "jkljlj",
+                    //   })
+                    // }
+                  >
+                    Withdraw Cash
+                  </DropdownItem> */}
                   <DropdownItem
                     key="buy_credits"
                     textValue="pricing"
@@ -391,6 +462,14 @@ export default function Header() {
                     textValue="help & feedback"
                   >
                     Help & Feedback
+                  </DropdownItem>
+
+                  <DropdownItem
+                    key="tickets"
+                    textValue="tickets"
+                    href="/tickets"
+                  >
+                    Tickets
                   </DropdownItem>
                   <DropdownItem
                     key="logout"
