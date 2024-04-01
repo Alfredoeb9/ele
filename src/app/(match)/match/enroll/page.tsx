@@ -17,6 +17,7 @@ import "react-toastify/dist/ReactToastify.min.css";
 import { api } from "@/trpc/react";
 import Link from "next/link";
 import { type MoneyMatchType } from "@/server/db/schema";
+import MatchTimer from "@/app/_components/MatchTimer";
 
 interface RulesTypes {
   value: string;
@@ -85,11 +86,13 @@ export default function Enroll() {
 
   let matchRules: RulesTypes[] = [];
   let gameT = "";
+  let startTime = "";
 
   if (match !== undefined && match?.length > 0) {
     for (const ele of match) {
       matchRules = ele.rules as RulesTypes[];
       gameT = ele.gameTitle;
+      startTime = ele.startTime;
     }
   }
 
@@ -321,25 +324,36 @@ export default function Enroll() {
           className="h-inherit mx-1 h-auto w-0.5 bg-white text-white"
         />
 
-        <div className="">
-          <h3 className="text-xl font-semibold text-red-600">Rules:</h3>
+        <div>
+          <div>
+            <h3 className="text-xl font-semibold text-red-600">Rules:</h3>
 
-          {moneyMatch.isPending ? (
-            <Spinner label="Loading..." color="warning" />
-          ) : (
-            <>
-              {matchRules.map((rule, i: number) => (
-                <div key={i}>
-                  <p className="text-white">
-                    <span className="font-semibold uppercase text-red-300">
-                      {Object.keys(rule)[0]}:
-                    </span>{" "}
-                    {Object.values(rule)[0] as unknown as string}
-                  </p>
-                </div>
-              ))}
-            </>
-          )}
+            {moneyMatch.isPending ? (
+              <Spinner label="Loading..." color="warning" />
+            ) : (
+              <>
+                {matchRules.map((rule, i: number) => (
+                  <div key={i}>
+                    <p className="text-white">
+                      <span className="font-semibold uppercase text-red-300">
+                        {Object.keys(rule)[0]}:
+                      </span>{" "}
+                      {Object.values(rule)[0] as unknown as string}
+                    </p>
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
+          <div className="pt-4">
+            <h3 className="text-xl font-semibold text-white">Match Starts:</h3>
+
+            <MatchTimer
+              d2={new Date()}
+              d1={new Date(startTime)}
+              color="text-slate-100"
+            />
+          </div>
         </div>
       </div>
 
