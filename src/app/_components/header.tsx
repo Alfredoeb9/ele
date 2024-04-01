@@ -152,29 +152,29 @@ export default function Header() {
     },
   });
 
-  const withdrawCash = api.user.updateUsersStripeData.useMutation({
-    onSuccess: async () => {
-      toast("Cash has been withdrawn", {
-        position: "bottom-right",
-        autoClose: 3000,
-        closeOnClick: true,
-        draggable: false,
-        type: "success",
-        toastId: 71,
-      });
-    },
+  // const withdrawCash = api.user.updateUsersStripeData.useMutation({
+  //   onSuccess: async () => {
+  //     toast("Cash has been withdrawn", {
+  //       position: "bottom-right",
+  //       autoClose: 3000,
+  //       closeOnClick: true,
+  //       draggable: false,
+  //       type: "success",
+  //       toastId: 71,
+  //     });
+  //   },
 
-    onError: (error) => {
-      toast("Error withdrawing cash", {
-        position: "bottom-right",
-        autoClose: 3000,
-        closeOnClick: true,
-        draggable: false,
-        type: "success",
-        toastId: 72,
-      });
-    },
-  });
+  //   onError: (error) => {
+  //     toast("Error withdrawing cash", {
+  //       position: "bottom-right",
+  //       autoClose: 3000,
+  //       closeOnClick: true,
+  //       draggable: false,
+  //       type: "success",
+  //       toastId: 72,
+  //     });
+  //   },
+  // });
 
   const sub = userData?.subscription;
 
