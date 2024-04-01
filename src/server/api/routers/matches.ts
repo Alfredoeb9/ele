@@ -65,12 +65,12 @@ export const matchRouter = createTRPCRouter({
 
         if (tournament.length <= 0)
           throw new Error(
-            "Tournament was not found, plesae try again or create a support ticket.",
+            "Tournament was not found, please try again or create a support ticket.",
           );
 
         if (!tournament)
           throw new Error(
-            "Tournament was not found, plesae try again or create a support ticket.",
+            "Tournament was not found, please try again or create a support ticket.",
           );
 
         return tournament;
@@ -86,10 +86,26 @@ export const matchRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      return await ctx.db
-        .select()
-        .from(moneyMatch)
-        .where(eq(moneyMatch.matchId, input.matchId));
+      try {
+        const moneyMatchData = await ctx.db
+          .select()
+          .from(moneyMatch)
+          .where(eq(moneyMatch.matchId, input.matchId));
+
+        if (moneyMatchData.length <= 0)
+          throw new Error(
+            "Money Match was not found, please try again or create a support ticket.",
+          );
+
+        if (!moneyMatchData)
+          throw new Error(
+            "Money Match was not found, please try again or create a support ticket.",
+          );
+
+        return moneyMatchData;
+      } catch (error) {
+        throw new Error(error as string);
+      }
     }),
 
   // getSingle: publicProcedure.query(({ ctx }) => {
