@@ -6,6 +6,7 @@ import {
   teamMembersTable,
   teamRecordTable,
   teams,
+  tickets,
 } from "@/server/db/schema";
 
 export const createRouter = createTRPCRouter({
@@ -87,6 +88,35 @@ export const createRouter = createTRPCRouter({
             platform: input.platforms,
           });
         });
+      } catch (error) {
+        throw new Error(error as string);
+      }
+    }),
+
+  createNewTicket: protectedProcedure
+    .input(
+      z.object({
+        userId: z.string().min(1),
+        userEmail: z.string().min(1),
+        userName: z.string().min(1),
+        text: z.string().min(1),
+        cat: z.string().min(1),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const ticketId = crypto.randomUUID();
+        const newTicket = await ctx.db.insert(tickets).values({
+          id: ticketId,
+          body: input.text,
+          userId: input.userId,
+          userEmail: input.userEmail,
+          createdById: input.userName,
+          category: input.cat,
+          status: "open",
+        });
+
+        return newTicket;
       } catch (error) {
         throw new Error(error as string);
       }
