@@ -558,7 +558,7 @@ export default function Tournaments({
               <div>
                 <p className="text-base sm:text-lg">
                   <span className="font-bold underline">Match Starts in: </span>
-                  <MatchTimer d1={d1} d2={d2} />
+                  <MatchTimer d1={d1} d2={d2} color={"text-slate-800"} />
                 </p>
               </div>
               <Button
