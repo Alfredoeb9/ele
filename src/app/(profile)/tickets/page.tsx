@@ -116,8 +116,6 @@ export default function TicketsDashboard() {
     (ticket: any, columnKey: React.Key) => {
       const cellValue = ticket[columnKey as keyof UsersType];
 
-      console.log("ticket", ticket);
-
       switch (columnKey) {
         case "id":
           return <p>{ticket.id}</p>;

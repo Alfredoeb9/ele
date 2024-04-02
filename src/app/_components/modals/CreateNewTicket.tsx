@@ -43,7 +43,8 @@ export default function CreateNewTicket({
 
   const createTicket = api.create.createNewTicket.useMutation({
     onSuccess: async () => {
-      //   await utils.user.getNotifications.invalidate();
+      await utils.user.getUserDataWithTickets.invalidate();
+      onClose();
       toast(`Ticket has been created`, {
         position: "bottom-right",
         autoClose: 4500,
@@ -158,7 +159,7 @@ export default function CreateNewTicket({
                   </button>
                 </div>
               </ModalBody>
-              <ToastContainer />
+              <ToastContainer containerId={"create-ticket-toast"} />
             </>
           )}
         </ModalContent>
