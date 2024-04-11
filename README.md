@@ -20,12 +20,14 @@ This is a ELE Main App
   - [] - Create Page where teams can submit scores
   - [] - Update following tournament/id to next round
   - [] - Create disputed tournaments use case functionility / good chance to use AI to help medigate disputed match
+- [x] - Convert from MySQL to SQLite and move from planetscale to turso due to planetscale removing free tier plan
 
 - [Next.js](https://nextjs.org)
 - [NextAuth.js](https://next-auth.js.org)
 - [Drizzle](https://orm.drizzle.team/)
 - [Tailwind CSS](https://tailwindcss.com)
 - [tRPC](https://trpc.io)
+- [Turso](https://turso.tech/)
 
 ## How do I deploy this?
 
