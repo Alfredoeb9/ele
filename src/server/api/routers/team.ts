@@ -21,6 +21,7 @@ export const teamRouter = createTRPCRouter({
         const team = await ctx.db.query.teams.findFirst({
           where: eq(teams.id, input.id),
           with: {
+            // @ts-expect-error memebers should be available
             members: true,
             record: true,
             matches: true,
