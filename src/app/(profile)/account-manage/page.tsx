@@ -14,9 +14,6 @@ import {
 import { FaCog } from "react-icons/fa";
 import { ChangeEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import UpdateUsernameModal from "@/app/_components/modals/UpdateUsernameModal";
-import UpdateEmailModal from "@/app/_components/modals/UpdateEmailModal";
-import { Session } from "next-auth";
 import CustomUpdateUserEmailButton from "@/app/_components/modals/modalButtons/CustomUpdateEmailButton";
 import CustomUpdateUsernameButton from "@/app/_components/modals/modalButtons/CutsomUpdateUserName";
 
@@ -59,14 +56,16 @@ export default function AccountSettings() {
   useEffect(() => {
     // would only be logged when words is changed.
     if (getSingleUser.data && getSingleUser.data?.gamerTags.length > 0) {
-      setChangeUserName(getSingleUser.data.username as string);
+      setChangeUserName(getSingleUser.data.username!);
       const list = [...gamerTags];
 
-      getSingleUser.data.gamerTags.map((gamer, i) => {
-        list[i].label = gamer.type;
-        list[i].value = gamer.gamerTag;
-        setGamerTags(list);
-      });
+      getSingleUser.data.gamerTags.map(
+        (gamer: { type: string; gamerTag: string }, i: number) => {
+          list[i].label = gamer.type;
+          list[i].value = gamer.gamerTag;
+          setGamerTags(list);
+        },
+      );
     }
   }, [getSingleUser.data]);
 
@@ -175,7 +174,7 @@ export default function AccountSettings() {
 
                         <CustomUpdateUsernameButton
                           newUsername={changeUsername}
-                          oldUsername={session.data?.user.username as string}
+                          oldUsername={session.data?.user.username!}
                           session={session}
                           credits={getSingleUser.data?.credits}
                         />
@@ -197,12 +196,12 @@ export default function AccountSettings() {
                           type="text"
                           label="Email"
                           size="sm"
-                          placeholder={session.data?.user.email as string}
+                          placeholder={session.data?.user.email!}
                           onChange={(e) => setChangeEmail(e.target.value)}
                         />
                         <CustomUpdateUserEmailButton
                           newEmail={changeEmail}
-                          oldEmail={session.data?.user.email as string}
+                          oldEmail={session.data?.user.email!}
                           session={session}
                         />
                       </div>
@@ -257,7 +256,7 @@ export default function AccountSettings() {
                     disabled={updateGamerTag.isPending}
                     onPress={() =>
                       updateGamerTag.mutate({
-                        email: session.data?.user.email as string,
+                        email: session.data?.user.email!,
                         gamerTags: [...gamerTags],
                       })
                     }
