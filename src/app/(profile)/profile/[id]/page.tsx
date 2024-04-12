@@ -76,17 +76,21 @@ export default function Profile() {
   //@ts-expect-error user matches table should be available
   const usersUpcomingMatches: Match[] = user?.matches;
 
-  const usersEnrolledTournaments = user?.teams;
+  //@ts-expect-error teams should be available
+  const usersTeams = user?.teams;
 
   useEffect(() => {
-    usersEnrolledTournaments?.map((team) => {
-      //@ts-expect-error tournamentsEnrolled should be available
-      if (team?.tournamentsEnrolled === undefined || !team?.tournamentsEnrolled)
-        return null;
-      //@ts-expect-error tournamentsEnrolled should be available
-      setTournaments(team.tournamentsEnrolled);
-    });
-  }, [usersEnrolledTournaments]);
+    usersTeams?.map(
+      (team: { tournamentsEnrolled: SetStateAction<never[]> | undefined }) => {
+        if (
+          team?.tournamentsEnrolled === undefined ||
+          !team?.tournamentsEnrolled
+        )
+          return null;
+        setTournaments(team.tournamentsEnrolled);
+      },
+    );
+  }, [usersTeams]);
 
   useEffect(() => {
     usersFriends?.map((friend: { targetUser: string | undefined }) => {
