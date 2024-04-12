@@ -28,7 +28,7 @@ import {
   friendsColumns,
 } from "@/lib/sharedData";
 // import Link from "next/link";
-import { VerticalDotsIcon } from "./VerticalDotsIcon";
+import { VerticalDotsIcon } from "../../../public/svg/VerticalDotsIcon";
 import { SearchIcon } from "./SearchIcon";
 import type { UsersType } from "@/server/db/schema";
 import RemoveFriendModal from "../_components/modals/RemoveFriendModal";
