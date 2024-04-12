@@ -241,6 +241,7 @@ export const userRouter = createTRPCRouter({
                 password: false,
               },
               with: {
+                gamerTags: true,
                 follows: true,
                 userRecord: true,
                 teams: {
