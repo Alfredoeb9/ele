@@ -6,11 +6,11 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import type { SetStateAction } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import type {
-  UsersRecordType,
-  Match,
-  FollowsType,
-  TournamentTeamsEnrolled,
+import {
+  type UsersRecordType,
+  type Match,
+  type FollowsType,
+  type TournamentTeamsEnrolled,
 } from "@/server/db/schema";
 import Link from "next/link";
 
@@ -132,6 +132,28 @@ export default function Profile() {
     },
   });
 
+  // @ts-expect-error gamerTags should be present at this check
+  const gamerTagData = user?.gamerTags;
+  const gamerTags = [
+    {
+      "Battle.net": "",
+      Playstation: "",
+    },
+  ];
+
+  if (gamerTagData?.length > 0) {
+    // eslint-disable-next-line @typescript-eslint/prefer-for-of
+    for (let i = 0; i < gamerTagData?.length; i++) {
+      if (gamerTagData[i].type === "Battle.net") {
+        gamerTags[0]["Battle.net"] = gamerTagData[i].gamerTag;
+      }
+
+      if (gamerTagData[i].type === "Playstation") {
+        gamerTags[0].Playstation = gamerTagData[i].gamerTag;
+      }
+    }
+  }
+
   // finalize how i want to grab recent matches, if on profile path (which means viewing users)
   //then we can grab only solo games or find a way to get all teams users is assigned to (solo, duos, teams, etc...)
   // and then display upcoming matches
@@ -164,11 +186,11 @@ export default function Profile() {
                       <div className="">
                         <p className="flex">
                           <span className="font-semibold">Playstation:</span>{" "}
-                          {user?.username}
+                          {gamerTags[0]?.Playstation}
                         </p>
                         <p className="flex">
                           <span className="font-semibold">Battlenet:</span>{" "}
-                          {user?.username}
+                          {gamerTags[0]["Battle.net"]}
                         </p>
                       </div>
                     </div>
