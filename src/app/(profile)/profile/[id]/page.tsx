@@ -24,7 +24,11 @@ export default function Profile() {
   const [areFriends, setAreFriends] = useState<boolean>(false);
   const [tournaments, setTournaments] = useState([]);
 
-  const userFromPath = pathname.split("/")[2];
+  let userFromPath = pathname.split("/")[2];
+
+  if (userFromPath.includes("%20")) {
+    userFromPath = userFromPath.replace("%20", " ");
+  }
 
   useEffect(() => {
     if (!userFromPath || userFromPath === "undefined") {
