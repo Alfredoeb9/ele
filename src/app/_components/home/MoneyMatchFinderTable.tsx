@@ -199,9 +199,7 @@ export const MoneyMatchFinderTable = ({ data }: MatchListProps) => {
                 isDisabled={d2.valueOf() >= d1.valueOf() ? true : false}
                 className="rounded-2xl  bg-green-600 p-2"
               >
-                <Link href={`/match/money-match/${moneyMatch.matchId}`}>
-                  Accept
-                </Link>
+                <Link href={`/money-match/${moneyMatch.matchId}`}>Accept</Link>
               </Button>
             </div>
           );
