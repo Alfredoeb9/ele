@@ -58,10 +58,11 @@ export default function TeamSettings() {
     return <Spinner label="Loading..." color="warning" />;
 
   if (currentUser.isError || currentUser.data === undefined) {
-    return null
+    return null;
   }
 
-  const teams = currentUser.data.teams
+  //@ts-expect-error teams is present at this level
+  const teams = currentUser.data.teams;
 
   return (
     <div className="mx-auto flex min-h-screen items-center justify-center bg-stone-900 px-6 py-8 md:h-screen lg:py-0">
@@ -74,68 +75,88 @@ export default function TeamSettings() {
             </div>
           ) : (
             <>
-              {teams.map((team) => (
-                <div
-                  className="w-[100%] rounded-xl bg-slate-800 p-2 text-white sm:w-[32.2%]"
-                  key={team?.id}
-                >
-                  <div className="tournament_info ml-4 w-full">
-                    <h1 className="text-lg font-bold md:text-xl lg:text-2xl mb-2">
-                      {team.team_name}
-                    </h1>
-                    <p><span className="font-semibold">Team Category:</span> {team.teamCategory.toUpperCase()}</p>
-                    <p className="font-semibold">
-                      {team.gameTitle === "mw3" && statusGameMap[team?.gameTitle]}
-                      {team.gameTitle === "fornite" && statusGameMap[team?.gameTitle]}
-                    </p>
+              {teams.map(
+                (team: {
+                  id: string;
+                  team_name: string;
+                  teamCategory: string;
+                  gameTitle: string;
+                  record: { wins: string; losses: string };
+                  members: { role: string }[];
+                }) => (
+                  <div
+                    className="w-[100%] rounded-xl bg-slate-800 p-2 text-white sm:w-[32.2%]"
+                    key={team?.id}
+                  >
+                    <div className="tournament_info ml-4 w-full">
+                      <h1 className="mb-2 text-lg font-bold md:text-xl lg:text-2xl">
+                        {team.team_name}
+                      </h1>
+                      <p>
+                        <span className="font-semibold">Team Category:</span>{" "}
+                        {team.teamCategory.toUpperCase()}
+                      </p>
+                      <p className="font-semibold">
+                        {team.gameTitle === "mw3" &&
+                          statusGameMap[team?.gameTitle]}
+                        {team.gameTitle === "fornite" &&
+                          statusGameMap[team?.gameTitle]}
+                      </p>
 
-                    <div>
-                      Ladder squads | {team?.record?.wins ?? 0} W -{" "}
-                      {team?.record?.losses ?? 0} L
-                    </div>
+                      <div>
+                        Ladder squads | {team?.record?.wins ?? 0} W -{" "}
+                        {team?.record?.losses ?? 0} L
+                      </div>
 
-                    <div className="mt-4 flex flex-wrap justify-start gap-2 md:gap-3 lg:gap-4">
-                      {team.members[0].role === "member" && (
-                        <>
-                          <Button className="text-green-500" variant="bordered">
-                            <Link href={`/team/${team?.id}`}>View</Link>
-                          </Button>
-                          <Button
-                            className="text-red-500"
-                            variant="bordered"
-                            onPress={() => {
-                              onOpen();
-                              setModalPath("member");
-                              setTeamName(team.team_name);
-                            }}
-                          >
-                            Leave Team
-                          </Button>
-                        </>
-                      )}
+                      <div className="mt-4 flex flex-wrap justify-start gap-2 md:gap-3 lg:gap-4">
+                        {team.members[0].role === "member" && (
+                          <>
+                            <Button
+                              className="text-green-500"
+                              variant="bordered"
+                            >
+                              <Link href={`/team/${team?.id}`}>View</Link>
+                            </Button>
+                            <Button
+                              className="text-red-500"
+                              variant="bordered"
+                              onPress={() => {
+                                onOpen();
+                                setModalPath("member");
+                                setTeamName(team.team_name);
+                              }}
+                            >
+                              Leave Team
+                            </Button>
+                          </>
+                        )}
 
-                      {team.members[0].role === "owner" && (
-                        <>
-                          <Button className="text-green-500" variant="bordered">
-                            <Link href={`/team/${team?.id}`}>Manage</Link>
-                          </Button>
-                          <Button
-                            className="text-red-500"
-                            variant="bordered"
-                            onPress={() => {
-                              onOpen(), setModalPath("owner");
-                              setTeamName(team.team_name);
-                              setTeamId(team.id);
-                            }}
-                          >
-                            Disband
-                          </Button>
-                        </>
-                      )}
+                        {team.members[0].role === "owner" && (
+                          <>
+                            <Button
+                              className="text-green-500"
+                              variant="bordered"
+                            >
+                              <Link href={`/team/${team?.id}`}>Manage</Link>
+                            </Button>
+                            <Button
+                              className="text-red-500"
+                              variant="bordered"
+                              onPress={() => {
+                                onOpen(), setModalPath("owner");
+                                setTeamName(team.team_name);
+                                setTeamId(team.id);
+                              }}
+                            >
+                              Disband
+                            </Button>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ),
+              )}
             </>
           )}
         </div>
