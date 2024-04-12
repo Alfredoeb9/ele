@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { eq, gte } from "drizzle-orm";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { gameCategory, tournaments } from "@/server/db/schema";
+import { gameCategory, moneyMatch, tournaments } from "@/server/db/schema";
 
 export const gameCategoryRouter = createTRPCRouter({
   getAllGames: publicProcedure.query(async ({ ctx }) => {
@@ -37,6 +37,9 @@ export const gameCategoryRouter = createTRPCRouter({
                 tournaments.start_time,
                 new Date() as unknown as string,
               ),
+            },
+            moneyMatch: {
+              where: eq(moneyMatch.gameTitle, input.gameName),
             },
           },
         });
