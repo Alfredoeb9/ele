@@ -420,7 +420,7 @@ export default function Tournaments({
   if (tournamentData.data === undefined) return null;
 
   const tournament = tournamentData.data;
-  const tournamentRules = tournament[0].rules as RulesTypes[];
+  const tournamentRules = tournament[0].rules;
 
   if (tournamentData.isLoading)
     return <Spinner label="Loading..." color="warning" />;
@@ -636,7 +636,7 @@ export default function Tournaments({
                           <span className="font-semibold uppercase text-red-600">
                             {Object.keys(rule)[0]}:
                           </span>{" "}
-                          {Object.values(rule)[0] as unknown as string}
+                          {Object.values(rule)[0]}
                         </p>
                       </div>
                     ))}

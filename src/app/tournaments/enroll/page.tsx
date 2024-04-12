@@ -57,7 +57,7 @@ export default function Enroll() {
 
   const currentUser = api.user.getSingleUserByTeamId.useQuery(
     {
-      email: session?.data?.user.email as string,
+      email: session?.data?.user.email!,
       gameId: tournament.data && (tournament?.data[0]?.game as string | any),
     },
     {
@@ -140,7 +140,8 @@ export default function Enroll() {
     }
   }
 
-  // if(currentUser.isLoading) return <Spinner label="Loading..." color="warning" />
+  //@ts-expect-error teams is present as this level
+  const teams = currentUser?.data?.teams;
 
   return (
     <div className="container m-auto px-4 pt-2">
@@ -198,11 +199,7 @@ export default function Enroll() {
               label="Select a Team"
               className="max-w-xs"
               onClick={() => {
-                if (
-                  currentUser.data &&
-                  currentUser.data.teams &&
-                  currentUser.data.teams.length <= 0
-                ) {
+                if (currentUser.data && teams && teams.length <= 0) {
                   toast.error(CustomToastWithLink, {
                     position: "bottom-right",
                     autoClose: 5000,
@@ -217,16 +214,12 @@ export default function Enroll() {
               required
             >
               {
-                currentUser.data?.teams?.map((match) => (
+                teams?.map((match: { teamId: string; teamName: string }) => (
                   <SelectItem
-                    //@ts-expect-error id is present
                     key={match.teamId}
-                    //@ts-expect-error teamName is present
                     onClick={() => setTeamName(match.teamName)}
-                    //@ts-expect-error teamName is present
                     value={match.teamName}
                   >
-                    {/* @ts-expect-error teamName is present */}
                     {match.teamName}
                   </SelectItem>
                 )) as []
@@ -237,9 +230,7 @@ export default function Enroll() {
           <button
             className="m-auto mt-4 flex w-64 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-slate-500"
             disabled={
-              (enrollTeam.isPending ||
-                (currentUser?.data?.teams &&
-                  currentUser.data.teams.length <= 0)) ??
+              (enrollTeam.isPending || (teams && teams.length <= 0)) ??
               selectedGames.length <= 0
             }
           >
