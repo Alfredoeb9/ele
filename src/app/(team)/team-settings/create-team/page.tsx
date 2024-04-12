@@ -16,10 +16,12 @@ export default function CreateTeam() {
   const [error, setError] = useState<string>("");
   const [selectedGameId, setSelectedGameId] = useState<string>("");
   const [selectedGame, setSelectedGame] = useState<string>("");
-  const [teamCategoryPicked, setTeamCategoryPicked] = useState<TeamCategoryTypes[]>([]);
+  const [teamCategoryPicked, setTeamCategoryPicked] = useState<
+    TeamCategoryTypes[]
+  >([]);
   const [selectedCategory, setSelectedCategory] = useState("");
 
-  if (session.status === "unauthenticated") router.push("/sign-in");
+  // if (session.status === "unauthenticated") router.push("/sign-in");
 
   const createTeam = api.create.createTeam.useMutation({
     onSuccess: () => {
@@ -32,7 +34,6 @@ export default function CreateTeam() {
         e.data?.stack?.includes("rpc error: code = AlreadyExists") ||
         e.message.includes("'ele_team.ele_team_game_id_team_name_unique'")
       ) {
-        
         setError("Team name already exists");
         toast(
           `Team name ${teamName} already exists for ${selectedGame}, please choose another`,
@@ -48,19 +49,16 @@ export default function CreateTeam() {
       }
 
       if (e.data?.zodError?.fieldErrors.teamName) {
-        const errorMessage = e.data?.zodError?.fieldErrors.teamName[0]
+        const errorMessage = e.data?.zodError?.fieldErrors.teamName[0];
         setError(`Team name: ${errorMessage}`);
-        toast(
-          `Team Name: ${errorMessage}`,
-          {
-            position: "bottom-right",
-            autoClose: 3500,
-            closeOnClick: true,
-            draggable: false,
-            type: "error",
-            toastId: 62,
-          },
-        );
+        toast(`Team Name: ${errorMessage}`, {
+          position: "bottom-right",
+          autoClose: 3500,
+          closeOnClick: true,
+          draggable: false,
+          type: "error",
+          toastId: 62,
+        });
       }
 
       setTeamName("");
@@ -71,17 +69,17 @@ export default function CreateTeam() {
 
   const gameCategory = api.games.getOnlyGames.useQuery();
 
-  if (gameCategory.isError) {
-    setError("Service is down, please refresh or submit a ticket");
-    toast(`Service is down, please refresh or submit a ticket`, {
-      position: "bottom-right",
-      autoClose: 3500,
-      closeOnClick: true,
-      draggable: false,
-      type: "error",
-      toastId: 12,
-    });
-  }
+  // if (gameCategory.isError) {
+  //   setError("Service is down, please refresh or submit a ticket");
+  //   toast(`Service is down, please refresh or submit a ticket`, {
+  //     position: "bottom-right",
+  //     autoClose: 3500,
+  //     closeOnClick: true,
+  //     draggable: false,
+  //     type: "error",
+  //     toastId: 12,
+  //   });
+  // }
 
   const arrById = gameCategory.data?.filter(filterByID);
 
@@ -92,8 +90,8 @@ export default function CreateTeam() {
       teamCategory.find((ele) => {
         arrById.map((arr) => {
           //@ts-expect-error ehh types are weird
-          setTeamCategoryPicked(ele[arr?.game])
-        })
+          setTeamCategoryPicked(ele[arr?.game]);
+        });
       });
     }
   }, [arrById, selectedGame]);
@@ -105,10 +103,21 @@ export default function CreateTeam() {
   }
 
   function handleRuleChange(e: string) {
-    setSelectedCategory(e)
+    setSelectedCategory(e);
   }
 
-  if (teamCategoryPicked == undefined) return null
+  if (teamCategoryPicked == undefined) return null;
+
+  if (gameCategory.isError) {
+    toast("Service is down please reach out to support", {
+      position: "bottom-right",
+      autoClose: 3500,
+      closeOnClick: true,
+      draggable: false,
+      type: "error",
+      toastId: 77,
+    });
+  }
 
   if (createTeam.isPending)
     return <Spinner label="Loading..." color="warning" />;
@@ -174,18 +183,31 @@ export default function CreateTeam() {
           value={teamName}
         />
 
-        <div className='mb-2'>
-          <label className='block text-sm font-medium leading-6'>Rules:</label>
-          
-          {Object?.entries(teamCategoryPicked)?.map((rule: any[], key: number) => (
-            <Select label={rule[0].charAt(0).toUpperCase() + rule[0].slice(1)} key={key} id={`${key}`} className='flex'>
+        <div className="mb-2">
+          <label className="block text-sm font-medium leading-6">Rules:</label>
+
+          {Object?.entries(teamCategoryPicked)?.map(
+            (rule: any[], key: number) => (
+              <Select
+                label={rule[0].charAt(0).toUpperCase() + rule[0].slice(1)}
+                key={key}
+                id={`${key}`}
+                className="flex"
+              >
                 {rule[1].map((option: string, i: number) => (
-                  <SelectItem value={option} key={i} onPress={(e) => handleRuleChange((e.target as HTMLElement).innerText)}>
+                  <SelectItem
+                    value={option}
+                    key={i}
+                    onPress={(e) =>
+                      handleRuleChange((e.target as HTMLElement).innerText)
+                    }
+                  >
                     {option}
                   </SelectItem>
                 ))}
-            </Select>
-          ))}
+              </Select>
+            ),
+          )}
         </div>
 
         <button
@@ -194,7 +216,7 @@ export default function CreateTeam() {
             selectedGame === "" ||
             selectedGame.length <= 0 ||
             selectedCategory.length <= 0 ||
-            teamName.length <=0
+            teamName.length <= 0
           }
           onClick={() => {
             createTeam.mutate({
