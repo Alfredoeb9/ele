@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
@@ -16,11 +17,11 @@ import { ToastContainer, toast } from "react-toastify";
 import { FaBell } from "react-icons/fa";
 import type { NotificationType, UsersType } from "@/server/db/schema";
 
-import "react-toastify/dist/ReactToastify.css";
+// import "react-toastify/dist/ReactToastify.css";
 import { api } from "@/trpc/react";
-import { stripe } from "@/lib/stripe";
-import getStripe from "@/lib/utils/get-stripejs";
-import { createStripeAccountAction, withdrawMoney } from "./actions/actions";
+// import { stripe } from "@/lib/stripe";
+// import getStripe from "@/lib/utils/get-stripejs";
+// import { createStripeAccountAction, withdrawMoney } from "./actions/actions";
 
 export default function Header() {
   const utils = api.useUtils();
@@ -182,10 +183,13 @@ export default function Header() {
     <header className="nav">
       <nav className="flex h-16 w-full items-center justify-between rounded-b-lg bg-gray-200 px-4 dark:bg-gray-800">
         <nav className="flex h-12 items-center gap-x-4">
-          <Link className="text-md font-semibold text-zinc-300" href={"/"}>
-            <span className="text-elg-blue">E</span>
-            <span className="text-elg-red">L</span>
-            <span className="text-elg-white">E</span>
+          <Link
+            className="text-md roun rounded-lg bg-gradient-to-br from-red-700 to-indigo-600 px-3 py-1 font-semibold text-zinc-300"
+            href={"/"}
+          >
+            <span>E</span>
+            <span>L</span>
+            <span>E</span>
           </Link>
           <Link className="text-md font-bold text-zinc-900" href="/">
             Home
