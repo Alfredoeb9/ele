@@ -1,11 +1,10 @@
 "use client";
 
 import React from "react";
-import { Card, CardBody, CardFooter } from "@nextui-org/react";
+import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
 import { checkoutAction } from "./actions";
 import getStripe from "@/lib/utils/get-stripejs";
 import { pricingCards } from "@/lib/PricingCards";
-import Image from "next/image";
 import { ToastContainer, toast } from "react-toastify";
 
 export default function PricingCards() {
@@ -48,12 +47,13 @@ export default function PricingCards() {
                 });
             }}
           >
-            <CardBody className="flex items-center justify-center">
+            <CardBody className="flex items-center justify-center overflow-visible p-0">
               <Image
-                src={"/images/mw3.png"}
+                shadow="sm"
+                src={"/images/credits-bg.jpg"}
                 alt={""}
-                width={200}
-                height={200}
+                width="100%"
+                className="h-[250px] w-full object-cover"
               />
             </CardBody>
 
