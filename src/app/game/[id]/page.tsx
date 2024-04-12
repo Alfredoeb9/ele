@@ -121,8 +121,6 @@ export default function Game() {
   //     setT1(time1.valueOf())?
   // }, [])
 
-  console.log("render", renderData);
-
   return (
     <main className="bg-neutral-600">
       <div className="relative z-0 h-[300px] w-full bg-mw3_team_background from-white to-neutral-400 bg-cover bg-no-repeat object-cover after:relative after:left-0 after:top-0 after:block after:h-full after:w-full after:bg-gradient-to-br after:opacity-50"></div>
