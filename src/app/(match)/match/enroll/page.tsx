@@ -112,8 +112,10 @@ export default function Enroll() {
     },
   );
 
-  const arrById = currentUser?.data?.teams?.filter(
-    //@ts-expect-error team_name is there
+  // @ts-expect-error teams is present at this level
+  const teams = currentUser?.data?.teams;
+
+  const arrById = teams?.filter(
     (item: { team_name: string }) => item.team_name === teamName,
   );
 
@@ -234,7 +236,7 @@ export default function Enroll() {
                 //     moneyMatch.data &&
                 //     (moneyMatch.data[0]?.matchId as string | any),
                 //   acceptingTeamId: selectedGames,
-                //   teamName: teamName,
+                //   createrTeamId: teamName,
                 // });
               }
             }}
@@ -244,11 +246,7 @@ export default function Enroll() {
                 label="Select a Team"
                 className="max-w-xs"
                 onClick={() => {
-                  if (
-                    currentUser.data &&
-                    currentUser.data.teams &&
-                    currentUser.data.teams.length <= 0
-                  ) {
+                  if (currentUser.data && teams && teams.length <= 0) {
                     toast.error(CustomToastWithLink, {
                       position: "bottom-right",
                       autoClose: 5000,
@@ -262,21 +260,15 @@ export default function Enroll() {
                 onSelectionChange={(e) => setSelectedGames(Object.values(e)[0])}
                 required
               >
-                {
-                  currentUser.data?.teams?.map((team) => (
-                    <SelectItem
-                      //@ts-expect-error id is present
-                      key={team.id}
-                      //@ts-expect-error team_name is present
-                      onClick={() => setTeamName(team.team_name)}
-                      //@ts-expect-error team_name is present
-                      value={team.team_name}
-                    >
-                      {/* @ts-expect-error id is present */}
-                      {team.team_name}
-                    </SelectItem>
-                  )) as []
-                }
+                {teams?.map((team: { id: string; team_name: string }) => (
+                  <SelectItem
+                    key={team.id}
+                    onClick={() => setTeamName(team.team_name)}
+                    value={team.team_name}
+                  >
+                    {team.team_name}
+                  </SelectItem>
+                ))}
               </Select>
 
               <CheckboxGroup
@@ -287,7 +279,6 @@ export default function Enroll() {
                 isRequired
               >
                 {arrById &&
-                  // @ts-expect-error members is part of data
                   (arrById[idx]?.members.map(
                     (member: { userName: string }, i: number) => (
                       <Checkbox
@@ -308,9 +299,7 @@ export default function Enroll() {
             <button
               className="m-auto mt-4 flex w-64 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-slate-500"
               disabled={
-                (enrollTeam.isPending ||
-                  (currentUser?.data?.teams &&
-                    currentUser.data.teams.length <= 0)) ??
+                (enrollTeam.isPending || (teams && teams.length <= 0)) ??
                 selectedGames.length <= 0
               }
             >
