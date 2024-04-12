@@ -232,6 +232,7 @@ export type TournamentType = typeof tournaments.$inferSelect;
 // A gameCategory can have many tournaments
 export const tournamentRelations = relations(gameCategory, ({ many }) => ({
   tournaments: many(tournaments),
+  moneyMatch: many(moneyMatch),
 }));
 
 // tournament can only have one id
@@ -274,6 +275,10 @@ export const moneyMatchRelation = relations(moneyMatch, ({ one }) => ({
   teams: one(teams, {
     fields: [moneyMatch.createdBy],
     references: [teams.id],
+  }),
+  moneyMatch: one(gameCategory, {
+    fields: [moneyMatch.gameTitle],
+    references: [gameCategory.game],
   }),
 }));
 
