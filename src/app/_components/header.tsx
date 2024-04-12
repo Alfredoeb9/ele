@@ -184,7 +184,7 @@ export default function Header() {
       <nav className="flex h-16 w-full items-center justify-between rounded-b-lg bg-gray-200 px-4 dark:bg-gray-800">
         <nav className="flex h-12 items-center gap-x-4">
           <Link
-            className="text-md roun rounded-lg bg-gradient-to-br from-red-700 to-indigo-600 px-3 py-1 font-semibold text-zinc-300"
+            className="text-md roun rounded-lg bg-gradient-to-br from-red-700 to-sky-800 px-3 py-1 font-semibold text-zinc-300"
             href={"/"}
           >
             <span>E</span>
