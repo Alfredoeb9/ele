@@ -575,6 +575,26 @@ export const userRouter = createTRPCRouter({
         throw new Error(error as string);
       }
     }),
+  getUniqueTicket: publicProcedure
+    .input(
+      z.object({
+        ticketId: z.string().min(1),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const ticketData = await ctx.db
+          .select()
+          .from(tickets)
+          .where(eq(tickets.id, input.ticketId));
+
+        if (!ticketData) throw new Error("Ticket does not exist");
+
+        return ticketData[0];
+      } catch (error) {
+        throw new Error("There was a service error");
+      }
+    }),
 
   // updateUsersStripeData: publicProcedure
   //   .input(
