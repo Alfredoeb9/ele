@@ -153,7 +153,7 @@ export default function TicketsDashboard() {
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu>
-                  <DropdownItem href={`/ticket/${ticket?.id}`}>
+                  <DropdownItem href={`/tickets/${ticket?.id}`}>
                     View
                   </DropdownItem>
                   <DropdownItem
