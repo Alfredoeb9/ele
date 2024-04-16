@@ -64,7 +64,7 @@ export const stripeAccount = createTable("stripe_account", {
   userId: text("user_id", { length: 255 }),
   stripeId: text("stripe_id", { length: 255 }),
   username: text("username", { length: 255 }),
-  balance: text("balance").default("0"),
+  balance: int("balance", { mode: "number" }).default(0),
 });
 
 export const stripeAccountRelation = relations(stripeAccount, ({ one }) => ({
