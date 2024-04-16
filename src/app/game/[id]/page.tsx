@@ -2,19 +2,8 @@
 
 import { api } from "@/trpc/react";
 import { usePathname } from "next/navigation";
-import { Tabs, Tab, Card, CardBody, CardHeader } from "@nextui-org/react";
-import type { GameCategoryType, Tournament } from "@/server/db/schema";
-import {
-  JSXElementConstructor,
-  PromiseLikeOfReactNode,
-  ReactElement,
-  ReactNode,
-  ReactPortal,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { SelectItem, Select } from "@nextui-org/react";
+import { useEffect, useState } from "react";
 import { tabs } from "@/lib/sharedData";
 import GameTabs from "./GameTabs";
 import Link from "next/link";
@@ -123,11 +112,16 @@ export default function Game() {
 
   return (
     <main className="bg-neutral-600">
-      <div className="relative z-0 h-[300px] w-full bg-mw3_team_background from-white to-neutral-400 bg-cover bg-no-repeat object-cover after:relative after:left-0 after:top-0 after:block after:h-full after:w-full after:bg-gradient-to-br after:opacity-50"></div>
+      <div
+        style={{
+          backgroundImage: `url(/images/${gameFromPath}_team_background.png)`,
+        }}
+        className={`relative z-0 h-[300px] w-full  from-white to-neutral-400 bg-cover bg-no-repeat object-cover after:relative after:left-0 after:top-0 after:block after:h-full after:w-full after:bg-gradient-to-br after:opacity-50`}
+      ></div>
 
       <div className="relative mt-[-150px] py-3">
         <div className="container relative z-20 m-auto">
-          <div>
+          <div className="relative">
             <ul className="flex flex-row justify-center gap-3">
               {tabs.map((tab) => (
                 <GameTabs
@@ -139,6 +133,26 @@ export default function Game() {
                 />
               ))}
             </ul>
+
+            <div className="absolute -top-1 right-24 flex w-36 justify-end">
+              <Select
+                label="Game Drop down"
+                defaultSelectedKeys={[gameFromPath]}
+                disabledKeys={[gameFromPath]}
+                selectionMode="single"
+              >
+                <SelectItem href={`/game/mw3`} key={"mw3"} value={"mw3"}>
+                  mw3
+                </SelectItem>
+                <SelectItem
+                  href={`/game/fornite`}
+                  key={"fornite"}
+                  value={"fornite"}
+                >
+                  fornite
+                </SelectItem>
+              </Select>
+            </div>
 
             <div className="pt-4">
               <h2 className="text-xl font-bold text-white md:text-2xl lg:text-3xl">
