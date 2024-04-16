@@ -19,6 +19,7 @@ export default {
       },
       backgroundImage: {
         mw3_team_background: "url('/images/mw3_team_background.png')",
+        fornite_team_background: "url('/images/fornite_team_background.png')",
         credit_bg: "url('/images/credits-bg.jpg)",
         hero_bg: "url('/images/hero-bg.jpg')",
       },
