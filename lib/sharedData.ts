@@ -107,7 +107,46 @@ export const ticketOptions = [
   {
     label: "General",
     value: "genearl",
-    description: "Create a general ticket regarding the application or a system being down",
+    description:
+      "Create a general ticket regarding the application or a system being down",
+  },
+];
+
+export const addCashSelectOptions = [
+  {
+    label: "5",
+    value: "5",
+    description: "add $5 to your account",
+  },
+  {
+    label: "10",
+    value: "10",
+    description: "add $10 to your account",
+  },
+  {
+    label: "15",
+    value: "15",
+    description: "add $15 to your account",
+  },
+  {
+    label: "25",
+    value: "25",
+    description: "add $25 to your account",
+  },
+  {
+    label: "50",
+    value: "50",
+    description: "add $50 to your account",
+  },
+  {
+    label: "75",
+    value: "75",
+    description: "add $75 to your account",
+  },
+  {
+    label: "100",
+    value: "100",
+    description: "add $100 to your account",
   },
 ];
 
@@ -246,42 +285,42 @@ export const trophys = [
 ];
 
 export interface TeamCategoryTypes {
-  "id": {
-    "category": string[];
+  id: {
+    category: string[];
   };
 }
 
 export const teamCategory = [
   {
-    "mw3": { "category": ["solo", "duo", "trios", "quads"] },
-    "fornite": ["solo", "duo", "trios", "quads"],
+    mw3: { category: ["solo", "duo", "trios", "quads"] },
+    fornite: ["solo", "duo", "trios", "quads"],
   },
 ];
 
 export const gameTitles = [
   {
-    "mw3": {
-      "solo": [
+    mw3: {
+      solo: [
         "CDL Search and Destory",
         "CDL Hardpoint",
         "CDL Variant",
         "Rio Only SND",
       ],
-      "duo": [
+      duo: [
         "CDL Search and Destory (duo)",
         "CDL Hardpoint (duo)",
         "CDL Variant (duo)",
         "Rio Only SND (duo)",
         "CDL Control (duo)",
       ],
-      "trios": [
+      trios: [
         "CDL Search and Destory (trios)",
         "CDL Hardpoint (trios)",
         "CDL Variant (trios)",
         "Rio Only SND (trios)",
         "CDL Control (trios)",
       ],
-      "quads": [
+      quads: [
         "CDL Search and Destory (quads)",
         "CDL Hardpoint (quads)",
         "CDL Variant (quads)",
@@ -294,39 +333,39 @@ export const gameTitles = [
 
 export const Rules = [
   {
-    "mw3": {
-      "pc_player": ["Allowed", "Not Allowed"],
-      "snaking": ["Allowed", "Not Allowed"],
-      "snipers": ["Allowed", "Not Allowed"],
-      "allowed_input": ["Controller", "MKB", "Controller + MKB"],
+    mw3: {
+      pc_player: ["Allowed", "Not Allowed"],
+      snaking: ["Allowed", "Not Allowed"],
+      snipers: ["Allowed", "Not Allowed"],
+      allowed_input: ["Controller", "MKB", "Controller + MKB"],
     },
 
-    "fornite": {
-      "pc_player": ["Allowed", "Not Allowed"],
-      "smg": ["Allowed", "Not Allowed"],
+    fornite: {
+      pc_player: ["Allowed", "Not Allowed"],
+      smg: ["Allowed", "Not Allowed"],
     },
 
-    "warzone": {
-      "pc_player": ["Allowed", "Not Allowed"],
-      "snipers": ["Allowed", "Not Allowed"],
-      "helicopters": ["Allowed", "Not Allowed"],
+    warzone: {
+      pc_player: ["Allowed", "Not Allowed"],
+      snipers: ["Allowed", "Not Allowed"],
+      helicopters: ["Allowed", "Not Allowed"],
     },
   },
 ];
 
 export const teamSizeRender = [
   {
-    "mw3": {
-      "solo": "1",
-      "duo": 2,
-      "trios": 3,
-      "quads": 4,
+    mw3: {
+      solo: "1",
+      duo: 2,
+      trios: 3,
+      quads: 4,
     },
-    "fornite": {
-      "solo": 1,
-      "duo": 2,
-      "trios": 3,
-      "quads": 4,
+    fornite: {
+      solo: 1,
+      duo: 2,
+      trios: 3,
+      quads: 4,
     },
   },
 ];
