@@ -16,6 +16,21 @@ import { Rules, gameTitles, teamSizeRender } from "@/lib/sharedData";
 import { useSession } from "next-auth/react";
 import { ToastContainer, toast } from "react-toastify";
 
+interface CreateMatchType {
+  "mw3": {
+    solo: number;
+    duo: number;
+    trios: number;
+    quads: number;
+};
+"fornite": {
+    solo: number;
+    duo: number;
+    trios: number;
+    quads: number;
+};
+}
+
 export default function CreateMatch() {
   const pathname = usePathname();
   const router = useRouter();
@@ -36,11 +51,9 @@ export default function CreateMatch() {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [gameRules, setGameRules] = useState<any>([]);
   const [gameTitle, setGameTitles] = useState<any[]>([]);
-  const [teamSize, setTeamSize] = useState<string>("");
+  const [teamSize, setTeamSize] = useState(null);
   const [matchEntry, setMatchEntry] = useState<number | string>(1);
-  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
   const [startTime, setStartTime] = useState(
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     `${new Date().toISOString().slice(0, -8)}`,
   );
   const [selectedGameTitle, setSelectedGameTitle] = useState<string | null>("");
@@ -74,7 +87,7 @@ export default function CreateMatch() {
         type: "success",
         toastId: 67,
       });
-      setTeamSize("");
+      setTeamSize(null);
       setGameTitles([]);
       setSelectedPlatforms([]);
       setConfirmedGameRules([]);
@@ -168,7 +181,7 @@ export default function CreateMatch() {
         setGameTitles(title[arrById[0]?.game][teamCat as any]),
       );
       //@ts-expect-error using dynamic values to render value
-      setTeamSize(teamSizeRender[0][`${selectedGames}`][teamCat]);
+      setTeamSize((teamSizeRender[0])[`${selectedGames}`][teamCat]);
     } else {
       setSelectedGames(pathname.split("/")[3]);
     }
