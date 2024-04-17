@@ -11,7 +11,7 @@ import {
   SelectItem,
 } from "@nextui-org/react";
 import { api } from "@/trpc/react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Rules, gameTitles, teamSizeRender } from "@/lib/sharedData";
 import { useSession } from "next-auth/react";
 import { ToastContainer, toast } from "react-toastify";
@@ -35,6 +35,10 @@ export default function CreateMatch() {
   const pathname = usePathname();
   const router = useRouter();
   const session = useSession();
+  const searchParamsNext = useSearchParams();
+  const teamName = searchParamsNext.get("teamName")
+  const teamIdNext = searchParamsNext.get("teamId");
+  const teamCatNext = searchParamsNext.get("teamCategory")
   const searchParams = new URLSearchParams(location.search);
   const formattedParmas = searchParams.toString().split("&");
   const [loading, setLoading] = useState<boolean>(false);
@@ -43,10 +47,10 @@ export default function CreateMatch() {
   const [selectedGames, setSelectedGames] = useState<string>(
     pathname.split("/")[3],
   );
-  const [teamId, setTeamId] = useState(formattedParmas[0]?.split("=")[1] || "");
-  const [teamCat, setTeamCat] = useState(
-    formattedParmas[1]?.split("=")[1] || "",
-  );
+  // const [teamId, setTeamId] = useState(formattedParmas[0]?.split("=")[1] || "");
+  // const [teamCat, setTeamCat] = useState(
+  //   formattedParmas[1]?.split("=")[1] || "",
+  // );
   const [confirmedGameRules, setConfirmedGameRules] = useState<any>([]);
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [gameRules, setGameRules] = useState<any>([]);
@@ -72,6 +76,19 @@ export default function CreateMatch() {
     });
   }
 
+  if (teamCatNext === undefined || teamIdNext === undefined) {
+    toast('Seems to be an error please try again', {
+      position: "bottom-right",
+      autoClose: 2800,
+      closeOnClick: true,
+      draggable: false,
+      type: "error",
+      toastId: 80,
+    })
+
+    router.push(`team/${teamIdNext}`)
+  }
+
   const getSingleGame = api.games.getSingleGame.useQuery(
     { gameName: selectedGames },
     { enabled: selectedGames.length > 0 && session.status === "authenticated" },
@@ -94,7 +111,7 @@ export default function CreateMatch() {
       setMatchEntry(1);
       setStartTime(`${new Date().toISOString().slice(0, -8)}`);
       setTimeout(() => {
-        router.push(`/team/${teamId}`);
+        router.push(`/team/${teamIdNext}`);
       });
     },
 
@@ -165,12 +182,12 @@ export default function CreateMatch() {
 
   const arrById: any = getSingleGame.data?.filter(filterByID);
 
-  useEffect(() => {
-    if (formattedParmas.length > 0) {
-      setTeamId(formattedParmas[0]?.split("=")[1]);
-      setTeamCat(formattedParmas[1]?.split("=")[1]);
-    }
-  }, [formattedParmas]);
+  // useEffect(() => {
+  //   if (formattedParmas.length > 0) {
+  //     setTeamId(formattedParmas[0]?.split("=")[1]);
+  //     setTeamCat(formattedParmas[1]?.split("=")[1]);
+  //   }
+  // }, [formattedParmas]);
 
   useEffect(() => {
     if (arrById === undefined) return;
@@ -178,16 +195,16 @@ export default function CreateMatch() {
     if (selectedGames.length > 0) {
       Rules.find((ele: any) => setGameRules(ele[arrById[0]?.game]));
       gameTitles.find((title: any) =>
-        setGameTitles(title[arrById[0]?.game][teamCat as any]),
+        setGameTitles(title[arrById[0]?.game][teamCatNext!]),
       );
       //@ts-expect-error using dynamic values to render value
-      setTeamSize((teamSizeRender[0])[`${selectedGames}`][teamCat]);
+      setTeamSize((teamSizeRender[0])[`${selectedGames}`][teamCatNext]);
     } else {
       setSelectedGames(pathname.split("/")[3]);
     }
-  }, [selectedGames, gameRules, arrById, teamCat, pathname]);
+  }, [selectedGames, gameRules, arrById, pathname, teamCatNext]);
 
-  if (teamId?.length <= 0 || teamCat?.length <= 0) return null;
+  if (teamIdNext!.length <= 0 || teamCatNext!.length <= 0) return null;
 
   if (arrById === undefined) return null;
 
@@ -197,6 +214,9 @@ export default function CreateMatch() {
         <h1 className="my-8 text-center text-2xl font-bold leading-9 tracking-tight text-white sm:text-3xl">
           Create Money Match
         </h1>
+
+        <h2 className="text-white"><span className="font-semibold ">Creating Match For:</span> {teamName}</h2>
+        <h2 className="text-white pb-4"><span className="font-semibold ">Game Title:</span> {selectedGames}</h2>
 
         <div className="mb-2">
           <Select label="Match Title Name" className="max-w-xs" required>
@@ -237,11 +257,12 @@ export default function CreateMatch() {
 
         <div className="mt-2 text-white">
           <label
-            className="block pb-2 text-lg font-medium leading-6 text-white sm:text-xl"
+            className="block text-lg font-medium leading-6 text-white sm:text-xl"
             htmlFor={"start-time"}
           >
             Match Entry:
           </label>
+          <p className="pb-2">Note: this entry is per player</p>
           <Input
             placeholder="0.00"
             min={1}
@@ -263,7 +284,7 @@ export default function CreateMatch() {
             type="text"
             readOnly
             //@ts-expect-error using dynamic values to render value
-            value={teamSizeRender[0][`${selectedGames}`][teamCat]}
+            value={teamSizeRender[0][`${selectedGames}`][teamCatNext]}
           />
         </div>
 
@@ -339,8 +360,8 @@ export default function CreateMatch() {
               gameTitle: selectedGames,
               matchTitle: selectedGameTitle!,
               rules: confirmedGameRules,
-              teamCategory: teamCat,
-              teamName: teamId,
+              teamCategory: teamCatNext!,
+              teamName: teamIdNext!,
               createdBy: session?.data?.user.username!,
               teamSize: String(teamSize),
               matchEntry: Number(matchEntry),

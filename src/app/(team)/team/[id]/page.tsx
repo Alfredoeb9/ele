@@ -252,7 +252,7 @@ export default function Team() {
                       color="success"
                       onPress={() => [
                         router.push(
-                          `/match/create/${team?.gameTitle.toLowerCase()}?teamId=${team?.id}&teamCategory=${team?.teamCategory}`,
+                          `/match/create/${team?.gameTitle.toLowerCase()}?teamId=${team?.id}&teamCategory=${team?.teamCategory}&teamName=${team?.team_name}`,
                         ),
                       ]}
                     >
