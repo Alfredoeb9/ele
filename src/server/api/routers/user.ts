@@ -603,6 +603,21 @@ export const userRouter = createTRPCRouter({
         throw new Error("There was a service error");
       }
     }),
+  deleteUniqueTicket: publicProcedure
+    .input(
+      z.object({
+        ticketId: z.string().min(1),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        return await ctx.db
+          .delete(tickets)
+          .where(eq(tickets.id, input.ticketId));
+      } catch (error) {
+        throw new Error("There was a problem deleting ticket");
+      }
+    }),
 
   // updateUsersStripeData: publicProcedure
   //   .input(
