@@ -143,6 +143,7 @@ export const userRouter = createTRPCRouter({
           },
           with: {
             subscription: true,
+            stripeAccount: true,
           },
         });
 
