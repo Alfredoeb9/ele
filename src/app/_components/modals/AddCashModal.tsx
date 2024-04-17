@@ -5,15 +5,12 @@ import {
   ModalHeader,
   ModalBody,
   useDisclosure,
-  Textarea,
   Select,
   SelectItem,
-  SelectSection,
 } from "@nextui-org/react";
 import { useState } from "react";
 import { api } from "@/trpc/react";
 import { ToastContainer, toast } from "react-toastify";
-import { useSession } from "next-auth/react";
 
 import "react-toastify/dist/ReactToastify.css";
 import { addCashSelectOptions } from "@/lib/sharedData";
@@ -36,8 +33,6 @@ export default function AddCashModal({
   const [selectedCategory, setSelectedCategory] = useState("");
 
   const utils = api.useUtils();
-
-  console.log("userAddCashModal", UserId);
 
   const createTicket = api.create.createNewTicket.useMutation({
     onSuccess: async () => {
@@ -127,11 +122,6 @@ export default function AddCashModal({
                     </SelectItem>
                   ))}
                 </Select>
-                {/* <Textarea
-                  placeholder="Enter your text here..."
-                  onChange={(e) => setTicketText(e.target.value)}
-                  value={ticketText}
-                /> */}
 
                 <div className="mt-2 flex justify-end gap-2 md:gap-3 xl:gap-4">
                   <button className="text-red-500" onClick={onClose}>
