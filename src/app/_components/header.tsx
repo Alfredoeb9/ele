@@ -12,18 +12,17 @@ import {
   DropdownMenu,
   DropdownItem,
   Button,
+  useDisclosure,
 } from "@nextui-org/react";
 import { ToastContainer, toast } from "react-toastify";
 import { FaBell } from "react-icons/fa";
-import type { NotificationType, UsersType } from "@/server/db/schema";
+import type { NotificationType } from "@/server/db/schema";
 
-// import "react-toastify/dist/ReactToastify.css";
 import { api } from "@/trpc/react";
-// import { stripe } from "@/lib/stripe";
-// import getStripe from "@/lib/utils/get-stripejs";
-// import { createStripeAccountAction, withdrawMoney } from "./actions/actions";
+import AddCashModal from "./modals/AddCashModal";
 
 export default function Header() {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const utils = api.useUtils();
   const [error, setError] = useState("");
   const session = useSession();
@@ -403,34 +402,14 @@ export default function Header() {
                   >
                     Friends
                   </DropdownItem>
-                  {/* <DropdownItem
+                  <DropdownItem
                     key="add_cash"
                     textValue="pricing"
                     // href={`${process.env.STRIPE_BASE_API}/v1/accounts`}
-                    onPress={() =>
-                      createStripeAccountAction(sessionUser).then(
-                        async (session) => {
-                          const stripe = await getStripe();
-
-                          if (stripe === null)
-                            return toast(
-                              "Stripe service down, please reach out to customer support",
-                              {
-                                position: "bottom-right",
-                                autoClose: 4500,
-                                closeOnClick: true,
-                                draggable: false,
-                                type: "error",
-                                toastId: 70,
-                              },
-                            );
-                          router.push(session);
-                        },
-                      )
-                    }
+                    onPress={() => onOpen()}
                   >
                     Add Cash
-                  </DropdownItem> */}
+                  </DropdownItem>
 
                   {/* <DropdownItem
                     key="add_cash"
@@ -494,6 +473,13 @@ export default function Header() {
       </nav>
       <ToastContainer containerId={"header-toast"} />
       {/* {error && <ErrorComponent message="There was problem retrieving your credits, please refresh and try agian. If this problem presist please reach out to customer service"/>} */}
+      {isOpen && (
+        <AddCashModal
+          open={isOpen}
+          onOpenChange={onOpenChange}
+          UserId={sessionUser?.id!}
+        />
+      )}
     </header>
   );
 }

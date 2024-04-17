@@ -1,5 +1,6 @@
 "use server";
 
+import { env } from "@/env";
 import { stripe } from "@/lib/stripe";
 import { getIPAddress } from "@/lib/utils/getIPAddress";
 import { api } from "@/trpc/server";
@@ -25,39 +26,52 @@ export async function createStripeAccountAction(
   }
 
   //   const stripee = new initStripe(process.env.STRIPE_SECRET_KEY!);
-  const account = await stripe.accounts.create({
-    type: "express",
-    country: "US",
-    email: session?.user.email,
-    // capabilities: {
-    //   card_payments: {
-    //     requested: true,
-    //   },
-    //   transfers: {
-    //     requested: true,
-    //   },
-    // },
-    // business_type: "individual",
-    // individual: {
-    //   first_name: clientSession?.firstName,
-    //   last_name: clientSession?.lastName,
-    // },
-  });
+  const topup = await stripe.topups.create(
+    {
+      amount: 2000,
+      currency: "usd",
+      description: "Top-up for week of May 31",
+      statement_descriptor: "Weekly top-up",
+    },
+    {
+      stripeAccount: "acct_1P0CUbQ50fcRm3jU",
+    },
+  );
+
+  console.log("topup", topup);
+  // const account = await stripe.accounts.create({
+  //   type: "express",
+  //   country: "US",
+  //   email: session?.user.email,
+  // capabilities: {
+  //   card_payments: {
+  //     requested: true,
+  //   },
+  //   transfers: {
+  //     requested: true,
+  //   },
+  // },
+  // business_type: "individual",
+  // individual: {
+  //   first_name: clientSession?.firstName,
+  //   last_name: clientSession?.lastName,
+  // },
+  // });
 
   // Create an account link for the user's Stripe account
-  const accountLink = await stripe.accountLinks.create({
-    account: account.id,
-    refresh_url: process.env.REACT_APP_BASE_URL + "/stripe/authorize",
-    return_url:
-      process.env.REACT_APP_BASE_URL +
-      "/stripe/onboarded/" +
-      account.id +
-      "?userId=" +
-      clientSession?.id +
-      "&userName=" +
-      clientSession?.username,
-    type: "account_onboarding",
-  });
+  // const accountLink = await stripe.accountLinks.create({
+  //   account: account.id,
+  //   refresh_url: process.env.REACT_APP_BASE_URL + "/stripe/authorize",
+  //   return_url:
+  //     process.env.REACT_APP_BASE_URL +
+  //     "/stripe/onboarded/" +
+  //     account.id +
+  //     "?userId=" +
+  //     clientSession?.id +
+  //     "&userName=" +
+  //     clientSession?.username,
+  //   type: "account_onboarding",
+  // });
 
   // await stripe.accounts.update(account.id, {
   //   tos_acceptance: {
@@ -66,7 +80,7 @@ export async function createStripeAccountAction(
   //   },
   // });
 
-  return accountLink.url;
+  // return accountLink.url;
 
   //   await stripee.accounts.create({
 
@@ -144,5 +158,45 @@ export async function withdrawMoney(account: { id: string }) {
     amount: 1000,
     currency: "usd",
     destination: account.id,
+  });
+}
+
+export async function addCashToAccount(cashAmount: number, userId: string) {
+  const session = await getServerSession();
+  if (!session?.user.email) {
+    throw new Error("You must be logged in to checkout!");
+  }
+
+  const priceIds: Record<number, string> = {
+    5: env.ADD_CASH_5,
+    10: env.ADD_CASH_10,
+    15: env.ADD_CASH_15,
+    25: env.ADD_CASH_25,
+    50: env.ADD_CASH_50,
+    75: env.ADD_CASH_75,
+    100: env.ADD_CASH_100,
+  };
+
+  const priceId = priceIds[cashAmount];
+
+  if (!priceId) {
+    throw new Error("invalid price id");
+  }
+  return stripe.checkout.sessions.create({
+    mode: "payment",
+    payment_method_types: ["card", "us_bank_account"],
+    metadata: {
+      email: session.user.email,
+      depositAmount: cashAmount,
+      userId: userId,
+    },
+    line_items: [
+      {
+        price: priceId,
+        quantity: 1,
+      },
+    ],
+    success_url: `${process.env.REACT_APP_BASE_URL}/`,
+    cancel_url: `${process.env.REACT_APP_BASE_URL}/`,
   });
 }
