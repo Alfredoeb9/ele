@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import initStripe from "stripe";
 import {
   Avatar,
   Dropdown,
@@ -177,6 +176,7 @@ export default function Header() {
   // });
 
   const sub = userData?.subscription;
+  const cashBalance = userData?.stripeAccount;
 
   return (
     <header className="nav">
@@ -353,6 +353,7 @@ export default function Header() {
                   disabledKeys={[
                     "profile",
                     "credits",
+                    "cash_balance",
                     "stats",
                     "help_and_feedback",
                   ]}
@@ -379,6 +380,14 @@ export default function Header() {
                         ? "Err"
                         : userData.credits}
                     </span>
+                  </DropdownItem>
+                  <DropdownItem
+                    key="cash_balance"
+                    textValue={cashBalance?.balance?.toString()}
+                    className="h-14 gap-2"
+                  >
+                    <p className="font-semibold">Cash Balance:</p>
+                    <p className="font-semibold">{cashBalance?.balance}</p>
                   </DropdownItem>
                   <DropdownItem
                     key="settings"
