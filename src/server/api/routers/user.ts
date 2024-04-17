@@ -78,6 +78,14 @@ export const userRouter = createTRPCRouter({
           id: newUser[0].id,
         });
 
+        // create stripeAccountTable after they verify account
+        await ctx.db.insert(stripeAccount).values({
+          stripeId: crypto.randomUUID(),
+          username: newUser[0].username,
+          userId: newUser[0].id,
+          balance: 0,
+        });
+
         await sentVerifyUserEmail(newUser[0].email, fullName, link);
         return "success";
       } catch (error) {
