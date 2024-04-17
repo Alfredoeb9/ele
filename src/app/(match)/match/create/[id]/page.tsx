@@ -17,18 +17,18 @@ import { useSession } from "next-auth/react";
 import { ToastContainer, toast } from "react-toastify";
 
 interface CreateMatchType {
-  "mw3": {
+  mw3: {
     solo: number;
     duo: number;
     trios: number;
     quads: number;
-};
-"fornite": {
+  };
+  fornite: {
     solo: number;
     duo: number;
     trios: number;
     quads: number;
-};
+  };
 }
 
 export default function CreateMatch() {
@@ -36,9 +36,9 @@ export default function CreateMatch() {
   const router = useRouter();
   const session = useSession();
   const searchParamsNext = useSearchParams();
-  const teamName = searchParamsNext.get("teamName")
+  const teamName = searchParamsNext.get("teamName");
   const teamIdNext = searchParamsNext.get("teamId");
-  const teamCatNext = searchParamsNext.get("teamCategory")
+  const teamCatNext = searchParamsNext.get("teamCategory");
   const searchParams = new URLSearchParams(location.search);
   const formattedParmas = searchParams.toString().split("&");
   const [loading, setLoading] = useState<boolean>(false);
@@ -71,22 +71,20 @@ export default function CreateMatch() {
       type: "error",
       toastId: 66,
     });
-    setTimeout(() => {
-      router.push("/sign-in");
-    });
+    router.push("/sign-in");
   }
 
-  if (teamCatNext === undefined || teamIdNext === undefined) {
-    toast('Seems to be an error please try again', {
+  if (teamCatNext === "trios" || teamIdNext === undefined) {
+    toast("Seems to be an error please try again", {
       position: "bottom-right",
       autoClose: 2800,
       closeOnClick: true,
       draggable: false,
       type: "error",
       toastId: 80,
-    })
+    });
 
-    router.push(`team/${teamIdNext}`)
+    router.push(`/team/${teamIdNext}`);
   }
 
   const getSingleGame = api.games.getSingleGame.useQuery(
@@ -198,7 +196,7 @@ export default function CreateMatch() {
         setGameTitles(title[arrById[0]?.game][teamCatNext!]),
       );
       //@ts-expect-error using dynamic values to render value
-      setTeamSize((teamSizeRender[0])[`${selectedGames}`][teamCatNext]);
+      setTeamSize(teamSizeRender[0][`${selectedGames}`][teamCatNext]);
     } else {
       setSelectedGames(pathname.split("/")[3]);
     }
@@ -215,8 +213,12 @@ export default function CreateMatch() {
           Create Money Match
         </h1>
 
-        <h2 className="text-white"><span className="font-semibold ">Creating Match For:</span> {teamName}</h2>
-        <h2 className="text-white pb-4"><span className="font-semibold ">Game Title:</span> {selectedGames}</h2>
+        <h2 className="text-white">
+          <span className="font-semibold ">Creating Match For:</span> {teamName}
+        </h2>
+        <h2 className="pb-4 text-white">
+          <span className="font-semibold ">Game Title:</span> {selectedGames}
+        </h2>
 
         <div className="mb-2">
           <Select label="Match Title Name" className="max-w-xs" required>
