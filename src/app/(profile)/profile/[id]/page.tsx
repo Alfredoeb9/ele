@@ -1,7 +1,7 @@
 "use client";
 import { api } from "@/trpc/react";
 import { usePathname, useRouter } from "next/navigation";
-import { Avatar, Button, Divider } from "@nextui-org/react";
+import { Avatar, Button, Divider, useDisclosure } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import type { SetStateAction } from "react";
@@ -13,8 +13,14 @@ import {
   type TournamentTeamsEnrolled,
 } from "@/server/db/schema";
 import Link from "next/link";
+import WithDrawCash from "@/app/_components/modals/WithdrawCash";
+
+interface gamerTagDataTypes {
+  gamerTagData: [{ type: string; gamerTag: string }];
+}
 
 export default function Profile() {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const router = useRouter();
   const utils = api.useUtils();
   const pathname = usePathname();
@@ -73,12 +79,16 @@ export default function Profile() {
 
   const user = getUserData?.data;
 
+  console.log("user", user);
+
   //@ts-expect-error follows table should be available
   const usersFriends: FollowsType[] = user?.follows;
   //@ts-expect-error user record table should be available
   const usersRecord: UsersRecordType = user?.userRecord;
   //@ts-expect-error user matches table should be available
   const usersUpcomingMatches: Match[] = user?.matches;
+  //@ts-expect-error user stripeAccount table should be available
+  const stripeAccount = user?.stripeAccount;
 
   //@ts-expect-error teams should be available
   const usersTeams = user?.teams;
@@ -133,7 +143,7 @@ export default function Profile() {
   });
 
   // @ts-expect-error gamerTags should be present at this check
-  const gamerTagData = user?.gamerTags;
+  const gamerTagData = user?.gamerTags as gamerTagDataTypes["gamerTagData"];
   const gamerTags = [
     {
       "Battle.net": "",
@@ -206,6 +216,13 @@ export default function Profile() {
                       >
                         Connect Accounts
                       </Link>
+                      <Button
+                        color="success"
+                        className="text-white"
+                        onPress={() => onOpen()}
+                      >
+                        Withdraw Cash
+                      </Button>
                     </>
                   ) : (
                     <Button
@@ -324,6 +341,14 @@ export default function Profile() {
         </div>
       </div>
       <ToastContainer containerId={"profile-toast"} />
+      {isOpen && (
+        <WithDrawCash
+          open={isOpen}
+          onOpenChange={onOpenChange}
+          userId={userSession?.id!}
+          balance={stripeAccount?.balance}
+        />
+      )}
     </div>
   );
 }
