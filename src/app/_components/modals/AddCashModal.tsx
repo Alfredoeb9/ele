@@ -33,55 +33,55 @@ export default function AddCashModal({
 
   const utils = api.useUtils();
 
-  const createTicket = api.create.createNewTicket.useMutation({
-    onSuccess: async () => {
-      await utils.user.getUserDataWithTickets.invalidate();
-      onClose();
-      toast(`Ticket has been created`, {
-        position: "bottom-right",
-        autoClose: 4500,
-        closeOnClick: true,
-        draggable: false,
-        type: "success",
-        toastId: 86,
-      });
-    },
+  // const createTicket = api.create.createNewTicket.useMutation({
+  //   onSuccess: async () => {
+  //     await utils.user.getUserDataWithTickets.invalidate();
+  //     onClose();
+  //     toast(`Ticket has been created`, {
+  //       position: "bottom-right",
+  //       autoClose: 4500,
+  //       closeOnClick: true,
+  //       draggable: false,
+  //       type: "success",
+  //       toastId: 86,
+  //     });
+  //   },
 
-    onError: (e) => {
-      if (e.data?.zodError) {
-        e.data?.zodError?.fieldErrors.userName?.map((error) => {
-          if (error.includes("String must contain at least 1")) {
-            toast("Please insert a text in the body", {
-              position: "bottom-right",
-              autoClose: 4500,
-              closeOnClick: true,
-              draggable: false,
-              type: "error",
-              toastId: 85,
-            });
-          }
-        });
-      } else if (e.message.includes("already sent user a friend request")) {
-        toast("You have already sent user a friend request", {
-          position: "bottom-right",
-          autoClose: 4500,
-          closeOnClick: true,
-          draggable: false,
-          type: "error",
-          toastId: 83,
-        });
-      } else if (e.message.includes("No user found")) {
-        toast(`User does not exist`, {
-          position: "bottom-right",
-          autoClose: 4500,
-          closeOnClick: true,
-          draggable: false,
-          type: "error",
-          toastId: 84,
-        });
-      }
-    },
-  });
+  //   onError: (e) => {
+  //     if (e.data?.zodError) {
+  //       e.data?.zodError?.fieldErrors.userName?.map((error) => {
+  //         if (error.includes("String must contain at least 1")) {
+  //           toast("Please insert a text in the body", {
+  //             position: "bottom-right",
+  //             autoClose: 4500,
+  //             closeOnClick: true,
+  //             draggable: false,
+  //             type: "error",
+  //             toastId: 85,
+  //           });
+  //         }
+  //       });
+  //     } else if (e.message.includes("already sent user a friend request")) {
+  //       toast("You have already sent user a friend request", {
+  //         position: "bottom-right",
+  //         autoClose: 4500,
+  //         closeOnClick: true,
+  //         draggable: false,
+  //         type: "error",
+  //         toastId: 83,
+  //       });
+  //     } else if (e.message.includes("No user found")) {
+  //       toast(`User does not exist`, {
+  //         position: "bottom-right",
+  //         autoClose: 4500,
+  //         closeOnClick: true,
+  //         draggable: false,
+  //         type: "error",
+  //         toastId: 84,
+  //       });
+  //     }
+  //   },
+  // });
 
   function handleAddCashChange(e: string) {
     setSelectedCategory(e);
@@ -134,7 +134,7 @@ export default function AddCashModal({
                   </button>
                   <button
                     className="rounded-2xl bg-green-500 p-3 text-white"
-                    disabled={createTicket.isPending}
+                    // disabled={createTicket.isPending}
                     onClick={() => {
                       addCashToAccount(selectedCategory, userId)
                         .then(async (session) => {
