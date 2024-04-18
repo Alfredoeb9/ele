@@ -12,11 +12,13 @@ export async function withdrawMoney(account: { id: string }) {
   });
 }
 
-export async function addCashToAccount(cashAmount: number, userId: string) {
+export async function addCashToAccount(cashAmount: string, userId: string) {
   const session = await getServerSession();
   if (!session?.user.email) {
     throw new Error("You must be logged in to checkout!");
   }
+
+  const priceExtracted = cashAmount.split("$ ")[1];
 
   const priceIds: Record<number, string> = {
     5: env.ADD_CASH_5,
@@ -28,7 +30,7 @@ export async function addCashToAccount(cashAmount: number, userId: string) {
     100: env.ADD_CASH_100,
   };
 
-  const priceId = priceIds[cashAmount];
+  const priceId = priceIds[Number(priceExtracted)];
 
   if (!priceId) {
     throw new Error("invalid price id");

@@ -20,13 +20,13 @@ import getStripe from "@/lib/utils/get-stripejs";
 interface CreateNewTicketTypes {
   open: boolean;
   onOpenChange: () => void;
-  UserId: string;
+  userId: string;
 }
 
 export default function AddCashModal({
   open,
   onOpenChange,
-  UserId,
+  userId,
 }: CreateNewTicketTypes) {
   const { onClose } = useDisclosure();
   const [size] = useState<string>("md");
@@ -44,7 +44,7 @@ export default function AddCashModal({
         closeOnClick: true,
         draggable: false,
         type: "success",
-        toastId: 76,
+        toastId: 86,
       });
     },
 
@@ -58,7 +58,7 @@ export default function AddCashModal({
               closeOnClick: true,
               draggable: false,
               type: "error",
-              toastId: 73,
+              toastId: 85,
             });
           }
         });
@@ -69,7 +69,7 @@ export default function AddCashModal({
           closeOnClick: true,
           draggable: false,
           type: "error",
-          toastId: 74,
+          toastId: 83,
         });
       } else if (e.message.includes("No user found")) {
         toast(`User does not exist`, {
@@ -78,7 +78,7 @@ export default function AddCashModal({
           closeOnClick: true,
           draggable: false,
           type: "error",
-          toastId: 75,
+          toastId: 84,
         });
       }
     },
@@ -88,6 +88,8 @@ export default function AddCashModal({
     setSelectedCategory(e);
   }
 
+  console.log("selectedCategory", selectedCategory);
+
   return (
     <>
       <Modal
@@ -96,14 +98,15 @@ export default function AddCashModal({
         onClose={() => {
           onClose();
         }}
+        classNames={{ wrapper: "h-[50dvh] sm:h-[100dvh]" }}
         onOpenChange={onOpenChange}
       >
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1 text-2xl text-red-600">
+              <ModalHeader className="flex flex-col gap-1 text-xl text-red-600 sm:text-2xl">
                 Add Cash to Your Account{" "}
-                <p className="text-md sm:text-sm">
+                <p className="sm:text-md text-sm">
                   Note: After selecting amount to deposit you will redirected to
                   a stripe checkout
                 </p>
@@ -114,11 +117,15 @@ export default function AddCashModal({
                     <SelectItem
                       key={option.value}
                       value={option.value}
+                      textValue={option.value}
                       onPress={(e) =>
+                        // setSelectedCategory(
+                        //   (e.target as HTMLElement).innerText,
+                        // )
                         handleAddCashChange((e.target as HTMLElement).innerText)
                       }
                     >
-                      {option.label}
+                      $ {option.label}
                     </SelectItem>
                   ))}
                 </Select>
@@ -131,7 +138,7 @@ export default function AddCashModal({
                     className="rounded-2xl bg-green-500 p-3 text-white"
                     disabled={createTicket.isPending}
                     onClick={() => {
-                      addCashToAccount(Number(selectedCategory), UserId)
+                      addCashToAccount(selectedCategory, userId)
                         .then(async (session) => {
                           const stripe = await getStripe();
                           if (stripe === null)
@@ -139,11 +146,11 @@ export default function AddCashModal({
                               "Stripe service down, please reach out to customer support",
                               {
                                 position: "bottom-right",
-                                autoClose: false,
+                                autoClose: 3000,
                                 closeOnClick: true,
                                 draggable: false,
                                 type: "error",
-                                toastId: 11,
+                                toastId: 81,
                               },
                             );
                           await stripe.redirectToCheckout({
@@ -151,18 +158,21 @@ export default function AddCashModal({
                           });
                         })
                         .catch(() => {
-                          toast("You much be loggin in to buy credits", {
-                            position: "bottom-right",
-                            autoClose: 3500,
-                            closeOnClick: true,
-                            draggable: false,
-                            type: "error",
-                            toastId: 1,
-                          });
+                          toast(
+                            "Seems to be a service error please try again",
+                            {
+                              position: "bottom-right",
+                              autoClose: 3000,
+                              closeOnClick: true,
+                              draggable: false,
+                              type: "error",
+                              toastId: 82,
+                            },
+                          );
                         });
                     }}
                   >
-                    Create Ticket
+                    Add Cash
                   </button>
                 </div>
               </ModalBody>

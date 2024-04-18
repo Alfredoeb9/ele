@@ -414,7 +414,6 @@ export default function Header() {
                   <DropdownItem
                     key="add_cash"
                     textValue="pricing"
-                    // href={`${process.env.STRIPE_BASE_API}/v1/accounts`}
                     onPress={() => onOpen()}
                   >
                     Add Cash
@@ -486,7 +485,7 @@ export default function Header() {
         <AddCashModal
           open={isOpen}
           onOpenChange={onOpenChange}
-          UserId={sessionUser?.id!}
+          userId={sessionUser?.id!}
         />
       )}
     </header>
