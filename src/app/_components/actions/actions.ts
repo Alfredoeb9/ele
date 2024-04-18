@@ -2,7 +2,60 @@
 
 import { env } from "@/env";
 import { stripe } from "@/lib/stripe";
+import { getIPAddress } from "@/lib/utils/getIPAddress";
 import { getServerSession } from "next-auth";
+
+export async function createStripeConnectedAccount(
+  email: string,
+  firstName: string,
+  lastName: string,
+  zipCode: string,
+  state: string,
+  userName: string,
+) {
+  const account = await stripe.accounts.create({
+    type: "express",
+    country: "US",
+    email: email,
+    business_type: "individual",
+    business_profile: {
+      product_description: "Online E-Sports Tournament User",
+    },
+    capabilities: {
+      transfers: {
+        requested: true,
+      },
+    },
+    individual: {
+      address: {
+        postal_code: zipCode,
+        state: state,
+      },
+      metadata: {
+        user_name: userName,
+      },
+      email: email,
+      first_name: firstName,
+      last_name: lastName,
+    },
+  });
+
+  const accountLink = await stripe.accountLinks.create({
+    account: account.id,
+    refresh_url: `${env.REACT_APP_BASE_URL}/`,
+    return_url: `${env.REACT_APP_BASE_URL}/subscription`,
+    type: "account_onboarding",
+  });
+
+  // await stripe.accounts.update(account.id, {
+  //   tos_acceptance: {
+  //     date: Math.floor(Date.now() / 1000),
+  //     ip: await getIPAddress(),
+  //   },
+  // });
+
+  return accountLink;
+}
 
 export async function withdrawMoney(account: { id: string }) {
   await stripe.transfers.create({
