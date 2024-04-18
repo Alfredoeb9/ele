@@ -259,6 +259,7 @@ export const userRouter = createTRPCRouter({
                     tournamentsEnrolled: true,
                   },
                 },
+                stripeAccount: true,
                 // matches: true,
               },
             });
