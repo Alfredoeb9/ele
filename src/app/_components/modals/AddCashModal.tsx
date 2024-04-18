@@ -12,7 +12,6 @@ import { useState } from "react";
 import { api } from "@/trpc/react";
 import { ToastContainer, toast } from "react-toastify";
 
-import "react-toastify/dist/ReactToastify.css";
 import { addCashSelectOptions } from "@/lib/sharedData";
 import { addCashToAccount } from "../actions/actions";
 import getStripe from "@/lib/utils/get-stripejs";
@@ -88,8 +87,6 @@ export default function AddCashModal({
     setSelectedCategory(e);
   }
 
-  console.log("selectedCategory", selectedCategory);
-
   return (
     <>
       <Modal
@@ -118,11 +115,12 @@ export default function AddCashModal({
                       key={option.value}
                       value={option.value}
                       textValue={option.value}
-                      onPress={(e) =>
-                        // setSelectedCategory(
-                        //   (e.target as HTMLElement).innerText,
-                        // )
-                        handleAddCashChange((e.target as HTMLElement).innerText)
+                      onPress={
+                        (e) =>
+                          setSelectedCategory(
+                            (e.target as HTMLElement).innerText,
+                          )
+                        // handleAddCashChange((e.target as HTMLElement).innerText)
                       }
                     >
                       $ {option.label}

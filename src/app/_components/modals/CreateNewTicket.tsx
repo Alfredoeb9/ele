@@ -107,6 +107,7 @@ export default function CreateNewTicket({
           onClose();
         }}
         onOpenChange={onOpenChange}
+        classNames={{ wrapper: "h-[50dvh] sm:h-[100dvh]" }}
       >
         <ModalContent>
           {(onClose) => (

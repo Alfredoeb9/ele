@@ -35,6 +35,16 @@ export default function Header() {
     { enabled: session.status === "authenticated" ? true : false },
   );
 
+  const CustomToastWithLink = () => (
+    <div>
+      There was a problem adding cash to account please create a{" "}
+      <Link href="/tickets" className="text-blue-600 hover:text-blue-500">
+        Tickets
+      </Link>{" "}
+      in which one of our team members will help.
+    </div>
+  );
+
   if (currentUser.isError) {
     toast(`There was a problem getting user data`, {
       position: "bottom-right",
@@ -176,7 +186,7 @@ export default function Header() {
   // });
 
   const sub = userData?.subscription;
-  const cashBalance = userData?.stripeAccount;
+  const stripeAccount = userData?.stripeAccount;
 
   return (
     <header className="nav">
@@ -383,11 +393,13 @@ export default function Header() {
                   </DropdownItem>
                   <DropdownItem
                     key="cash_balance"
-                    textValue={cashBalance?.balance?.toString()}
+                    textValue={stripeAccount?.balance?.toString()}
                     className="h-14 gap-2"
                   >
                     <p className="font-semibold">Cash Balance:</p>
-                    <p className="font-semibold">{cashBalance?.balance}</p>
+                    <p className="font-semibold">
+                      {stripeAccount?.balance || "Err"}
+                    </p>
                   </DropdownItem>
                   <DropdownItem
                     key="settings"
@@ -414,7 +426,23 @@ export default function Header() {
                   <DropdownItem
                     key="add_cash"
                     textValue="pricing"
-                    onPress={() => onOpen()}
+                    onPress={() => {
+                      if (
+                        stripeAccount !== undefined ||
+                        stripeAccount !== null
+                      ) {
+                        onOpen();
+                      } else {
+                        toast(CustomToastWithLink, {
+                          position: "bottom-right",
+                          autoClose: 4500,
+                          closeOnClick: true,
+                          draggable: false,
+                          type: "error",
+                          toastId: 87,
+                        });
+                      }
+                    }}
                   >
                     Add Cash
                   </DropdownItem>
