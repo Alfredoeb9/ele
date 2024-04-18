@@ -28,6 +28,7 @@ export const env = createEnv({
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
       process.env.VERCEL ? z.string() : z.string().url(),
     ),
+    STRIPE_BASE_API: z.string(),
     REACT_APP_BASE_URL: z.string(),
     EMAIL_SERVER: z.string(),
     EMAIL_FROM: z.string(),
@@ -70,6 +71,7 @@ export const env = createEnv({
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     AUTH_TOKEN: process.env.AUTH_TOKEN,
+    STRIPE_BASE_API: process.env.STRIPE_BASE_API,
     NODE_ENV: process.env.NODE_ENV,
     REACT_APP_BASE_URL: process.env.REACT_APP_BASE_URL,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
