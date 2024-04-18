@@ -79,8 +79,6 @@ export default function Profile() {
 
   const user = getUserData?.data;
 
-  console.log("user", user);
-
   //@ts-expect-error follows table should be available
   const usersFriends: FollowsType[] = user?.follows;
   //@ts-expect-error user record table should be available
