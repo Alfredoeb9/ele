@@ -52,9 +52,7 @@ export default function TicketsDashboard() {
     direction: "ascending",
   });
   const [page, setPage] = useState(1);
-  const [usernameState, setUsername] = useState<string>("");
   const [userId, setUserId] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
   const [modalPath, setModalPath] = useState<string>("");
   const router = useRouter();
 
@@ -204,7 +202,7 @@ export default function TicketsDashboard() {
               base: "w-full sm:max-w-[44%]",
               inputWrapper: "border-1",
             }}
-            placeholder="Search by ticket name
+            placeholder="Search by ticket id
             ..."
             size="sm"
             // startContent={<SearchIcon className="text-default-300" />}
@@ -408,14 +406,12 @@ export default function TicketsDashboard() {
         </TableBody>
       </Table>
 
-      {modalPath === "new ticket" ? (
+      {modalPath === "new ticket" && (
         <CreateNewTicket
           open={isOpen}
           onOpenChange={onOpenChange}
           handleModalPath={handleModalPath}
         />
-      ) : (
-        ""
       )}
     </div>
   );
