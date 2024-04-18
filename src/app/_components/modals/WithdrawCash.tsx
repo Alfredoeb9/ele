@@ -139,40 +139,6 @@ export default function WithDrawCash({
                       balance === undefined ||
                       balance === null
                     }
-                    onClick={() => {
-                      addCashToAccount(selectedCategory, userId)
-                        .then(async (session) => {
-                          const stripe = await getStripe();
-                          if (stripe === null)
-                            return toast(
-                              "Stripe service down, please reach out to customer support",
-                              {
-                                position: "bottom-right",
-                                autoClose: 3000,
-                                closeOnClick: true,
-                                draggable: false,
-                                type: "error",
-                                toastId: 81,
-                              },
-                            );
-                          await stripe.redirectToCheckout({
-                            sessionId: session.id,
-                          });
-                        })
-                        .catch(() => {
-                          toast(
-                            "Seems to be a service error please try again",
-                            {
-                              position: "bottom-right",
-                              autoClose: 3000,
-                              closeOnClick: true,
-                              draggable: false,
-                              type: "error",
-                              toastId: 82,
-                            },
-                          );
-                        });
-                    }}
                   >
                     Add Cash
                   </button>
