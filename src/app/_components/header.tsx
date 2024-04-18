@@ -19,11 +19,16 @@ import type { NotificationType } from "@/server/db/schema";
 
 import { api } from "@/trpc/react";
 import AddCashModal from "./modals/AddCashModal";
+import { env } from "@/env";
+import { createStripeConnectedAccount } from "./actions/actions";
+import getStripe from "@/lib/utils/get-stripejs";
+import OnboardToStripe from "./modals/OnboardToStripe";
 
 export default function Header() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const utils = api.useUtils();
   const [error, setError] = useState("");
+  const [modalPath, setModalPath] = useState("");
   const session = useSession();
 
   const router = useRouter();
@@ -426,21 +431,16 @@ export default function Header() {
                   <DropdownItem
                     key="add_cash"
                     textValue="pricing"
-                    onPress={() => {
+                    onPress={async () => {
                       if (
-                        stripeAccount !== undefined ||
+                        stripeAccount !== undefined &&
                         stripeAccount !== null
                       ) {
+                        setModalPath("add_cash");
                         onOpen();
                       } else {
-                        toast(CustomToastWithLink, {
-                          position: "bottom-right",
-                          autoClose: 4500,
-                          closeOnClick: true,
-                          draggable: false,
-                          type: "error",
-                          toastId: 87,
-                        });
+                        setModalPath("stripe_connect_onboarding");
+                        onOpen();
                       }
                     }}
                   >
@@ -509,8 +509,16 @@ export default function Header() {
       </nav>
       <ToastContainer containerId={"header-toast"} />
       {/* {error && <ErrorComponent message="There was problem retrieving your credits, please refresh and try agian. If this problem presist please reach out to customer service"/>} */}
-      {isOpen && (
+      {modalPath === "add_cash" && isOpen && (
         <AddCashModal
+          open={isOpen}
+          onOpenChange={onOpenChange}
+          userId={sessionUser?.id!}
+        />
+      )}
+
+      {modalPath === "stripe_connect_onboarding" && isOpen && (
+        <OnboardToStripe
           open={isOpen}
           onOpenChange={onOpenChange}
           userId={sessionUser?.id!}
