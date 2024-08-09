@@ -1,9 +1,9 @@
 import "@/styles/globals.css";
 
 import { Inter } from "next/font/google";
-import { Analytics } from "@vercel/analytics/react"
+import { Analytics } from "@vercel/analytics/react";
 import { TRPCReactProvider } from "@/trpc/react";
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Provider from "./_components/providers/SessionProvider";
 import Header from "./_components/header";
 import ReduxProvider from "./_components/providers/ReduxProvider";
@@ -11,7 +11,7 @@ import { getServerSession } from "next-auth/next";
 import { NextUiProvider } from "./_components/providers/NextUIProvider";
 import { ToastContainer } from "react-toastify";
 import Footer from "./_components/Footer";
-
+import "react-toastify/dist/ReactToastify.css";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,7 +29,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession()
+  const session = await getServerSession();
 
   // const user = await db.query.users.findMany({
   //   with: {
@@ -70,7 +70,6 @@ export default async function RootLayout({
               </NextUiProvider>
             </TRPCReactProvider>
           </ReduxProvider>
-          
         </Provider>
         <Analytics />
       </body>
