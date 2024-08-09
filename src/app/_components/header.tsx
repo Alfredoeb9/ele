@@ -268,6 +268,7 @@ export default function Header() {
                       }) => (
                         <DropdownItem
                           key={notification?.id + notification?.userName}
+                          textValue="notifications"
                         >
                           {!notification.isRead && (
                             <span className="absolute -left-1 inline-block h-[10px] w-[10px] rounded-full bg-blue-500"></span>
@@ -375,7 +376,7 @@ export default function Header() {
                 >
                   <DropdownItem
                     key="profile"
-                    textValue={sessionUser?.email!}
+                    textValue={sessionUser?.email! || "example@gmail.com"}
                     className="h-14 gap-2"
                   >
                     <p className="font-semibold">Signed in as</p>
@@ -385,7 +386,7 @@ export default function Header() {
                     key="credits"
                     textValue={
                       userData !== undefined &&
-                      currentUser.isSuccess &&
+                      currentUser?.isSuccess &&
                       (userData as any).credits
                     }
                   >
@@ -393,12 +394,12 @@ export default function Header() {
                     <span className="font-semibold">
                       {userData == undefined || currentUser.isError
                         ? "Err"
-                        : userData.credits}
+                        : userData?.credits}
                     </span>
                   </DropdownItem>
                   <DropdownItem
                     key="cash_balance"
-                    textValue={stripeAccount?.balance?.toString()}
+                    textValue={stripeAccount?.balance?.toString() || "0"}
                     className="h-14 gap-2"
                   >
                     <p className="font-semibold">Cash Balance:</p>
@@ -478,7 +479,7 @@ export default function Header() {
                   </DropdownItem>
                   <DropdownItem
                     key="help_and_feedback"
-                    textValue="help & feedback"
+                    textValue="help_&_feedback"
                   >
                     Help & Feedback
                   </DropdownItem>
@@ -493,7 +494,7 @@ export default function Header() {
                   <DropdownItem
                     key="logout"
                     color="danger"
-                    textValue="log out"
+                    textValue="log_out"
                     onPress={async () => {
                       await signOut();
                       router.push("/");
