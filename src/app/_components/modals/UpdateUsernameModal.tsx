@@ -107,11 +107,14 @@ export default function SendTeamInvite({
                 />
 
                 <div className="mt-2 flex justify-end gap-8 md:gap-3 xl:gap-4">
-                  <Button className="text-lg text-red-500" onPress={onClose}>
+                  <Button
+                    className="text-md text-red-500 sm:text-lg"
+                    onPress={onClose}
+                  >
                     Cancel
                   </Button>
                   <Button
-                    className="rounded-2xl bg-green-500 p-3 text-lg text-white"
+                    className="text-md bg-green-500 p-3 text-lg text-white"
                     onPress={() => {
                       if (
                         newUsername.length <= 0 ||

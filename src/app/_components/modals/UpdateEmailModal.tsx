@@ -115,7 +115,7 @@ export default function SendTeamInvite({
 
                 <div className="mt-2 flex justify-end gap-8 md:gap-3 xl:gap-4">
                   <Button
-                    className="text-lg text-red-500 sm:text-xl"
+                    className="text-base text-red-500 sm:text-lg"
                     onPress={() => {
                       setNewEmail("");
                       onClose();
@@ -124,7 +124,7 @@ export default function SendTeamInvite({
                     Cancel
                   </Button>
                   <Button
-                    className="rounded-2xl bg-green-500 p-3 text-lg text-white sm:text-xl"
+                    className="rounded-2xl bg-green-500 p-3 text-base text-white sm:text-lg"
                     onPress={() => {
                       if (newEmail.length <= 0 || newEmail === oldEmail) {
                         toast("Please update your username before submitting", {
