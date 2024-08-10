@@ -24,6 +24,11 @@ export interface GamerTagsTypes {
   value: string;
 }
 
+export interface SocialMediaTagsTypes {
+  label: string;
+  value: string;
+}
+
 export default function AccountSettings() {
   const session = useSession();
   const router = useRouter();
@@ -39,6 +44,12 @@ export default function AccountSettings() {
     { label: "Activision ID", value: "" },
     { label: "2K ID", value: "" },
     { label: "Steam Friend Code", value: "" },
+  ]);
+  const [socialTags, setSocialTags] = useState<Array<SocialMediaTagsTypes>>([
+    { label: "X", value: "" },
+    { label: "Facebook", value: "" },
+    { label: "Instagram", value: "" },
+    { label: "Discord", value: "" },
   ]);
 
   if (session.status === "unauthenticated") router.push("/");
@@ -210,7 +221,10 @@ export default function AccountSettings() {
                 </div>
               }
             >
-              <SocialMediaTab />
+              <SocialMediaTab
+                socialTags={socialTags}
+                setSocialTags={setSocialTags}
+              />
             </Tab>
           </Tabs>
         </div>
