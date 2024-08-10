@@ -16,6 +16,8 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import CustomUpdateUserEmailButton from "@/app/_components/modals/modalButtons/CustomUpdateEmailButton";
 import CustomUpdateUsernameButton from "@/app/_components/modals/modalButtons/CutsomUpdateUserName";
+import SocialMediaTab from "./SocialMediaTab";
+import GamerTagTab from "./GamerTagTab";
 
 export interface GamerTagsTypes {
   label: string;
@@ -23,7 +25,6 @@ export interface GamerTagsTypes {
 }
 
 export default function AccountSettings() {
-  const utils = api.useUtils();
   const session = useSession();
   const router = useRouter();
   const [currentKey, setCurrentKey] = useState<string>("account_settings");
@@ -68,41 +69,6 @@ export default function AccountSettings() {
       );
     }
   }, [getSingleUser.data]);
-
-  const appendGamerTag = (e: ChangeEvent<HTMLInputElement>, index: number) => {
-    const { ariaLabel, value } = e.target;
-
-    const list = [...gamerTags];
-
-    list[index].label = ariaLabel!;
-    list[index].value = value;
-    setGamerTags(list);
-  };
-
-  const updateGamerTag = api.user.updateUsersGamerTags.useMutation({
-    onSuccess: async () => {
-      await utils.user.getSingleUserWithAccountInfo.invalidate();
-      toast("GamerTag has been updated", {
-        position: "bottom-right",
-        autoClose: 5000,
-        closeOnClick: true,
-        draggable: false,
-        type: "success",
-        toastId: 35,
-      });
-    },
-
-    onError: () => {
-      toast("There was a problem updating your Gamer Tags", {
-        position: "bottom-right",
-        autoClose: 5000,
-        closeOnClick: true,
-        draggable: false,
-        type: "error",
-        toastId: 36,
-      });
-    },
-  });
 
   useEffect(() => {
     const doesHrefHaveId = window.location.href.split("#");
@@ -233,38 +199,7 @@ export default function AccountSettings() {
                 </div>
               }
             >
-              <Card className="w-full sm:w-[65%]">
-                <CardBody>
-                  By entering your Game IDs, you acknowledge that you are the
-                  owner of these accounts and that all your game IDs will be
-                  publicly visible on CMG for match use.
-                  <div className="flex flex-wrap gap-2">
-                    {gamerTags.map((gameInput, i) => (
-                      <div key={i} className="w-[49%] flex-wrap">
-                        <Input
-                          type="text"
-                          label={gameInput.label}
-                          onChange={(e) => appendGamerTag(e, i)}
-                          placeholder={gameInput.value}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  <Button
-                    className="mt-4 w-32"
-                    color="success"
-                    disabled={updateGamerTag.isPending}
-                    onPress={() =>
-                      updateGamerTag.mutate({
-                        email: session.data?.user.email!,
-                        gamerTags: [...gamerTags],
-                      })
-                    }
-                  >
-                    Save Profile
-                  </Button>
-                </CardBody>
-              </Card>
+              <GamerTagTab gamerTags={gamerTags} setGamerTags={setGamerTags} />
             </Tab>
 
             <Tab
@@ -275,12 +210,7 @@ export default function AccountSettings() {
                 </div>
               }
             >
-              <Card className="w-full sm:w-[65%]">
-                <CardBody>
-                  Excepteur sint occaecat cupidatat non proident, sunt in culpa
-                  qui officia deserunt mollit anim id est laborum.
-                </CardBody>
-              </Card>
+              <SocialMediaTab />
             </Tab>
           </Tabs>
         </div>
