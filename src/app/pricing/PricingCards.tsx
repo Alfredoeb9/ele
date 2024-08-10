@@ -6,6 +6,7 @@ import { checkoutAction } from "./actions";
 import getStripe from "@/lib/utils/get-stripejs";
 import { pricingCards } from "@/lib/PricingCards";
 import { ToastContainer, toast } from "react-toastify";
+import NextImage from "next/image";
 
 export default function PricingCards() {
   return (
@@ -49,11 +50,12 @@ export default function PricingCards() {
           >
             <CardBody className="flex items-center justify-center overflow-visible p-0">
               <Image
+                as={NextImage}
                 shadow="sm"
-                src={"/images/credits-bg.jpg"}
-                alt={""}
-                width="100%"
-                className="h-[250px] w-full object-cover"
+                src={"/images/credits-md.png"}
+                alt={"pricing credits image"}
+                width={250}
+                height={250}
               />
             </CardBody>
 
