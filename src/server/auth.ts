@@ -130,7 +130,7 @@ export const authOptions: NextAuthOptions = {
   jwt: {
     maxAge: 24 * 60 * 60 * 1000
   },
-  secret: process.env.AUTH_SECRET,
+  secret: env.NEXTAUTH_SECRET,
   adapter: DrizzleAdapter(db, createTable) as unknown as Adapter,
   session: {
       strategy: "jwt",

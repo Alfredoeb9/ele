@@ -11,7 +11,7 @@ export const env = createEnv({
       .string()
       .url()
       .refine(
-        (str) => !str.includes("YOUR_MYSQL_URL_HERE"),
+        (/** @type {string | string[]} */ str) => !str.includes("YOUR_MYSQL_URL_HERE"),
         "You forgot to change the default URL",
       ),
     NODE_ENV: z
@@ -24,7 +24,7 @@ export const env = createEnv({
     NEXTAUTH_URL: z.preprocess(
       // This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
       // Since NextAuth.js automatically uses the VERCEL_URL if present.
-      (str) => process.env.VERCEL_URL ?? str,
+      (/** @type {any} */ str) => process.env.VERCEL_URL ?? str,
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
       process.env.VERCEL ? z.string() : z.string().url(),
     ),
@@ -40,6 +40,7 @@ export const env = createEnv({
     PRICE_ID_50: z.string(),
     PRICE_ID_100: z.string(),
     PRICE_ID_250: z.string(),
+    SUB_PRICE_ID_PRICE: z.string(),
     STRIPE_SECRET_KEY: z.string(),
     SRIPE_WEBHOOK_SECRET: z.string(),
     AUTH_TOKEN: z.string(),
@@ -86,6 +87,7 @@ export const env = createEnv({
     PRICE_ID_50: process.env.PRICE_ID_50,
     PRICE_ID_100: process.env.PRICE_ID_100,
     PRICE_ID_250: process.env.PRICE_ID_250,
+    SUB_PRICE_ID_PRICE: process.env.SUB_PRICE_ID_PRICE,
     ADD_CASH_5: process.env.ADD_CASH_5,
     ADD_CASH_10: process.env.ADD_CASH_10,
     ADD_CASH_15: process.env.ADD_CASH_15,

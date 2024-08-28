@@ -102,7 +102,7 @@ export async function addCashToAccount(cashAmount: string, userId: string) {
         quantity: 1,
       },
     ],
-    success_url: `${process.env.REACT_APP_BASE_URL}/`,
-    cancel_url: `${process.env.REACT_APP_BASE_URL}/`,
+    success_url: `${env.REACT_APP_BASE_URL}/`,
+    cancel_url: `${env.REACT_APP_BASE_URL}/`,
   });
 }
