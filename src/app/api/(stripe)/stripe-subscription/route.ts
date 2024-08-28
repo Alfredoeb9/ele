@@ -4,6 +4,7 @@ import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { db } from "@/server/db";
 import { subscription } from "@/server/db/schema";
+import { env } from "@/env";
 
 type Metadata = {
   userId: string;
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.SRIPE_WEBHOOK_SECRET!,
+      env.SRIPE_WEBHOOK_SECRET,
     );
   } catch (err) {
     return new Response(
