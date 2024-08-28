@@ -47,5 +47,5 @@
     "**/*.js",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "src/app/api/(stripe)/*"]
+  "exclude": ["node_modules", "./src/app/api/(stripe)/*"]
 }
