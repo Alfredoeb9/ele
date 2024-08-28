@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { db } from "@/server/db";
-import { stripeAccount, users } from "@/server/db/schema";
+import { stripeAccount } from "@/server/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { env } from "@/env";
 
