@@ -54,7 +54,7 @@ jobs:
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
 
       - name: Build Next.js for E2E
-        with:
+        env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
           SRIPE_WEBHOOK_SECRET: ${{ secrets.SRIPE_WEBHOOK_SECRET}}
