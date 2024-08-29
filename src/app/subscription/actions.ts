@@ -12,7 +12,7 @@ export async function checkoutSubscriptionAction(plan: number, userId: string) {
   }
 
   const priceIds: Record<number, string> = {
-    5: process.env.SUB_PRICE_ID_SIMPLE!,
+    5: env.SUB_PRICE_ID_PRICE,
   };
   const priceId = priceIds[plan];
 

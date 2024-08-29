@@ -4,8 +4,9 @@ import type { NextRequest } from "next/server";
 import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { db } from "@/server/db";
-import { stripeAccount, users } from "@/server/db/schema";
+import { stripeAccount } from "@/server/db/schema";
 import { eq, sql } from "drizzle-orm";
+import { env } from "@/env";
 
 type Metadata = {
   userId: string;
@@ -22,7 +23,7 @@ export async function POST(req: NextRequest) {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.SRIPE_WEBHOOK_SECRET!,
+      env.SRIPE_WEBHOOK_SECRET,
     );
   } catch (err) {
     return new Response(
