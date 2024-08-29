@@ -51,6 +51,11 @@ jobs:
 
       - name: Build Next.js for E2E tests
         run: npm run build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+          SRIPE_WEBHOOK_SECRET: ${{ secrets.SRIPE_WEBHOOK_SECRET}}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
 
       - name: Linter
         run: npm run lint
