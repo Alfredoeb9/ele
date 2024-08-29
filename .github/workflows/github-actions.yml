@@ -24,7 +24,12 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: npm
       - run: npm ci
-      - run: npm run build
+      - run: npm run
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+          SRIPE_WEBHOOK_SECRET: ${{ secrets.SRIPE_WEBHOOK_SECRET}}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
   test:
     strategy:
       matrix:
