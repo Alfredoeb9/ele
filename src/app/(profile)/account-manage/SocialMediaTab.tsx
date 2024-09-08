@@ -22,43 +22,43 @@ export default function SocialMediaTab({
   const utils = api.useUtils();
   const session = useSession();
 
-  //   const appendSocialMedia = (
-  //     e: ChangeEvent<HTMLInputElement>,
-  //     index: number,
-  //   ) => {
-  //     const { ariaLabel, value } = e.target;
+  const appendSocialMedia = (
+    e: ChangeEvent<HTMLInputElement>,
+    index: number,
+  ) => {
+    const { ariaLabel, value } = e.target;
 
-  //     const list = [...socialTags];
+    const list = [...socialTags];
 
-  //     list[index].label = ariaLabel!;
-  //     list[index].value = value;
-  //     setSocialTags(list);
-  //   };
+    list[index].label = ariaLabel!;
+    list[index].value = value;
+    setSocialTags(list);
+  };
 
-  //   const updateSocialMedia = api.user.updateUsersGamerTags.useMutation({
-  //     onSuccess: async () => {
-  //       await utils.user.getSingleUserWithAccountInfo.invalidate();
-  //       toast("GamerTag has been updated", {
-  //         position: "bottom-right",
-  //         autoClose: 5000,
-  //         closeOnClick: true,
-  //         draggable: false,
-  //         type: "success",
-  //         toastId: 35,
-  //       });
-  //     },
+  const updateSocialMedia = api.user.updateUsersSocialMedia.useMutation({
+    onSuccess: async () => {
+      await utils.user.getSingleUserWithAccountInfo.invalidate();
+      toast("Social Media Tag has been updated", {
+        position: "bottom-right",
+        autoClose: 5000,
+        closeOnClick: true,
+        draggable: false,
+        type: "success",
+        toastId: 35,
+      });
+    },
 
-  //     onError: () => {
-  //       toast("There was a problem updating your Gamer Tags", {
-  //         position: "bottom-right",
-  //         autoClose: 5000,
-  //         closeOnClick: true,
-  //         draggable: false,
-  //         type: "error",
-  //         toastId: 36,
-  //       });
-  //     },
-  //   });
+    onError: () => {
+      toast("There was a problem updating your Social Media Tag", {
+        position: "bottom-right",
+        autoClose: 5000,
+        closeOnClick: true,
+        draggable: false,
+        type: "error",
+        toastId: 36,
+      });
+    },
+  });
 
   return (
     <Card className="w-full sm:w-[65%]">
@@ -66,13 +66,13 @@ export default function SocialMediaTab({
         By entering your Social Media IDs, you acknowledge that you are the
         owner of these accounts and that all your game IDs will be publicly
         visible on your ELE profile.
-        <div className="flex flex-wrap gap-2">
+        <div className="mt-4 flex flex-wrap gap-2">
           {socialTags.map((socialInputs, i) => (
             <div key={i} className="w-[49%] flex-wrap">
               <Input
                 type="text"
                 label={socialInputs.label}
-                // onChange={(e) => appendSocialMedia(e, i)}
+                onChange={(e) => appendSocialMedia(e, i)}
                 placeholder={socialInputs.value}
               />
             </div>
@@ -81,13 +81,13 @@ export default function SocialMediaTab({
         <Button
           className="mt-4 w-32"
           color="success"
-          //   disabled={updateSocialMedia.isPending}
-          //   onPress={() =>
-          //     updateSocialMedia.mutate({
-          //       email: session.data?.user.email!,
-          //       gamerTags: [...socialTags],
-          //     })
-          //   }
+          disabled={updateSocialMedia.isPending}
+          onPress={() =>
+            updateSocialMedia.mutate({
+              email: session.data?.user.email!,
+              socialMedia: [...socialTags],
+            })
+          }
         >
           Save Profile
         </Button>
