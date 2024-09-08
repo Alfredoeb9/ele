@@ -85,6 +85,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   matches: many(matches),
   payments: many(payments),
   gamerTags: many(gamerTags),
+  socialMediaTags: many(socialTags),
   moneyMatch: many(moneyMatch),
   transactions: many(transactions),
   tickets: many(tickets),
@@ -109,6 +110,25 @@ export const gamerTagsRelation = relations(gamerTags, ({ one }) => ({
     references: [users.id],
   }),
 }));
+
+export const socialTags = createTable("social_tags", {
+  userId: text("user_id", { length: 255 }).notNull(),
+  type: text("type", { length: 255 }).notNull(),
+  socialTag: text("social_tag", { length: 255 }).notNull(),
+  createdAt: int("created_at", { mode: "timestamp" })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: int("updatedAt", { mode: "timestamp" }),
+});
+
+export const socialTagsRelation = relations(socialTags, ({ one }) => ({
+  user: one(users, {
+    fields: [socialTags.userId],
+    references: [users.id],
+  }),
+}));
+
+export type SocialTagsTypes = typeof socialTags.$inferSelect;
 
 export const accounts = createTable(
   "account",

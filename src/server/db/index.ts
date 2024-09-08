@@ -11,7 +11,7 @@ import { createClient } from "@libsql/client";
 //   { schema, logger: true }
 // );
 
-const client = createClient({
+export const client = createClient({
   url: env.DATABASE_URL,
   authToken: env.AUTH_TOKEN,
 });

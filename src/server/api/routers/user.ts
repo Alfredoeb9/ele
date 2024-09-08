@@ -6,6 +6,7 @@ import {
   followsTables,
   gamerTags,
   notificationsTable,
+  socialTags,
   stripeAccount,
   teamMembersTable,
   teams,
@@ -649,6 +650,71 @@ export const userRouter = createTRPCRouter({
   //     }
   //   }),
 
+  updateUsersSocialMedia: publicProcedure
+    .input(
+      z.object({
+        email: z.string().min(1),
+        socialMedia: z.array(
+          z.object({
+            label: z.string(),
+            value: z.string(),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const currentUserWithSocialMedia = await ctx.db.query.users.findFirst({
+          where: eq(users.email, input.email),
+          columns: {
+            password: false,
+          },
+          with: {
+            socialMediaTags: true,
+          },
+        });
+
+        if (!currentUserWithSocialMedia)
+          throw new Error("No user with such credentials");
+
+        if (currentUserWithSocialMedia.socialMediaTags.length <= 0) {
+          await Promise.all(
+            input.socialMedia.map(
+              async (tag: { value: string; label: string }) => {
+                return await ctx.db.insert(socialTags).values({
+                  userId: currentUserWithSocialMedia.id,
+                  socialTag: tag.value,
+                  type: tag.label,
+                });
+              },
+            ),
+          );
+        } else if (currentUserWithSocialMedia.socialMediaTags.length > 0) {
+          await Promise.all(
+            input.socialMedia.map(
+              async (tag: { value: string; label: string }) => {
+                return await ctx.db
+                  .update(socialTags)
+                  .set({
+                    userId: currentUserWithSocialMedia.id,
+                    socialTag: tag.value,
+                    type: tag.label,
+                  })
+                  .where(
+                    and(
+                      eq(socialTags.type, tag.label),
+                      eq(socialTags.userId, currentUserWithSocialMedia.id),
+                    ),
+                  );
+              },
+            ),
+          );
+        }
+      } catch (error) {
+        throw new Error(error as string);
+      }
+    }),
+
   updateUsersGamerTags: publicProcedure
     .input(
       z.object({
@@ -678,31 +744,35 @@ export const userRouter = createTRPCRouter({
 
         if (currentUserWithGamerTags.gamerTags.length <= 0) {
           await Promise.all(
-            input.gamerTags.map(async (tag: any) => {
-              return await ctx.db.insert(gamerTags).values({
-                userId: currentUserWithGamerTags.id,
-                gamerTag: tag.value,
-                type: tag.label,
-              });
-            }),
-          );
-        } else if (currentUserWithGamerTags.gamerTags.length > 0) {
-          await Promise.all(
-            input.gamerTags.map(async (tag: any) => {
-              return await ctx.db
-                .update(gamerTags)
-                .set({
+            input.gamerTags.map(
+              async (tag: { value: string; label: string }) => {
+                return await ctx.db.insert(gamerTags).values({
                   userId: currentUserWithGamerTags.id,
                   gamerTag: tag.value,
                   type: tag.label,
-                })
-                .where(
-                  and(
-                    eq(gamerTags.type, tag.label),
-                    eq(gamerTags.userId, currentUserWithGamerTags.id),
-                  ),
-                );
-            }),
+                });
+              },
+            ),
+          );
+        } else if (currentUserWithGamerTags.gamerTags.length > 0) {
+          await Promise.all(
+            input.gamerTags.map(
+              async (tag: { value: string; label: string }) => {
+                return await ctx.db
+                  .update(gamerTags)
+                  .set({
+                    userId: currentUserWithGamerTags.id,
+                    gamerTag: tag.value,
+                    type: tag.label,
+                  })
+                  .where(
+                    and(
+                      eq(gamerTags.type, tag.label),
+                      eq(gamerTags.userId, currentUserWithGamerTags.id),
+                    ),
+                  );
+              },
+            ),
           );
         }
       } catch (error) {
