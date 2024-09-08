@@ -16,6 +16,7 @@ import {
 } from "@/server/db/schema";
 import { createToken, emailRegx } from "@/lib/utils/utils";
 import { sentVerifyUserEmail } from "@/app/api/auth/[...nextauth]/mailer";
+import { env } from "@/env";
 
 export const userRouter = createTRPCRouter({
   create: publicProcedure
@@ -70,7 +71,7 @@ export const userRouter = createTRPCRouter({
 
         const token = await createToken(newUser[0].id);
 
-        const link = `${process.env.REACT_APP_BASE_URL}/verify-email/${token}`;
+        const link = `${env.REACT_APP_BASE_URL}/verify-email/${token}`;
         const fullName = newUser[0].firstName + " " + newUser[0].lastName;
 
         await ctx.db.insert(verificationTokens).values({
@@ -677,7 +678,7 @@ export const userRouter = createTRPCRouter({
 
         if (currentUserWithGamerTags.gamerTags.length <= 0) {
           await Promise.all(
-            input.gamerTags.map(async (tag) => {
+            input.gamerTags.map(async (tag: any) => {
               return await ctx.db.insert(gamerTags).values({
                 userId: currentUserWithGamerTags.id,
                 gamerTag: tag.value,
@@ -687,7 +688,7 @@ export const userRouter = createTRPCRouter({
           );
         } else if (currentUserWithGamerTags.gamerTags.length > 0) {
           await Promise.all(
-            input.gamerTags.map(async (tag) => {
+            input.gamerTags.map(async (tag: any) => {
               return await ctx.db
                 .update(gamerTags)
                 .set({

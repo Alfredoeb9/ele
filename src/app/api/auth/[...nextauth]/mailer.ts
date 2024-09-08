@@ -1,11 +1,12 @@
 import nodemailer from "nodemailer";
 import { createEmailTemplate } from "../../services/templateService";
 import type { Options } from "nodemailer/lib/mailer";
+import { env } from "@/env";
 
 const SMTPConfig = {
     service: "gmail",
     EMAIL: "alfredoeb96@gmail.com",
-    PASSWORD: process.env.EMAIL_PWD, // Here Password is master key from smtp
+    PASSWORD: env.EMAIL_PWD, // Here Password is master key from smtp
     PORT: 587,
     FROM_EMAIL: "<donotreply>@mlg.com",
 };

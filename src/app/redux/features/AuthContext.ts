@@ -1,13 +1,13 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import authAPI from "../api/authAPI";
+// import authAPI from "../api/authAPI";
 import { RootState } from "../store";
 
 export interface UserAuthProps {
-    user: any,
-    isError: boolean,
-    isSuccess: boolean,
-    isLoading: boolean,
-    message: string
+  user: any;
+  isError: boolean;
+  isSuccess: boolean;
+  isLoading: boolean;
+  message: string;
 }
 
 const initialState: UserAuthProps = {
@@ -119,7 +119,10 @@ export const userAuthSlice = createSlice({
       state.message = "USER_REGISTERED";
       // state.user = action.payload;
     },
-    updateUser: (state: UserAuthProps, action: PayloadAction<UserAuthProps>) => {
+    updateUser: (
+      state: UserAuthProps,
+      action: PayloadAction<UserAuthProps>,
+    ) => {
       // console.log(state.workout);
       // console.log(action.payload);
       // state.workout = state.workout.filter(
@@ -189,6 +192,7 @@ export const { login, logout, verifyEmail, register, updateUser } =
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
-export const selectUserAuth = (state: { user: { user: any; }; }) => state.user.user;
+export const selectUserAuth = (state: { user: { user: any } }) =>
+  state.user.user;
 
 export default userAuthSlice;

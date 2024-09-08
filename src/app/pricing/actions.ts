@@ -1,5 +1,6 @@
 "use server";
 
+import { env } from "@/env";
 import { stripe } from "@/lib/stripe";
 import { getServerSession } from "next-auth";
 
@@ -10,10 +11,10 @@ export async function checkoutAction(credits: number) {
     }
 
     const priceIds: Record<number, string> = {
-        25: process.env.PRICE_ID_25!,
-        50: process.env.PRICE_ID_50!,
-        100: process.env.PRICE_ID_100!,
-        250: process.env.PRICE_ID_250!,
+        25: env.PRICE_ID_25,
+        50: env.PRICE_ID_50,
+        100: env.PRICE_ID_100,
+        250: env.PRICE_ID_250,
     }
 
     const priceId = priceIds[credits];
@@ -35,8 +36,8 @@ export async function checkoutAction(credits: number) {
                 quantity: 1,
             }
         ],
-        success_url: `${process.env.REACT_APP_BASE_URL}/`,
-        cancel_url: `${process.env.REACT_APP_BASE_URL}/pricing`,
+        success_url: `${env.REACT_APP_BASE_URL}/`,
+        cancel_url: `${env.REACT_APP_BASE_URL}/pricing`,
     })
 }
 
