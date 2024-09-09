@@ -10,7 +10,7 @@ const config = {
     return [
       {
         source: "/:path*",
-        has: [{ type: "header", key: "host", value: "www.ele-t3.vercel.app/" }],
+        has: [{ type: "header", key: "host", value: "www.ele-t3.vercel.app" }],
         destination: "https://ele-t3.vercel.app/:path*",
         permanent: true,
       },
