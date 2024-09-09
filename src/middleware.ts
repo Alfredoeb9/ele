@@ -1,26 +1,40 @@
-import {NextResponse} from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-    // Assume a 'Cookie:nextjs=fast' header to be present on the incoming request
-    // Getting cookies from the request using the 'RequestCookies' API
-    // console.log("testing")
-    const {pathname, searchParams} = request.nextUrl;
-    
-    // console.log(pathname)
-    // console.log(searchParams)
-    const cookie = request.cookies.get('next-auth.csrf-token')?.value
+  // Assume a 'Cookie:nextjs=fast' header to be present on the incoming request
+  // Getting cookies from the request using the 'RequestCookies' API
+  // console.log("testing")
+  const { pathname, searchParams } = request.nextUrl;
 
-    // console.log('cookie', cookie)
-    const allCookies = request.cookies.getAll()
-    // console.log('allCookies', allCookies)
+  // console.log(pathname)
+  // console.log(searchParams)
+  const cookie = request.cookies.get("next-auth.csrf-token")?.value;
 
-    return NextResponse.next()
+  // console.log('cookie', cookie)
+  const allCookies = request.cookies.getAll();
+  // console.log('allCookies', allCookies)
+
+  const host = request.headers.get("host");
+  const wwwRegex = /^www\./;
+  // This redirect will only take effect on a production website (on a non-localhost domain)
+  if (
+    host?.startsWith("www.") &&
+    !request.headers.get("host")?.includes("localhost")
+  ) {
+    const newHost = host.replace(wwwRegex, "");
+    return NextResponse.redirect(
+      `https://${newHost}${request.nextUrl.pathname}`,
+      301,
+    );
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
-    matcher: '/'
-}
+  matcher: "/",
+};
 
 /*
     Middleware
