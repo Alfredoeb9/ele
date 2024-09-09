@@ -5,6 +5,17 @@
 await import("./src/env.js");
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+  redirects: async () => {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "header", key: "host", value: "www.ele-t3.vercel.app/" }],
+        destination: "https://ele-t3.vercel.app/:path*",
+        permanent: true,
+      },
+    ];
+  },
+};
 
 export default config;
