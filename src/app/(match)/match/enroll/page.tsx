@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/prefer-for-of */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import {
   Checkbox,
@@ -21,6 +19,15 @@ import MatchTimer from "@/app/_components/MatchTimer";
 
 interface RulesTypes {
   value: string;
+}
+
+interface Team {
+  id: string;
+  team_name: string;
+  teamCategory: string;
+  gameTitle: string;
+  record: { wins: string; losses: string };
+  members: { role: string; userName: string }[];
 }
 
 export default function Enroll() {
@@ -112,8 +119,8 @@ export default function Enroll() {
     },
   );
 
-  // @ts-expect-error teams is present at this level
-  const teams = currentUser?.data?.teams;
+  //@ts-expect-error teams is present
+  const teams: Team[] = currentUser?.data?.teams;
 
   const arrById = teams?.filter(
     (item: { team_name: string }) => item.team_name === teamName,
@@ -135,7 +142,8 @@ export default function Enroll() {
   const enrollTeam = api.matches.enrollTeamToMoneyMatch.useMutation({
     onSuccess: () => {
       toast(
-        `${teamName} has been enrolled into ${moneyMatch?.data![0]?.matchName} money match`,
+        `${teamName} has been enrolled into ${moneyMatch?.data![0]
+          ?.matchName} money match`,
         {
           position: "bottom-right",
           autoClose: 3500,
@@ -155,7 +163,8 @@ export default function Enroll() {
     onError: (error) => {
       if (error.message.includes("cannot enroll team in money match")) {
         toast(
-          `${teamName} is already enrolled into ${moneyMatch?.data![0]?.matchName} money match`,
+          `${teamName} is already enrolled into ${moneyMatch?.data![0]
+            ?.matchName} money match`,
           {
             position: "bottom-right",
             autoClose: 5000,
@@ -185,6 +194,34 @@ export default function Enroll() {
     ) {
       router.push("/pricing");
     }
+  }
+
+  useEffect(() => {
+    if (
+      match !== undefined &&
+      match[0]?.createdBy === currentUser?.data?.username
+    ) {
+      toast("Sorry you cannot accept your own match", {
+        position: "bottom-right",
+        autoClose: 5000,
+        closeOnClick: true,
+        draggable: false,
+        type: "error",
+        toastId: 95,
+      });
+    }
+  }, [currentUser?.data?.username, match, moneyMatch.data]);
+
+  if (match === undefined) {
+    return null;
+  }
+
+  if (currentUser?.data === undefined) {
+    return null;
+  }
+
+  if (arrById === undefined) {
+    return null;
   }
 
   return (
@@ -245,6 +282,7 @@ export default function Enroll() {
               <Select
                 label="Select a Team"
                 className="max-w-xs"
+                isDisabled={match[0]?.createdBy === currentUser?.data?.username}
                 onClick={() => {
                   if (currentUser.data && teams && teams.length <= 0) {
                     toast.error(CustomToastWithLink, {
@@ -278,8 +316,8 @@ export default function Enroll() {
                 onValueChange={setAvailableTeamMembers}
                 isRequired
               >
-                {arrById &&
-                  (arrById[idx]?.members.map(
+                {
+                  arrById[idx]?.members.map(
                     (member: { userName: string }, i: number) => (
                       <Checkbox
                         key={i}
@@ -292,14 +330,17 @@ export default function Enroll() {
                         {member.userName}
                       </Checkbox>
                     ),
-                  ) as [])}
+                  ) as []
+                }
               </CheckboxGroup>
             </div>
 
             <button
               className="m-auto mt-4 flex w-64 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-slate-500"
               disabled={
-                (enrollTeam.isPending || (teams && teams.length <= 0)) ??
+                (enrollTeam.isPending ||
+                  (teams && teams.length <= 0) ||
+                  match[0]?.createdBy === currentUser?.data?.username) ??
                 selectedGames.length <= 0
               }
             >
