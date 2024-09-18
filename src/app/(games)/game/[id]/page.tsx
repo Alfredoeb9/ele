@@ -35,8 +35,6 @@ export default function Game() {
     { enabled: gameFromPath.length > 0 },
   );
 
-  console.log("game", gameData);
-
   useEffect(() => {
     if (value === "Community Tournaments" && gameData.data) {
       setRenderData(gameData?.data[0]?.tournaments);
