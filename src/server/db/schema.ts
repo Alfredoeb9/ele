@@ -331,6 +331,7 @@ export const usersRecordTable = createTable(
   "users_record",
   {
     userId: text("user_id", { length: 255 }).notNull(),
+    userName: text("user_name", { length: 255 }).notNull(),
     wins: int("wins").default(0),
     losses: int("losses").default(0),
   },

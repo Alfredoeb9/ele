@@ -110,6 +110,11 @@ export const userRouter = createTRPCRouter({
         if (!dbUser[0])
           throw new Error("Error: New such user found Please sign up");
 
+        const userInfo = await ctx.db
+          .select()
+          .from(users)
+          .where(eq(users.id, dbUser[0].id));
+
         await ctx.db
           .update(users)
           .set({ isVerified: true })
@@ -122,6 +127,7 @@ export const userRouter = createTRPCRouter({
 
         await ctx.db.insert(usersRecordTable).values({
           userId: dbUser[0].id,
+          userName: userInfo[0].username,
         });
 
         return "success";
@@ -367,6 +373,10 @@ export const userRouter = createTRPCRouter({
         throw new Error(error as string);
       }
     }),
+
+  getAllUsersRecords: publicProcedure.query(({ ctx }) => {
+    return ctx.db.select().from(usersRecordTable);
+  }),
 
   sendFriendRequest: publicProcedure
     .input(
