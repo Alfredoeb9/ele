@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq, gte } from "drizzle-orm";
+import { and, eq, gte } from "drizzle-orm";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { gameCategory, moneyMatch, tournaments } from "@/server/db/schema";
 
@@ -35,11 +35,16 @@ export const gameCategoryRouter = createTRPCRouter({
             tournaments: {
               where: gte(
                 tournaments.start_time,
-                new Date() as unknown as string,
+                new Date().toISOString().slice(0, -8) as unknown as string,
               ),
             },
             moneyMatch: {
-              where: eq(moneyMatch.gameTitle, input.gameName),
+              where:
+                (and(eq(moneyMatch.gameTitle, input.gameName)),
+                gte(
+                  moneyMatch.startTime,
+                  new Date().toISOString().slice(0, -8) as unknown as string,
+                )),
             },
           },
         });

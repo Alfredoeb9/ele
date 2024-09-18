@@ -10,6 +10,18 @@ import Link from "next/link";
 import Image from "next/image";
 import { ToastContainer, toast } from "react-toastify";
 
+interface GameDataTypes {
+  id: string;
+  name: string;
+  start_time: string;
+  game: string;
+  prize: string;
+  matchEntry: number;
+  startTime: string;
+  matchName: string;
+  gameTitle: string;
+}
+
 export default function Game() {
   const [value, setValue] = useState("Community Tournaments");
   const [renderData, setRenderData] = useState<any[]>([]);
@@ -22,6 +34,8 @@ export default function Game() {
     { gameName: gameFromPath },
     { enabled: gameFromPath.length > 0 },
   );
+
+  console.log("game", gameData);
 
   useEffect(() => {
     if (value === "Community Tournaments" && gameData.data) {
@@ -103,68 +117,56 @@ export default function Game() {
                   </p>
                 ) : (
                   <>
-                    {renderData?.map(
-                      (data: {
-                        id: string;
-                        name: string;
-                        start_time: string;
-                        game: string;
-                        prize: string;
-                        matchEntry: number;
-                        startTime: string;
-                        matchName: string;
-                        gameTitle: string;
-                      }) => (
-                        <div
-                          key={data.id}
-                          className="m-3 flex h-[200px] rounded-xl bg-slate-800 p-2 md:w-[32.3%]"
-                        >
-                          <Image
-                            src={`/images/${data.game || data.gameTitle}.png`}
-                            alt={`${data.game} placeholder image`}
-                            width={50}
-                            height={50}
-                            className="mr-2 w-[25%] rounded-md object-contain"
-                          />
-                          <div className="m-auto w-[84%] text-white">
-                            <h2 className="text-base ">
-                              <span className="pr-1 font-semibold text-white">
-                                Name:
-                              </span>
-                              {data.name || data.matchName}
-                            </h2>
-                            <p className="text-slate-200">
-                              <span className="font-semibold text-white">
-                                Date:{" "}
-                              </span>
-                              {new Date(
-                                data.start_time || data.startTime,
-                              ).toDateString()}
-                            </p>
-                            <p className="text-slate-200">
-                              <span className="font-semibold text-white">
-                                Time:
-                              </span>{" "}
-                              {new Date(
-                                data.start_time || data.startTime,
-                              ).toLocaleTimeString()}
-                            </p>
-                            <p className="pb-4 text-slate-200">
-                              <span className="font-semibold text-white">
-                                Prize:
-                              </span>{" "}
-                              ${data.prize || data?.matchEntry || 0}
-                            </p>
-                            <Link
-                              href={`/tournaments/${data.id}`}
-                              className="rounded-xl bg-red-500 p-2 text-sm sm:p-1 sm:text-base "
-                            >
-                              View {value.split(" ")[1]}
-                            </Link>
-                          </div>
+                    {renderData?.map((data: GameDataTypes) => (
+                      <div
+                        key={data.id}
+                        className="m-3 flex h-[200px] rounded-xl bg-slate-800 p-2 md:w-[32.3%]"
+                      >
+                        <Image
+                          src={`/images/${data.game || data.gameTitle}.png`}
+                          alt={`${data.game} placeholder image`}
+                          width={50}
+                          height={50}
+                          className="mr-2 w-[25%] rounded-md object-contain"
+                        />
+                        <div className="m-auto w-[84%] text-white">
+                          <h2 className="text-base ">
+                            <span className="pr-1 font-semibold text-white">
+                              Name:
+                            </span>
+                            {data.name || data.matchName}
+                          </h2>
+                          <p className="text-slate-200">
+                            <span className="font-semibold text-white">
+                              Date:{" "}
+                            </span>
+                            {new Date(
+                              data.start_time || data.startTime,
+                            ).toDateString()}
+                          </p>
+                          <p className="text-slate-200">
+                            <span className="font-semibold text-white">
+                              Time:
+                            </span>{" "}
+                            {new Date(
+                              data.start_time || data.startTime,
+                            ).toLocaleTimeString()}
+                          </p>
+                          <p className="pb-4 text-slate-200">
+                            <span className="font-semibold text-white">
+                              Prize:
+                            </span>{" "}
+                            ${data.prize || data?.matchEntry || 0}
+                          </p>
+                          <Link
+                            href={`/tournaments/${data.id}`}
+                            className="rounded-xl bg-red-500 p-2 text-sm sm:p-1 sm:text-base "
+                          >
+                            View {value.split(" ")[1]}
+                          </Link>
                         </div>
-                      ),
-                    )}
+                      </div>
+                    ))}
                   </>
                 )}
               </div>
