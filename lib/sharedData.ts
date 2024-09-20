@@ -172,8 +172,8 @@ export const tabs = [
 ];
 
 export const statusGameMap: Record<string, any["name"]> = {
-  "mw3": "Call of Duty: Modern Warare 3",
-  "fornite": "Fornite",
+  mw3: "Call of Duty: Modern Warare 3",
+  fornite: "Fornite",
 };
 
 export const friendTableColumn = [
@@ -292,35 +292,35 @@ export interface TeamCategoryTypes {
 
 export const teamCategory = [
   {
-    "mw3": { "category": ["solo", "duo", "trios", "quads"] },
-    "fornite": { "category": ["solo", "duo", "trios", "quads"] },
+    mw3: { category: ["solo", "duo", "trios", "quads"] },
+    fornite: { category: ["solo", "duo", "trios", "quads"] },
   },
 ];
 
 export const gameTitles = [
   {
-    "mw3": {
-      "solo": [
+    mw3: {
+      solo: [
         "CDL Search and Destory",
         "CDL Hardpoint",
         "CDL Variant",
         "Rio Only SND",
       ],
-      "duo": [
+      duo: [
         "CDL Search and Destory (duo)",
         "CDL Hardpoint (duo)",
         "CDL Variant (duo)",
         "Rio Only SND (duo)",
         "CDL Control (duo)",
       ],
-      "trios": [
+      trios: [
         "CDL Search and Destory (trios)",
         "CDL Hardpoint (trios)",
         "CDL Variant (trios)",
         "Rio Only SND (trios)",
         "CDL Control (trios)",
       ],
-      "quads": [
+      quads: [
         "CDL Search and Destory (quads)",
         "CDL Hardpoint (quads)",
         "CDL Variant (quads)",
@@ -328,29 +328,29 @@ export const gameTitles = [
         "CDL Control (quads)",
       ],
     },
-    "fornite": {
-      "solo": [
+    fornite: {
+      solo: [
         "Kill Race",
         "Kill Race - Zero Build",
         "Survival DeathMatch",
         "Build Fight",
         "Zone Wars",
       ],
-      "duo": [
+      duo: [
         "Kill Race",
         "Kill Race - Zero Build",
         "Survival DeathMatch",
         "Build Fight",
         "Zone Wars",
       ],
-      "trios": [
+      trios: [
         "Kill Race",
         "Kill Race - Zero Build",
         "Survival DeathMatch",
         "Build Fight",
         "Zone Wars",
       ],
-      "quads": [
+      quads: [
         "Kill Race",
         "Kill Race - Zero Build",
         "Survival DeathMatch",
@@ -363,39 +363,54 @@ export const gameTitles = [
 
 export const Rules = [
   {
-    "mw3": {
-      "pc_player": ["Allowed", "Not Allowed"],
-      "snaking": ["Allowed", "Not Allowed"],
-      "snipers": ["Allowed", "Not Allowed"],
-      "allowed_input": ["Controller", "MKB", "Controller + MKB"],
+    mw3: {
+      pc_player: ["Allowed", "Not Allowed"],
+      snaking: ["Allowed", "Not Allowed"],
+      snipers: ["Allowed", "Not Allowed"],
+      allowed_input: ["Controller", "MKB", "Controller + MKB"],
     },
 
-    "fornite": {
-      "pc_player": ["Allowed", "Not Allowed"],
-      "smg": ["Allowed", "Not Allowed"],
+    fornite: {
+      pc_player: ["Allowed", "Not Allowed"],
+      smg: ["Allowed", "Not Allowed"],
     },
 
-    "warzone": {
-      "pc_player": ["Allowed", "Not Allowed"],
-      "snipers": ["Allowed", "Not Allowed"],
-      "helicopters": ["Allowed", "Not Allowed"],
+    warzone: {
+      pc_player: ["Allowed", "Not Allowed"],
+      snipers: ["Allowed", "Not Allowed"],
+      helicopters: ["Allowed", "Not Allowed"],
     },
   },
 ];
 
 export const teamSizeRender = [
   {
-    "mw3": {
-      "solo": 1,
-      "duo": 2,
-      "trios": 3,
-      "quads": 4,
+    mw3: {
+      solo: 1,
+      duo: 2,
+      trios: 3,
+      quads: 4,
     },
-    "fornite": {
-      "solo": 1,
-      "duo": 2,
-      "trios": 3,
-      "quads": 4,
+    fornite: {
+      solo: 1,
+      duo: 2,
+      trios: 3,
+      quads: 4,
     },
+  },
+];
+
+export const leaderBoardColumns = [
+  {
+    key: "userName",
+    label: "NAME",
+  },
+  {
+    key: "wins",
+    label: "WINS",
+  },
+  {
+    key: "losses",
+    label: "LOSSES",
   },
 ];
