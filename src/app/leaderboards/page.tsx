@@ -16,7 +16,7 @@ import { type SetStateAction, useMemo, useState } from "react";
 
 export default function Leaderboards() {
   const [page, setPage] = useState(1);
-  const rowsPerPage = 4;
+  const rowsPerPage = 15;
 
   const columns = leaderBoardColumns;
   const leaderboardData = api.user.getAllUsersRecords.useQuery();

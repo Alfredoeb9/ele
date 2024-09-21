@@ -107,6 +107,7 @@ export const userRouter = createTRPCRouter({
           .select()
           .from(verificationTokens)
           .where(eq(verificationTokens.token, input.token));
+
         if (!dbUser[0])
           throw new Error("Error: New such user found Please sign up");
 
@@ -114,6 +115,8 @@ export const userRouter = createTRPCRouter({
           .select()
           .from(users)
           .where(eq(users.id, dbUser[0].id));
+
+        if (!userInfo[0]) throw new Error("Error: Service error!");
 
         await ctx.db
           .update(users)
@@ -125,9 +128,16 @@ export const userRouter = createTRPCRouter({
           .set({ updatedAt: new Date() })
           .where(eq(verificationTokens.token, input.token));
 
+        const userId = dbUser[0].id;
+        const userName = userInfo[0]?.username;
+
+        if (!userId || !userName) {
+          throw new Error("Invalid user data");
+        }
+
         await ctx.db.insert(usersRecordTable).values({
-          userId: dbUser[0].id,
-          userName: userInfo[0].username,
+          userId: userId,
+          userName: userName,
         });
 
         return "success";
