@@ -95,9 +95,11 @@ export default function Home() {
       toastId: 53,
     });
   }
+
+  console.log("session", session);
   return (
     <main>
-      <section className="bg-hero_bg min-h-128 m-auto flex h-[80vh] w-full flex-col place-content-center items-start justify-center bg-cover bg-no-repeat object-cover px-12 sm:h-lvh">
+      <section className="min-h-128 sm:h-lvh m-auto flex h-[80vh] w-full flex-col place-content-center items-start justify-center bg-hero_bg bg-cover bg-no-repeat object-cover px-12">
         <div className=" flex max-h-full flex-row place-content-start">
           <div className="mr-4 h-52 w-2 bg-red-400" />
           <div>
@@ -111,12 +113,21 @@ export default function Home() {
               COMPETE FOR ...
             </h1>
 
-            <Link
-              href={"/sign-up"}
-              className="mt-6 inline-block border-2 border-slate-300 px-12 py-4 text-center text-lg text-white transition-all hover:scale-105 hover:border-slate-200"
-            >
-              JOIN MLG
-            </Link>
+            {session.data ? (
+              <Link
+                href={"/team-settings"}
+                className="mt-6 inline-block border-2 border-slate-300 px-12 py-4 text-center text-lg text-white transition-all hover:scale-105 hover:border-slate-200"
+              >
+                GO TO DASHBOARD
+              </Link>
+            ) : (
+              <Link
+                href={"/sign-up"}
+                className="mt-6 inline-block border-2 border-slate-300 px-12 py-4 text-center text-lg text-white transition-all hover:scale-105 hover:border-slate-200"
+              >
+                JOIN MLG
+              </Link>
+            )}
           </div>
         </div>
       </section>
