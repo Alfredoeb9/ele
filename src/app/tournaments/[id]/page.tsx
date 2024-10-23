@@ -389,6 +389,8 @@ export default function Tournaments({
     { enabled: tournamentId.length >= 0 },
   );
 
+  console.log("tournamentData", tournamentData);
+
   // ENABLE THIS ONLY WHEN THE TOURNAMENT TIMER IS DONE / 0
   const teamsEnrolled = api.matches.getEnrolledTeams.useQuery(
     { tournamentId: tournamentId },
@@ -443,11 +445,11 @@ export default function Tournaments({
         className={`h-[300px] w-full bg-${tournament[0].game.toLowerCase()}_team_background bg-cover bg-fixed bg-center bg-no-repeat`}
       />
 
-      <main className=" relative mt-[-150px] px-4">
+      <main className="relative mt-[-150px] px-4">
         <div className="w-full sm:w-[65%]">
           <div
             id="tournament_info-block"
-            className="rounded-xl bg-slate-400  p-1"
+            className="rounded-xl bg-slate-400 p-1"
           >
             <div className="block sm:flex">
               {tournament?.map((tournament) => (
@@ -464,7 +466,7 @@ export default function Tournaments({
                       width={400}
                     />
                     <CardFooter className="absolute bottom-0 z-10 border-t-1 border-default-600 bg-black/40 dark:border-default-100">
-                      <div className="flex w-full items-center justify-between ">
+                      <div className="flex w-full items-center justify-between">
                         <p className="text-sm text-white/60">
                           Prize: ${tournament?.prize}
                         </p>
@@ -610,7 +612,7 @@ export default function Tournaments({
                       eligible teams seeded into the bracket.
                     </p>
 
-                    <div className="flex justify-evenly ">
+                    <div className="flex justify-evenly">
                       {trophys?.map((trophy, i) => (
                         <div key={trophy.id} className="block text-center">
                           <GrTrophy

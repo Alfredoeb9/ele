@@ -19,7 +19,14 @@ import {
 import { useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 
-import { Key, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  type Key,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { ToastContainer, toast } from "react-toastify";
 import type { TeamMembersType, TeamRecordType } from "@/server/db/schema";
 import { friendTableColumn, statusGameMap } from "@/lib/sharedData";
@@ -36,7 +43,7 @@ export default function Team() {
   // const [error, setError] = useState<string>("");
   const [rowsPerPage] = useState<number>(5);
   const [page] = useState<number>(1);
-  const [currentSet, setCurrentSet] = useState<number[]>([0, 0]);
+  const [, setCurrentSet] = useState<number[]>([0, 0]);
   const [isUserOwner, setIsUserOwner] = useState(false);
   const [isUserMember, setIsUserMember] = useState(false);
   const teamIdFromPath = pathname.split("/")[2];
@@ -78,7 +85,7 @@ export default function Team() {
     //@ts-expect-error members should be present
     teamRecord: TeamRecordType = team?.record;
 
-  type User = typeof members;
+  // type User = typeof members;
 
   const items = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -89,7 +96,7 @@ export default function Team() {
     return members?.slice(start, end);
   }, [page, members, rowsPerPage]);
 
-  const pages = Math.ceil(members?.length / rowsPerPage);
+  // const pages = Math.ceil(members?.length / rowsPerPage);
 
   // const onNextPage = useCallback(() => {
   //     if (page < pages) {
@@ -169,7 +176,7 @@ export default function Team() {
             </div>
           );
         default:
-          return cellValue;
+          return cellValue as ReactNode;
       }
     },
     [],
@@ -215,9 +222,9 @@ export default function Team() {
     <div className="bg-neutral-600">
       <div className="relative z-0 h-[300px] w-full bg-mw3_team_background from-white to-neutral-400 bg-cover bg-no-repeat object-cover after:relative after:left-0 after:top-0 after:block after:h-full after:w-full after:bg-gradient-to-br after:opacity-50"></div>
 
-      <div className="relative mt-[-150px] ">
+      <div className="relative mt-[-150px]">
         <div className="container relative z-20 m-auto">
-          <div className="p-4 ">
+          <div className="p-4">
             <div className="flex justify-between pb-2">
               <div className="flex">
                 <Avatar />

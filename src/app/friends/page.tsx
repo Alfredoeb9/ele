@@ -19,7 +19,13 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import type { Selection, ChipProps, SortDescriptor } from "@nextui-org/react";
-import { useCallback, useMemo, useState } from "react";
+import {
+  type ReactNode,
+  type SetStateAction,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import { useSession } from "next-auth/react";
 import { api } from "@/trpc/react";
 import {
@@ -27,7 +33,6 @@ import {
   statusOptions,
   friendsColumns,
 } from "@/lib/sharedData";
-// import Link from "next/link";
 import { VerticalDotsIcon } from "../../../public/svg/VerticalDotsIcon";
 import { SearchIcon } from "./SearchIcon";
 import type { UsersType } from "@/server/db/schema";
@@ -68,13 +73,11 @@ export default function Friends() {
   if (session.status === "unauthenticated") router.push("/sign-in");
 
   const userFriendData = api.user.getUserWithFriends.useQuery(
-    { id: session.data?.user.id as string },
+    { id: session.data?.user.id! },
     { enabled: session.status === "authenticated" ? true : false },
   );
 
-  const pages = Math.ceil(
-    (userFriendData.data?.length as number) / rowsPerPage,
-  );
+  const pages = Math.ceil(userFriendData.data?.length! / rowsPerPage);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -189,7 +192,7 @@ export default function Friends() {
             </div>
           );
         default:
-          return cellValue;
+          return cellValue as ReactNode;
       }
     },
     [userFriendData.data],

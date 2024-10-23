@@ -10,7 +10,8 @@ import {
   type UsersRecordType,
   type Match,
   type FollowsType,
-  type TournamentTeamsEnrolled,
+  type TeamTypes,
+  type UsersType,
 } from "@/server/db/schema";
 import Link from "next/link";
 import WithDrawCash from "@/app/_components/modals/WithdrawCash";
@@ -77,23 +78,34 @@ export default function Profile() {
     }
   }, [getUserData, router]);
 
-  const user = getUserData?.data;
+  const user = getUserData?.data as UsersType & {
+    teams: TeamTypes[];
+    matches: Match[];
+    follows: FollowsType[];
+    userRecord: UsersRecordType;
+    gamerTags: gamerTagDataTypes["gamerTagData"];
+    stripeAccount: { balance: number };
+  };
 
-  //@ts-expect-error follows table should be available
-  const usersFriends: FollowsType[] = user?.follows;
-  //@ts-expect-error user record table should be available
-  const usersRecord: UsersRecordType = user?.userRecord;
-  //@ts-expect-error user matches table should be available
-  const usersUpcomingMatches: Match[] = user?.matches;
-  //@ts-expect-error user stripeAccount table should be available
+  const usersFriends = user?.follows;
+  const usersRecord = user?.userRecord;
+  const usersUpcomingMatches = user?.matches;
   const stripeAccount = user?.stripeAccount;
-
-  //@ts-expect-error teams should be available
   const usersTeams = user?.teams;
 
   useEffect(() => {
     usersTeams?.map(
-      (team: { tournamentsEnrolled: SetStateAction<never[]> | undefined }) => {
+      (team: {
+        id: string;
+        createdAt: number;
+        updatedAt: Date | null;
+        userId: string;
+        gameId: string;
+        gameTitle: string;
+        team_name: string;
+        teamCategory: string;
+        tournamentsEnrolled?: SetStateAction<never[]>;
+      }) => {
         if (
           team?.tournamentsEnrolled === undefined ||
           !team?.tournamentsEnrolled
@@ -140,8 +152,7 @@ export default function Profile() {
     },
   });
 
-  // @ts-expect-error gamerTags should be present at this check
-  const gamerTagData = user?.gamerTags as gamerTagDataTypes["gamerTagData"];
+  const gamerTagData = user?.gamerTags;
   const gamerTags = [
     {
       "Battle.net": "",
@@ -171,12 +182,12 @@ export default function Profile() {
     <div className="bg-neutral-600">
       <div className="relative z-0 h-[300px] w-full bg-mw3_team_background from-white to-neutral-400 bg-cover bg-no-repeat object-cover after:relative after:left-0 after:top-0 after:block after:h-full after:w-full after:bg-gradient-to-br after:opacity-50"></div>
 
-      <div className="relative mt-[-150px] ">
+      <div className="relative mt-[-150px]">
         <div className="relative z-20 m-auto">
           {getUserData.isError ? (
             <p>{error}</p>
           ) : (
-            <div className="p-4 ">
+            <div className="p-4">
               <div className="flex justify-between pb-2">
                 <div className="flex">
                   <Avatar />
@@ -245,7 +256,7 @@ export default function Profile() {
                           sendRequest.mutate({
                             userName: user?.username!,
                             id: userSession?.id!,
-                            senderUserName: user?.email!,
+                            senderUserName: user?.email,
                           });
                         }
                       }}

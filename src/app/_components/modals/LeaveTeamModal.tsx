@@ -47,7 +47,7 @@ export default function LeaveTeamModal({
         toastId: 44,
       });
     },
-    onError: (e) => {
+    onError: () => {
       toast(`User ${userName} does not exist`, {
         position: "bottom-right",
         autoClose: false,

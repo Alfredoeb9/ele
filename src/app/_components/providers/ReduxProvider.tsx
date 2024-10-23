@@ -4,23 +4,10 @@ import { Provider } from "react-redux";
 import { makeStore } from "@/redux/store";
 import type { EnhancedStore } from "@reduxjs/toolkit";
 import type { UserAuthProps } from "@/redux/features/AuthContext";
-
-// import { useSession } from 'next-auth/react'
 import { updateUser } from "@/redux/features/AuthContext";
-import { User } from "next-auth";
+import { type User } from "next-auth";
 
 type AppStore = EnhancedStore<{ authXReducer: { user: UserAuthProps } }>;
-
-// interface ReduxProviderProps {
-//   user: {
-//     id: string;
-//     username: string;
-//     email: string;
-//     firstName: string;
-//     role: string;
-//     lastName: string;
-//   };
-// }
 
 export default function ReduxProvider({
   user,

@@ -1,5 +1,5 @@
 import { Button, useDisclosure } from "@nextui-org/react";
-import { SessionContextValue } from "next-auth/react";
+import { type SessionContextValue } from "next-auth/react";
 import { FaCog } from "react-icons/fa";
 import UpdateEmailModal from "../UpdateEmailModal";
 
