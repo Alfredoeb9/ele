@@ -38,8 +38,6 @@ const SignIn = () => {
   const { resend, error2, isLoading2 } = useResend();
   const [show, setShow] = useState({ password: false });
 
-  console.log("user", user);
-
   useEffect(() => {
     if (user.status == "authenticated") {
       router.push("/");
@@ -178,7 +176,7 @@ const SignIn = () => {
           </form>
 
           <p className="mt-10text-sm text-white hover:text-white">
-            <Link href={"/auth/forgot-password"}>Forgot Password?</Link>
+            <Link href={"/forgot-password"}>Forgot Password?</Link>
           </p>
 
           {verifyEmail && (
@@ -201,7 +199,7 @@ const SignIn = () => {
         Don't have an account?{" "}
         <Link
           className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
-          href={"/auth/sign-up"}
+          href={"/sign-up"}
         >
           Sign up
         </Link>
