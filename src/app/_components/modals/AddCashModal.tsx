@@ -31,7 +31,7 @@ export default function AddCashModal({
   const [size] = useState<string>("md");
   const [selectedCategory, setSelectedCategory] = useState("");
 
-  const utils = api.useUtils();
+  // const utils = api.useUtils();
 
   // const createTicket = api.create.createNewTicket.useMutation({
   //   onSuccess: async () => {
@@ -83,9 +83,9 @@ export default function AddCashModal({
   //   },
   // });
 
-  function handleAddCashChange(e: string) {
-    setSelectedCategory(e);
-  }
+  // function handleAddCashChange(e: string) {
+  //   setSelectedCategory(e);
+  // }
 
   return (
     <>

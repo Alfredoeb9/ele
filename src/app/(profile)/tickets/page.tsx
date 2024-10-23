@@ -14,10 +14,9 @@ import {
   DropdownItem,
   Chip,
   Pagination,
-  User,
   useDisclosure,
 } from "@nextui-org/react";
-import { useCallback, useMemo, useState } from "react";
+import { type ReactNode, useCallback, useMemo, useState } from "react";
 import type { Selection, ChipProps, SortDescriptor } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import { api } from "@/trpc/react";
@@ -42,9 +41,7 @@ export default function TicketsDashboard() {
   const session = useSession();
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
-  const [visibleColumns, setVisibleColumns] = useState<Selection>(
-    new Set(friendsVisibleColumns),
-  );
+  const [visibleColumns] = useState<Selection>(new Set(friendsVisibleColumns));
   const [statusFilter, setStatusFilter] = useState<Selection>("all");
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
@@ -52,7 +49,7 @@ export default function TicketsDashboard() {
     direction: "ascending",
   });
   const [page, setPage] = useState(1);
-  const [userId, setUserId] = useState<string>("");
+  const [, setUserId] = useState<string>("");
   const [modalPath, setModalPath] = useState<string>("");
   const router = useRouter();
 
@@ -111,7 +108,10 @@ export default function TicketsDashboard() {
   }, [visibleColumns, userFriendData.data]);
 
   const renderCell = useCallback(
-    (ticket: any, columnKey: React.Key) => {
+    (
+      ticket: { [x: string]: any; id: string; status: string | number },
+      columnKey: React.Key,
+    ) => {
       const cellValue = ticket[columnKey as keyof UsersType];
 
       switch (columnKey) {
@@ -169,7 +169,7 @@ export default function TicketsDashboard() {
             </div>
           );
         default:
-          return cellValue;
+          return cellValue as ReactNode;
       }
     },
     [userFriendData.data],

@@ -1,5 +1,3 @@
-import { GrTrophy } from "react-icons/gr";
-
 export const columns = [
   {
     key: "game",
@@ -171,8 +169,8 @@ export const tabs = [
   },
 ];
 
-export const statusGameMap: Record<string, any["name"]> = {
-  mw3: "Call of Duty: Modern Warare 3",
+export const statusGameMap: Record<string, string> = {
+  mw3: "Call of Duty: Modern Warfare 3",
   fornite: "Fornite",
 };
 

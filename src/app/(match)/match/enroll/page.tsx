@@ -35,12 +35,12 @@ export default function Enroll() {
   const router = useRouter();
   const session = useSession();
   // const [error, setError] = useState<any>(null);
-  const [gameIdError, setGameIdError] = useState<boolean>(false);
+  const [gameIdError] = useState<boolean>(false);
   const [pathname] = useState<string>("enroll");
   const [selectedGames, setSelectedGames] = useState<string>("");
   const [teamName, setTeamName] = useState<string>("");
-  const [selectedMembers, setSelectedMembers] = useState([]);
-  const [selectedTeam, setSelectedTeam] = useState({});
+  // const [selectedMembers, setSelectedMembers] = useState([]);
+  // const [selectedTeam, setSelectedTeam] = useState({});
   const [availableTeamMembers, setAvailableTeamMembers] = useState([""]);
   const [idx] = useState(0);
 
@@ -142,8 +142,9 @@ export default function Enroll() {
   const enrollTeam = api.matches.enrollTeamToMoneyMatch.useMutation({
     onSuccess: () => {
       toast(
-        `${teamName} has been enrolled into ${moneyMatch?.data![0]
-          ?.matchName} money match`,
+        `${teamName} has been enrolled into ${
+          moneyMatch?.data![0]?.matchName
+        } money match`,
         {
           position: "bottom-right",
           autoClose: 3500,
@@ -163,8 +164,9 @@ export default function Enroll() {
     onError: (error) => {
       if (error.message.includes("cannot enroll team in money match")) {
         toast(
-          `${teamName} is already enrolled into ${moneyMatch?.data![0]
-            ?.matchName} money match`,
+          `${teamName} is already enrolled into ${
+            moneyMatch?.data![0]?.matchName
+          } money match`,
           {
             position: "bottom-right",
             autoClose: 5000,

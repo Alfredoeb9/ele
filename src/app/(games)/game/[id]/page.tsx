@@ -9,22 +9,19 @@ import GameTabs from "./GameTabs";
 import Link from "next/link";
 import Image from "next/image";
 import { ToastContainer, toast } from "react-toastify";
+import { type TournamentType, type MoneyMatchType } from "@/server/db/schema";
 
-interface GameDataTypes {
-  id: string;
-  name: string;
-  start_time: string;
-  game: string;
-  prize: string;
-  matchEntry: number;
-  startTime: string;
-  matchName: string;
-  gameTitle: string;
+function isTournamentType(
+  data: TournamentType | MoneyMatchType,
+): data is TournamentType {
+  return (data as TournamentType).game !== undefined;
 }
 
 export default function Game() {
   const [value, setValue] = useState("Community Tournaments");
-  const [renderData, setRenderData] = useState<any[]>([]);
+  const [renderData, setRenderData] = useState<
+    (TournamentType | MoneyMatchType)[]
+  >([]);
   const pathname = usePathname();
   const gameFromPath = pathname.split("/")[2];
   const [active, setActive] = useState<string>("community tournaments");
@@ -59,13 +56,15 @@ export default function Game() {
     );
   }
 
+  console.log("gameData", gameData);
+
   return (
     <main className="bg-neutral-600">
       <div
         style={{
           backgroundImage: `url(/images/${gameFromPath}_team_background.png)`,
         }}
-        className={`relative z-0 h-[300px] w-full  from-white to-neutral-400 bg-cover bg-no-repeat object-cover after:relative after:left-0 after:top-0 after:block after:h-full after:w-full after:bg-gradient-to-br after:opacity-50`}
+        className={`relative z-0 h-[300px] w-full from-white to-neutral-400 bg-cover bg-no-repeat object-cover after:relative after:left-0 after:top-0 after:block after:h-full after:w-full after:bg-gradient-to-br after:opacity-50`}
       ></div>
 
       <div className="relative mt-[-150px] py-3">
@@ -115,56 +114,67 @@ export default function Game() {
                   </p>
                 ) : (
                   <>
-                    {renderData?.map((data: GameDataTypes) => (
-                      <div
-                        key={data.id}
-                        className="m-3 flex h-[200px] rounded-xl bg-slate-800 p-2 md:w-[32.3%]"
-                      >
-                        <Image
-                          src={`/images/${data.game || data.gameTitle}.png`}
-                          alt={`${data.game} placeholder image`}
-                          width={50}
-                          height={50}
-                          className="mr-2 w-[25%] rounded-md object-contain"
-                        />
-                        <div className="m-auto w-[84%] text-white">
-                          <h2 className="text-base ">
-                            <span className="pr-1 font-semibold text-white">
-                              Name:
-                            </span>
-                            {data.name || data.matchName}
-                          </h2>
-                          <p className="text-slate-200">
-                            <span className="font-semibold text-white">
-                              Date:{" "}
-                            </span>
-                            {new Date(
-                              data.start_time || data.startTime,
-                            ).toDateString()}
-                          </p>
-                          <p className="text-slate-200">
-                            <span className="font-semibold text-white">
-                              Time:
-                            </span>{" "}
-                            {new Date(
-                              data.start_time || data.startTime,
-                            ).toLocaleTimeString()}
-                          </p>
-                          <p className="pb-4 text-slate-200">
-                            <span className="font-semibold text-white">
-                              Prize:
-                            </span>{" "}
-                            ${data.prize || data?.matchEntry || 0}
-                          </p>
-                          <Link
-                            href={`/tournaments/${data.id}`}
-                            className="rounded-xl bg-red-500 p-2 text-sm sm:p-1 sm:text-base "
-                          >
-                            View {value.split(" ")[1]}
-                          </Link>
+                    {renderData?.map(
+                      (data: TournamentType | MoneyMatchType) => (
+                        <div
+                          key={isTournamentType(data) ? data.id : data.matchId}
+                          className="m-3 flex h-[200px] rounded-xl bg-slate-800 p-2 md:w-[32.3%]"
+                        >
+                          <Image
+                            src={`/images/${isTournamentType(data) ? data.game : data.gameTitle}.png`}
+                            alt={`${isTournamentType(data) ? data.game : data.gameTitle} placeholder image`}
+                            width={50}
+                            height={50}
+                            className="mr-2 w-[25%] rounded-md object-contain"
+                          />
+                          <div className="m-auto w-[84%] text-white">
+                            <h2 className="text-base">
+                              <span className="pr-1 font-semibold text-white">
+                                Name:
+                              </span>
+                              {isTournamentType(data)
+                                ? data.name
+                                : data.matchName}
+                            </h2>
+                            <p className="text-slate-200">
+                              <span className="font-semibold text-white">
+                                Date:{" "}
+                              </span>
+                              {new Date(
+                                isTournamentType(data)
+                                  ? (data.start_time as string | number | Date)
+                                  : (data.startTime as string | number | Date),
+                              ).toDateString()}
+                            </p>
+                            <p className="text-slate-200">
+                              <span className="font-semibold text-white">
+                                Time:
+                              </span>{" "}
+                              {new Date(
+                                isTournamentType(data)
+                                  ? (data.start_time as string | number | Date)
+                                  : (data.startTime as string | number | Date),
+                              ).toLocaleTimeString()}
+                            </p>
+                            <p className="pb-4 text-slate-200">
+                              <span className="font-semibold text-white">
+                                Prize:
+                              </span>{" "}
+                              $
+                              {isTournamentType(data)
+                                ? data.prize
+                                : data.matchEntry || 0}
+                            </p>
+                            <Link
+                              href={`${isTournamentType(data) ? "/tournaments/" + data.id : "/money-match/" + data.matchId}`}
+                              className="rounded-xl bg-red-500 p-2 text-sm sm:p-1 sm:text-base"
+                            >
+                              View {value.split(" ")[1]}
+                            </Link>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ),
+                    )}
                   </>
                 )}
               </div>

@@ -12,7 +12,6 @@ import { NextUiProvider } from "./_components/providers/NextUIProvider";
 import { ToastContainer } from "react-toastify";
 import Footer from "./_components/Footer";
 import "react-toastify/dist/ReactToastify.css";
-import { User } from "next-auth";
 
 const inter = Inter({
   subsets: ["latin"],

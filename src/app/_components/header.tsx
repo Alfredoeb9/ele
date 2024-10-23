@@ -16,18 +16,13 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import { FaBell } from "react-icons/fa";
 import type { NotificationType } from "@/server/db/schema";
-
 import { api } from "@/trpc/react";
 import AddCashModal from "./modals/AddCashModal";
-import { env } from "@/env";
-import { createStripeConnectedAccount } from "./actions/actions";
-import getStripe from "@/lib/utils/get-stripejs";
 import OnboardToStripe from "./modals/OnboardToStripe";
 
 export default function Header() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const utils = api.useUtils();
-  const [error, setError] = useState("");
   const [modalPath, setModalPath] = useState("");
   const session = useSession();
 
@@ -40,15 +35,15 @@ export default function Header() {
     { enabled: session.status === "authenticated" ? true : false },
   );
 
-  const CustomToastWithLink = () => (
-    <div>
-      There was a problem adding cash to account please create a{" "}
-      <Link href="/tickets" className="text-blue-600 hover:text-blue-500">
-        Tickets
-      </Link>{" "}
-      in which one of our team members will help.
-    </div>
-  );
+  // const CustomToastWithLink = () => (
+  //   <div>
+  //     There was a problem adding cash to account please create a{" "}
+  //     <Link href="/tickets" className="text-blue-600 hover:text-blue-500">
+  //       Tickets
+  //     </Link>{" "}
+  //     in which one of our team members will help.
+  //   </div>
+  // );
 
   if (currentUser.isError) {
     toast(`There was a problem getting user data`, {
@@ -112,7 +107,7 @@ export default function Header() {
       });
     },
 
-    onError: (error) => {
+    onError: () => {
       toast("Error on accepting friend request, please try again", {
         position: "bottom-right",
         autoClose: 3000,
@@ -129,7 +124,7 @@ export default function Header() {
       await utils.user.getNotifications.invalidate();
     },
 
-    onError: (error) => {
+    onError: () => {
       toast("Error setting message as read, please create a support ticket", {
         position: "bottom-right",
         autoClose: 3000,
@@ -154,7 +149,7 @@ export default function Header() {
       });
     },
 
-    onError: (error) => {
+    onError: () => {
       toast("Error on declining friend request, please try again", {
         position: "bottom-right",
         autoClose: 3000,

@@ -10,14 +10,8 @@ import {
   Input,
 } from "@nextui-org/react";
 import { useState } from "react";
-import { api } from "@/trpc/react";
 import { ToastContainer, toast } from "react-toastify";
-
-// import { addCashSelectOptions } from "@/lib/sharedData";
-import {
-  // addCashToAccount,
-  createStripeConnectedAccount,
-} from "../actions/actions";
+import { createStripeConnectedAccount } from "../actions/actions";
 import getStripe from "@/lib/utils/get-stripejs";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -38,7 +32,6 @@ export default function OnboardToStripe({
   const session = useSession();
   const router = useRouter();
   const [size] = useState<string>("md");
-  const [, setSelectedCategory] = useState("");
   const [zipCodeValue, setZipCodeValue] = useState("");
   const [stateValue, setStateValue] = useState("");
 

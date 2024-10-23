@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
 import {
   Button,
   Card,
@@ -39,8 +38,8 @@ export default function Tournaments({
 }) {
   const session = useSession();
   const [matchId] = useState<string>(id);
-  const [, setPrize] = useState<number>(0);
-  const [prizeTest] = useState<number[]>([5, 0, 0]);
+  // const [, setPrize] = useState<number>(0);
+  // const [prizeTest] = useState<number[]>([5, 0, 0]);
   const [matchType, setMatchType] = useState("");
   const [matchEntry, setMatchEntry] = useState(0);
 
@@ -107,11 +106,11 @@ export default function Tournaments({
         className={`h-[300px] w-full bg-${matchData?.data && matchData?.data[0].gameTitle.toLowerCase()}_team_background bg-cover bg-fixed bg-center bg-no-repeat`}
       />
 
-      <main className=" relative mt-[-150px] px-4">
+      <main className="relative mt-[-150px] px-4">
         <div className="w-full">
           <div
             id="tournament_info-block"
-            className="rounded-xl bg-slate-400  p-1"
+            className="rounded-xl bg-slate-400 p-1"
           >
             <div className="block sm:flex">
               {matchData.data?.map((match) => (
@@ -128,7 +127,7 @@ export default function Tournaments({
                       width={400}
                     />
                     <CardFooter className="absolute bottom-0 z-10 border-t-1 border-default-600 bg-black/40 dark:border-default-100">
-                      <div className="flex w-full items-center justify-between ">
+                      <div className="flex w-full items-center justify-between">
                         <p className="text-sm text-white/60">
                           Match Entry: ${match?.matchEntry}
                         </p>
@@ -233,7 +232,7 @@ export default function Tournaments({
               </div>
               <Button
                 // isDisabled={d2.valueOf() <= d1.valueOf() ? false : true}
-                className="sm:text-lgtext-lg px-4 py-3 text-sm font-bold"
+                className="px-4 py-3 text-sm font-bold sm:text-lg"
                 color="success"
                 variant="solid"
                 size="lg"
@@ -275,14 +274,12 @@ export default function Tournaments({
                   Enroll Now
                 </Link>
               </Button>
-              <Button
-                className="px-4 py-3 text-sm font-semibold sm:text-lg"
-                variant="bordered"
-                size="lg"
-                radius="md"
+              <Link
+                href={"/friends"}
+                className="rounded-2xl border border-solid border-black px-4 py-3 text-sm font-bold sm:text-lg"
               >
-                Find {<br />} Teammates
-              </Button>
+                Find Teammates
+              </Link>
             </div>
           </div>
 
@@ -296,7 +293,7 @@ export default function Tournaments({
                       takes prize per teammate.
                     </p>
 
-                    <div className="flex justify-evenly ">
+                    <div className="flex justify-evenly">
                       {trophys
                         ?.filter((trophy) => trophy.id === "gold")
                         .map((trophy) => (

@@ -1,19 +1,9 @@
 "use client";
+import React, { useState, useEffect } from "react";
 import { api } from "@/trpc/react";
-import { SessionContextValue, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import {
-  Tabs,
-  Tab,
-  Card,
-  CardBody,
-  Input,
-  Button,
-  useDisclosure,
-} from "@nextui-org/react";
-import { FaCog } from "react-icons/fa";
-import { ChangeEvent, useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { Tabs, Tab, Card, CardBody, Input, Button } from "@nextui-org/react";
 import CustomUpdateUserEmailButton from "@/app/_components/modals/modalButtons/CustomUpdateEmailButton";
 import CustomUpdateUsernameButton from "@/app/_components/modals/modalButtons/CutsomUpdateUserName";
 import SocialMediaTab from "./SocialMediaTab";

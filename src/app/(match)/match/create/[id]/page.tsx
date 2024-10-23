@@ -16,20 +16,20 @@ import { Rules, gameTitles, teamSizeRender } from "@/lib/sharedData";
 import { useSession } from "next-auth/react";
 import { ToastContainer, toast } from "react-toastify";
 
-interface CreateMatchType {
-  mw3: {
-    solo: number;
-    duo: number;
-    trios: number;
-    quads: number;
-  };
-  fornite: {
-    solo: number;
-    duo: number;
-    trios: number;
-    quads: number;
-  };
-}
+// interface CreateMatchType {
+//   mw3: {
+//     solo: number;
+//     duo: number;
+//     trios: number;
+//     quads: number;
+//   };
+//   fornite: {
+//     solo: number;
+//     duo: number;
+//     trios: number;
+//     quads: number;
+//   };
+// }
 
 export default function CreateMatch() {
   const pathname = usePathname();
@@ -39,10 +39,10 @@ export default function CreateMatch() {
   const teamName = searchParamsNext.get("teamName");
   const teamIdNext = searchParamsNext.get("teamId");
   const teamCatNext = searchParamsNext.get("teamCategory");
-  const searchParams = new URLSearchParams(location.search);
-  const formattedParmas = searchParams.toString().split("&");
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  // const searchParams = new URLSearchParams(location.search);
+  // const formattedParmas = searchParams.toString().split("&");
+  const [loading] = useState<boolean>(false);
+  // const [error, setError] = useState<string>("");
   // const [previousGameName, setPreviousGameName] = useState<string>("");
   const [selectedGames, setSelectedGames] = useState<string>(
     pathname.split("/")[3],
@@ -214,10 +214,10 @@ export default function CreateMatch() {
         </h1>
 
         <h2 className="text-white">
-          <span className="font-semibold ">Creating Match For:</span> {teamName}
+          <span className="font-semibold">Creating Match For:</span> {teamName}
         </h2>
         <h2 className="pb-4 text-white">
-          <span className="font-semibold ">Game Title:</span> {selectedGames}
+          <span className="font-semibold">Game Title:</span> {selectedGames}
         </h2>
 
         <div className="mb-2">

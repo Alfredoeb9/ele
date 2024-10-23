@@ -14,7 +14,7 @@ import { ToastContainer, toast } from "react-toastify";
 // // import { verifyEmail } from "../../app/features/AuthContext";
 // // import CircularIndeterminate from "../../components/spinner/Spinner";
 
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 
 export default function VerifyEmail() {
   // const dispatch = useAppDispatch()
@@ -22,38 +22,38 @@ export default function VerifyEmail() {
   const router = useRouter();
 
   // const { Header } = Layout;
-//   const dispatch = useDispatch();
+  //   const dispatch = useDispatch();
   // const { isLoading, isError, isSuccess } = useAppSelector((state) => state.user.user);
   // const [isError, setIsError] = useState(false);
   // const [isSuccess, setIsSuccess] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>("");
+  const [message] = useState<string>("");
   // const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  const [, setError] = useState<string>("");
 
   // const {data, isFetching } = useQuery<any>({
   //   queryKey: ["get-user"],
-  //   queryFn: 
+  //   queryFn:
   //   () => useFetchVerify(params.token!.toString()),
-    
+
   //   // async () => {
   //   //     const data = await fetch('/api/user', {
-  //   //         method: 'POST', 
+  //   //         method: 'POST',
   //   //         headers: {
   //   //             'Content-Type': 'application/json',
   //   //         },
   //   //         body: JSON.stringify({email: session?.data?.user?.email})
   //   //     });
-        
+
   //   //     const json = await data.json();
 
   //   //     if (data.status == 500) {
   //   //         return setError(true)
   //   //     }
-    
+
   //   //     if (data.status === 201) {
-  //   //         return json;    
+  //   //         return json;
   //   //     }
-          
+
   //   // },
 
   //   enabled: session.data?.user !== undefined ? true : false,
@@ -63,7 +63,7 @@ export default function VerifyEmail() {
 
   // const fetchVerify = async () => {
   //   try {
-      
+
   //     await fetch("/api/auth/verify-email", {
   //       method: 'POST',
   //       headers: {
@@ -97,7 +97,6 @@ export default function VerifyEmail() {
   //   }
   // };
 
-
   // useEffect(() => {
   //   setIsLoading(true);
   //   if (params.token!.toString()) {
@@ -108,8 +107,6 @@ export default function VerifyEmail() {
   //       console.log("fetch Error", error)
   //     })
 
-      
-      
   //   } else {
   //     setIsError(true);
   //     setMessage("Error in verifying email!");
@@ -129,48 +126,44 @@ export default function VerifyEmail() {
 
   const verifyUser = api.user.verifyUser.useMutation({
     onSuccess: () => {
-      toast('Thank you for verifying', {
+      toast("Thank you for verifying", {
         position: "bottom-right",
         autoClose: 5000,
         closeOnClick: true,
         draggable: false,
         type: "success",
-        toastId: 4 
-      })
+        toastId: 4,
+      });
 
       setTimeout(() => {
-        router.push("/")
-      }, 6000)
-      
-      
+        router.push("/");
+      }, 6000);
     },
 
     onError: (error) => {
-      toast('Error Verifying account please try again', {
+      toast("Error Verifying account please try again", {
         position: "bottom-right",
         autoClose: false,
         closeOnClick: true,
         draggable: false,
         type: "error",
-        toastId: 5 
-      })
-      setError(error.message)
-    }
-  })
+        toastId: 5,
+      });
+      setError(error.message);
+    },
+  });
 
   useEffect(() => {
-    verifyUser.mutate({ token: params.token?.toString() })
-  }, [params?.token])
+    verifyUser.mutate({ token: params.token?.toString() });
+  }, [params.token, verifyUser]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-between p-24">
       <>
-        <header className='h-20 relative container mx-auto'>
-          <div className='flex items-center justify-between pt-2'>
+        <header className="container relative mx-auto h-20">
+          <div className="flex items-center justify-between pt-2">
             <div>
-              <Link href='/auth/sign-in'>
-                ELG
-              </Link>
+              <Link href="/auth/sign-in">ELG</Link>
             </div>
           </div>
         </header>
@@ -185,8 +178,11 @@ export default function VerifyEmail() {
                 Thank you for verifying your email.{" "}
               </span>
               <br />
-              Please <Link className="font-bold text-xl" href={`/sign-in`}>sign-in</Link> to access your
-              account.
+              Please{" "}
+              <Link className="text-xl font-bold" href={`/sign-in`}>
+                sign-in
+              </Link>{" "}
+              to access your account.
             </div>
           )}
           {verifyUser.isError && (
@@ -203,5 +199,3 @@ export default function VerifyEmail() {
     </div>
   );
 }
-
-
