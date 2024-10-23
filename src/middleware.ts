@@ -18,8 +18,6 @@ export function middleware(request: NextRequest) {
     );
   }
 
-  console.log(request.nextUrl);
-
   if (
     request.nextUrl.pathname === "/team-settings" ||
     request.nextUrl.pathname === "/team-settings/create-team" ||
