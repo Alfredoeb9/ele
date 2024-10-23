@@ -669,7 +669,7 @@ export type TeamsToMatchesInsert = typeof teamsToMatches.$inferInsert;
 
 export const teamMembersRelations = relations(teams, ({ one }) => ({
   team: one(teams, {
-    fields: [users.teamId as any],
+    fields: [teams.id],
     references: [teams.id],
   }),
   users: one(users, {

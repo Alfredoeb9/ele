@@ -3,7 +3,7 @@ import {
   ModalContent,
   ModalHeader,
   ModalBody,
-  ModalFooter,
+  // ModalFooter,
   Button,
   useDisclosure,
   Input,
@@ -11,7 +11,7 @@ import {
 import { useEffect, useState } from "react";
 import { api } from "@/trpc/react";
 import { ToastContainer, toast } from "react-toastify";
-import { SessionContextValue, useSession } from "next-auth/react";
+import { type SessionContextValue } from "next-auth/react";
 
 interface SendTeamInvite {
   open: boolean;
@@ -36,7 +36,7 @@ export default function SendTeamInvite({
 
   useEffect(() => {
     setNewEmail(newEmail);
-  }, [open]);
+  }, [newEmail, open]);
 
   const updateUsername = api.user.updateUsersEmail.useMutation({
     onSuccess: async () => {

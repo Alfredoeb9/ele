@@ -96,7 +96,6 @@ export default function Home() {
     });
   }
 
-  console.log("session", session);
   return (
     <main>
       <section className="min-h-128 sm:h-lvh m-auto flex h-[80vh] w-full flex-col place-content-center items-start justify-center bg-hero_bg bg-cover bg-no-repeat object-cover px-12">

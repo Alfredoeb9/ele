@@ -13,9 +13,9 @@ import { useState } from "react";
 import { api } from "@/trpc/react";
 import { ToastContainer, toast } from "react-toastify";
 
-import { addCashSelectOptions } from "@/lib/sharedData";
+// import { addCashSelectOptions } from "@/lib/sharedData";
 import {
-  addCashToAccount,
+  // addCashToAccount,
   createStripeConnectedAccount,
 } from "../actions/actions";
 import getStripe from "@/lib/utils/get-stripejs";
@@ -38,11 +38,11 @@ export default function OnboardToStripe({
   const session = useSession();
   const router = useRouter();
   const [size] = useState<string>("md");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [, setSelectedCategory] = useState("");
   const [zipCodeValue, setZipCodeValue] = useState("");
   const [stateValue, setStateValue] = useState("");
 
-  const utils = api.useUtils();
+  // const utils = api.useUtils();
 
   const sessionUser = session.data?.user;
 
@@ -106,9 +106,9 @@ export default function OnboardToStripe({
   //   },
   // });
 
-  function handleAddCashChange(e: string) {
-    setSelectedCategory(e);
-  }
+  // function handleAddCashChange(e: string) {
+  //   setSelectedCategory(e);
+  // }
 
   return (
     <>
@@ -342,13 +342,16 @@ export default function OnboardToStripe({
                               },
                             );
                           router.push(session.url);
-                          console.log("session", session.url);
                           // await stripe.redirectToCheckout({
                           //   sessionId: session.url,
                           // });
                         })
                         .catch((error) => {
-                          if (error.message.includes("You must be logged in")) {
+                          if (
+                            (error as Error).message.includes(
+                              "You must be logged in",
+                            )
+                          ) {
                             toast(CustomToastWithLink, {
                               position: "bottom-right",
                               autoClose: false,

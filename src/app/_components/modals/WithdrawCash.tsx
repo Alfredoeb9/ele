@@ -5,17 +5,17 @@ import {
   ModalHeader,
   ModalBody,
   useDisclosure,
-  Select,
-  SelectItem,
+  // Select,
+  // SelectItem,
   Input,
 } from "@nextui-org/react";
 import { useState } from "react";
 import { api } from "@/trpc/react";
 import { ToastContainer, toast } from "react-toastify";
 
-import { addCashSelectOptions } from "@/lib/sharedData";
-import { addCashToAccount } from "../actions/actions";
-import getStripe from "@/lib/utils/get-stripejs";
+// import { addCashSelectOptions } from "@/lib/sharedData";
+// import { addCashToAccount } from "../actions/actions";
+// import getStripe from "@/lib/utils/get-stripejs";
 
 interface CreateNewTicketTypes {
   open: boolean;
@@ -32,7 +32,7 @@ export default function WithDrawCash({
 }: CreateNewTicketTypes) {
   const { onClose } = useDisclosure();
   const [size] = useState<string>("md");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  // const [, setSelectedCategory] = useState("");
 
   const utils = api.useUtils();
 
@@ -86,9 +86,9 @@ export default function WithDrawCash({
     },
   });
 
-  function handleAddCashChange(e: string) {
-    setSelectedCategory(e);
-  }
+  // function handleAddCashChange(e: string) {
+  //   setSelectedCategory(e);
+  // }
 
   return (
     <>

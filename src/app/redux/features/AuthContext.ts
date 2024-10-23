@@ -1,17 +1,30 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-// import authAPI from "../api/authAPI";
-import { RootState } from "../store";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type RootState } from "../store";
 
 export interface UserAuthProps {
-  user: any;
-  isError: boolean;
-  isSuccess: boolean;
-  isLoading: boolean;
-  message: string;
+  user: {
+    id: string;
+    username: string;
+    email: string;
+    firstName: string;
+    role: string;
+    lastName: string;
+  };
+  isError?: boolean;
+  isSuccess?: boolean;
+  isLoading?: boolean;
+  message?: string;
 }
 
 const initialState: UserAuthProps = {
-  user: null,
+  user: {
+    id: "",
+    username: "",
+    email: "",
+    firstName: "",
+    role: "",
+    lastName: "",
+  },
   isError: false,
   isSuccess: false,
   isLoading: false,
@@ -93,7 +106,7 @@ export const userAuthSlice = createSlice({
   reducers: {
     // Use the PayloadAction type to declare the contents of `action.payload`
     login: (state: UserAuthProps, action: PayloadAction<UserAuthProps>) => {
-      state.user = action.payload;
+      state.user = action.payload.user;
       state.isError = false;
       state.isSuccess = true;
       state.isLoading = false;
@@ -101,7 +114,7 @@ export const userAuthSlice = createSlice({
     },
 
     logout: (state: UserAuthProps) => {
-      state.user = null;
+      state.user = initialState.user;
       // state.isError = false;
       // state.isSuccess = false;
       // state.isLoading = false;
@@ -128,7 +141,7 @@ export const userAuthSlice = createSlice({
       // state.workout = state.workout.filter(
       //   (workout) => workout._id !== action.payload._id
       // );
-      state.user = action.payload;
+      state.user = action.payload.user;
       state.message = "USER_SIGNED_IN";
     },
     // extraReducers: (builder) => {
@@ -192,7 +205,6 @@ export const { login, logout, verifyEmail, register, updateUser } =
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
-export const selectUserAuth = (state: { user: { user: any } }) =>
-  state.user.user;
+export const selectUserAuth = (state: RootState) => state.user.user;
 
 export default userAuthSlice;

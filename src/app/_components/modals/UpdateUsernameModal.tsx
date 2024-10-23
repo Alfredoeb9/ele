@@ -3,7 +3,7 @@ import {
   ModalContent,
   ModalHeader,
   ModalBody,
-  ModalFooter,
+  // ModalFooter,
   Button,
   useDisclosure,
   Input,
@@ -28,7 +28,7 @@ export default function SendTeamInvite({
 }: SendTeamInvite) {
   const { onClose } = useDisclosure();
   const [size] = useState<string>("md");
-  const [userName, setUserName] = useState<string>("");
+  const [, setUserName] = useState<string>("");
 
   const utils = api.useUtils();
 

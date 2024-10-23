@@ -16,20 +16,24 @@ import { moneyMatchColumns } from "@/lib/sharedData";
 import Link from "next/link";
 import Image from "next/image";
 
-interface MatchListProps {
-  data: MatchFinderTableProps[] | any;
+interface MatchFinderTableProps {
+  matchId: string;
+  // game: string;
+  platform: any;
+  matchEntry: number;
+  // entry: string;
+  // team_size: string;
+  tournament_type?: string;
+  rules: any;
+  startTime: string | number | Date;
+  gameTitle: string;
+  support?: string;
+  starting?: string;
+  info?: MatchFinderInfoProps[];
 }
 
-interface MatchFinderTableProps {
-  id: number | string;
-  game: string;
-  platform: string;
-  entry: number;
-  team_size: string;
-  competition: string;
-  support: string;
-  starting: string;
-  info?: MatchFinderInfoProps[];
+interface MatchListProps {
+  data: MatchFinderTableProps[];
 }
 
 interface MatchFinderInfoProps {
@@ -47,7 +51,7 @@ const statusColorMap: Record<string, ChipProps["color"]> = {
 export const MoneyMatchFinderTable = ({ data }: MatchListProps) => {
   if (!data) return null;
 
-  type Match = typeof data.matches;
+  type Match = MatchFinderTableProps;
 
   // const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
@@ -119,18 +123,8 @@ export const MoneyMatchFinderTable = ({ data }: MatchListProps) => {
   };
 
   const renderCell = useCallback(
-    (
-      moneyMatch: {
-        [x: string]: any;
-        startTime: string | number | Date;
-        gameTitle: string;
-        platform: any[];
-        rules: (Record<string, string> | ArrayLike<ReactNode>)[] | undefined;
-        matchId: string;
-      },
-      columnKey: React.Key,
-    ) => {
-      const cellValue = moneyMatch[columnKey as unknown as Match];
+    (moneyMatch: Match, columnKey: React.Key): React.ReactNode => {
+      const cellValue = moneyMatch[columnKey as keyof Match];
 
       const d1 = new Date(moneyMatch.startTime),
         d2 = new Date();
@@ -204,7 +198,7 @@ export const MoneyMatchFinderTable = ({ data }: MatchListProps) => {
             </div>
           );
         default:
-          return cellValue;
+          return cellValue as ReactNode;
       }
     },
     [],
@@ -256,11 +250,11 @@ export const MoneyMatchFinderTable = ({ data }: MatchListProps) => {
         )}
       </TableHeader>
       <TableBody items={items}>
-        {(item: { matchId: string }) => (
+        {(item: Match) => (
           <TableRow key={item?.matchId}>
             {(columnKey) => (
               <TableCell className="text-center">
-                {renderCell(item as any, columnKey)}
+                {renderCell(item, columnKey)}
               </TableCell>
             )}
           </TableRow>
