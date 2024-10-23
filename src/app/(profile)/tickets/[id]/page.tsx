@@ -17,15 +17,15 @@ export default function UniqueTickets() {
 
   const deleteTicket = api.user.deleteUniqueTicket.useMutation({
     onSuccess: async () => {
-      await utils.user.getUserDataWithTickets.invalidate(),
-        toast(`Ticket: ${ticketFromUrl} has been deleted.`, {
-          position: "bottom-right",
-          autoClose: 3000,
-          closeOnClick: true,
-          draggable: false,
-          type: "success",
-          toastId: 78,
-        });
+      await utils.user.getUserDataWithTickets.invalidate();
+      toast(`Ticket: ${ticketFromUrl} has been deleted.`, {
+        position: "bottom-right",
+        autoClose: 3000,
+        closeOnClick: true,
+        draggable: false,
+        type: "success",
+        toastId: 78,
+      });
 
       setTimeout(() => {
         router.push("/tickets");

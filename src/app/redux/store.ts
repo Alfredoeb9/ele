@@ -1,8 +1,14 @@
-"use-client"
-import { Tuple, applyMiddleware, combineReducers, configureStore } from "@reduxjs/toolkit";
+"use-client";
+import {
+  EnhancedStore,
+  Tuple,
+  applyMiddleware,
+  combineReducers,
+  configureStore,
+} from "@reduxjs/toolkit";
 // import { persistReducer, persistStore } from "redux-persist";
-import thunkMiddleware, { thunk }  from "redux-thunk";
-import logger from "redux"
+import thunkMiddleware, { thunk } from "redux-thunk";
+import logger from "redux";
 import { ThunkMiddleware } from "redux-thunk";
 // import geoQuizSlice from "./features/geolocationQuizSlice";
 import userAuthReducer from "./features/AuthContext";
@@ -64,29 +70,29 @@ import userAuthReducer from "./features/AuthContext";
 // };
 
 const authXReducer = combineReducers({
-//   geoQuiz: geoQuizSlice,
-  user: userAuthReducer.reducer
-//   results: resultSlice,
+  //   geoQuiz: geoQuizSlice,
+  user: userAuthReducer.reducer,
+  //   results: resultSlice,
 });
 
 // const persistedReducer = persistReducer(persistAuthConfig, authXReducer);
 
-export const store =  configureStore({
+export const store = configureStore({
   reducer: authXReducer,
-})
+});
 
 export const makeStore = () => {
   return configureStore({
-    reducer: {authXReducer}
-  })
-}
-
+    reducer: { authXReducer },
+  });
+};
 
 // Infer the type of store
-export type AppStore = ReturnType<typeof makeStore>
-// Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<AppStore['getState']>
-export type AppDispatch = AppStore['dispatch']
+export type RootState = ReturnType<typeof authXReducer>;
+// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+export default authXReducer;
+export type AppStore = EnhancedStore<RootState>;
+export type AppDispatch = AppStore["dispatch"];
 
 // export type RootState = ReturnType<typeof store.getState>;
 // export type AppDispatch = typeof store.dispatch;

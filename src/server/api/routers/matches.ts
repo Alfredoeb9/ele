@@ -36,7 +36,7 @@ export const matchRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(posts).values({
         name: input.name,
-        createdById: ctx.session.user.id,
+        createdById: ctx.session.user?.id,
       });
     }),
 
@@ -129,7 +129,7 @@ export const matchRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const data: TournamentType[] | PromiseLike<any[]> = [];
+      const data: TournamentType[] | PromiseLike<[]> = [];
 
       input.tournamentId.map(async (id: { id: string | SQLWrapper }) => {
         const tourneyMatches = ctx.db.query.tournaments.findMany({
@@ -214,7 +214,9 @@ export const matchRouter = createTRPCRouter({
 
           return true;
         } catch (error) {
-          throw new Error("Error cannot enroll team in tournament");
+          throw new Error(
+            "Error cannot enroll team in tournament" + (error as Error).message,
+          );
         }
       });
     }),

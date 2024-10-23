@@ -236,6 +236,7 @@ const Tournament: React.FC<{ participants: Participant[] }> = ({
   }
 
   const playRound = () => {
+    if (!winner) return null;
     // const count = getRoundsCount(participants);
 
     setActivateTournament(true);
@@ -362,7 +363,7 @@ const Tournament: React.FC<{ participants: Participant[] }> = ({
 
       <button
         onClick={() => {
-          !winner && playRound();
+          playRound();
         }}
       >
         Play Round

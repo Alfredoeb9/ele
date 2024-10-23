@@ -143,7 +143,8 @@ export default function TeamSettings() {
                               className="text-red-500"
                               variant="bordered"
                               onPress={() => {
-                                onOpen(), setModalPath("owner");
+                                onOpen();
+                                setModalPath("owner");
                                 setTeamName(team.team_name);
                                 setTeamId(team.id);
                               }}

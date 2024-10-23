@@ -11,8 +11,6 @@ type Metadata = {
   credits: string;
 };
 
-console.log("process.env", env.SRIPE_WEBHOOK_SECRET);
-
 export async function POST(req: NextRequest) {
   const body = await req.text();
   const signature = headers().get("Stripe-Signature") ?? "";

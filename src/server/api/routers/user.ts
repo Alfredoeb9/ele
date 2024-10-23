@@ -9,7 +9,7 @@ import {
   socialTags,
   stripeAccount,
   teamMembersTable,
-  teams,
+  // teams,
   tickets,
   users,
   usersRecordTable,
@@ -624,7 +624,9 @@ export const userRouter = createTRPCRouter({
 
         return ticketData[0];
       } catch (error) {
-        throw new Error("There was a service error");
+        throw new Error(
+          "There was a service error: " + (error as Error).message,
+        );
       }
     }),
   deleteUniqueTicket: publicProcedure
@@ -639,7 +641,9 @@ export const userRouter = createTRPCRouter({
           .delete(tickets)
           .where(eq(tickets.id, input.ticketId));
       } catch (error) {
-        throw new Error("There was a problem deleting ticket");
+        throw new Error(
+          "There was a problem deleting ticket" + (error as Error).message,
+        );
       }
     }),
 

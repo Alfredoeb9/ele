@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode, useCallback, useMemo, useState } from "react";
+import { type ReactNode, useCallback, useMemo, useState } from "react";
 import {
   Table,
   TableHeader,
@@ -9,28 +9,46 @@ import {
   TableCell,
   Button,
   Chip,
-  Avatar,
-  ChipProps,
+  type ChipProps,
   Tooltip,
 } from "@nextui-org/react";
 import { columns } from "@/lib/sharedData";
 import Link from "next/link";
 import Image from "next/image";
 
-interface MatchListProps {
-  data: MatchFinderTableProps[] | any;
-}
+// interface Match {
+//   id: string;
+//   name: string;
+//   game: string;
+//   created_by: string;
+//   platform: string[];
+//   entry: string;
+//   team_size: string;
+//   start_time: string;
+//   rules: Record<string, string>[];
+//   category: string | null;
+//   prize: number;
+//   tournament_type: string;
+//   max_teams: number | null;
+//   enrolled: number | null;
+// }
 
 interface MatchFinderTableProps {
   id: number | string;
   game: string;
-  platform: string;
-  entry: number;
+  platform: any;
+  entry: string;
   team_size: string;
-  competition: string;
-  support: string;
-  starting: string;
+  tournament_type?: string;
+  rules: Record<string, string>[];
+  start_time: string | null;
+  support?: string;
+  starting?: string;
   info?: MatchFinderInfoProps[];
+}
+
+interface MatchListProps {
+  data: MatchFinderTableProps[];
 }
 
 interface MatchFinderInfoProps {
@@ -48,10 +66,10 @@ const statusColorMap: Record<string, ChipProps["color"]> = {
 export const TournamentMatchFinderTable = ({ data }: MatchListProps) => {
   if (!data) return null;
 
-  type User = typeof data.matches;
+  type User = MatchFinderTableProps;
 
   // const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
-  const [rowsPerPage, setRowsPerPage] = useState<number>(5);
+  const [rowsPerPage] = useState<number>(5);
   const [page, setPage] = useState<number>(1);
   const [currentSet, setCurrentSet] = useState<number[]>([0, 0]);
 
@@ -78,7 +96,7 @@ export const TournamentMatchFinderTable = ({ data }: MatchListProps) => {
 
     setCurrentSet([start, end]);
 
-    return data.slice(start, end);
+    return data?.slice(start, end);
   }, [page, data, rowsPerPage]);
 
   const pages = Math.ceil(data.length / rowsPerPage);
@@ -98,107 +116,111 @@ export const TournamentMatchFinderTable = ({ data }: MatchListProps) => {
   const renderToolTip = (
     data: (Record<string, string> | ArrayLike<ReactNode>)[] | undefined,
   ) => {
-    if (!data || data === undefined) return null;
+    if (!data) return null;
 
     return (
       <div>
         <ul>
-          {data.map(
-            (
-              rule: Record<string, string> | ArrayLike<ReactNode>,
-              i: number,
-            ) => (
-              <li key={i}>
-                <span className="font-bold">{Object.keys(rule)[0]}:</span>{" "}
-                {Object.values(rule)}
-              </li>
-            ),
-          )}
+          {data.map((rule, i) => (
+            <li key={i}>
+              <span className="font-bold">{Object.keys(rule)[0]}:</span>{" "}
+              {Object.values(rule)}
+            </li>
+          ))}
         </ul>
       </div>
     );
   };
 
-  const renderCell = useCallback((user: any, columnKey: React.Key) => {
-    const cellValue = user[columnKey as keyof User];
+  const renderCell = useCallback(
+    (user: User, columnKey: React.Key): React.ReactNode => {
+      const cellValue = user[columnKey as keyof User];
 
-    const d1 = new Date(user.start_time),
-      d2 = new Date();
+      const d1 = new Date(user.start_time!),
+        d2 = new Date();
 
-    switch (columnKey) {
-      case "game":
-        return (
-          <div>
-            <Image
-              src={`/images/${user.game}.png`} // Route of the image file
-              height={40} // Desired size with correct aspect ratio
-              width={40} // Desired size with correct aspect ratio
-              alt={`${user.game} placeholder image`}
-            />
-          </div>
-        );
-      case "platforms":
-        return (
-          <div className="flex flex-col">
-            {user?.platform.length > 1 ? (
-              "Cross Platform"
-            ) : (
-              <p className="text-bold text-small capitalize">
-                {user?.platform}
-              </p>
-            )}
-          </div>
-        );
-      case "start_time":
-        return (
-          <Chip
-            className="gap-1 border-none capitalize text-default-600"
-            color={
-              d2.valueOf() <= d1.valueOf()
-                ? statusColorMap["available now"]
-                : statusColorMap["not available"]
-            }
-            size="sm"
-            variant="dot"
-          >
-            {d2.valueOf() <= d1.valueOf() ? "Available Now" : "Not Available"}
-          </Chip>
-        );
-      case "support":
-        return <div>Live Support</div>;
-      case "rules":
-        return (
-          <div className="relative flex items-center justify-center gap-2">
-            <Tooltip
-              classNames={{
-                content: [
-                  "py-2 px-4 shadow-xl",
-                  "text-black bg-gradient-to-br from-white to-neutral-400",
-                ],
-              }}
-              content={renderToolTip(user?.rules)}
+      switch (columnKey) {
+        case "game":
+          return (
+            <div>
+              <Image
+                src={`/images/${user.game}.png`} // Route of the image file
+                height={40} // Desired size with correct aspect ratio
+                width={40} // Desired size with correct aspect ratio
+                alt={`${user.game} placeholder image`}
+              />
+            </div>
+          );
+        case "platforms":
+          return (
+            <div className="flex flex-col">
+              {user?.platform.length > 1 ? (
+                "Cross Platform"
+              ) : (
+                <p className="text-bold text-small capitalize">
+                  {user?.platform as ReactNode}
+                </p>
+              )}
+            </div>
+          );
+        case "entry":
+          return <div>$ {user?.entry}</div>;
+        case "team_size":
+          return <div>{user?.team_size}</div>;
+        case "competition":
+          return <div>{user?.tournament_type}</div>;
+        case "start_time":
+          return (
+            <Chip
+              className="gap-1 border-none capitalize text-default-600"
+              color={
+                d2.valueOf() <= d1.valueOf()
+                  ? statusColorMap["available now"]
+                  : statusColorMap["not available"]
+              }
+              size="sm"
+              variant="dot"
             >
-              <button className="rounded-full bg-gray-400 px-2 py-1 text-center">
-                i
-              </button>
-            </Tooltip>
-          </div>
-        );
-      case "link":
-        return (
-          <div className="flex">
-            <Button
-              isDisabled={d2.valueOf() >= d1.valueOf() ? true : false}
-              className="rounded-2xl  bg-green-600 p-2"
-            >
-              <Link href={`/tournaments/${user.id}`}>Accept</Link>
-            </Button>
-          </div>
-        );
-      default:
-        return cellValue;
-    }
-  }, []);
+              {d2.valueOf() <= d1.valueOf() ? "Available Now" : "Not Available"}
+            </Chip>
+          );
+        case "support":
+          return <div>Live Support</div>;
+        case "rules":
+          return (
+            <div className="relative flex items-center justify-center gap-2">
+              <Tooltip
+                classNames={{
+                  content: [
+                    "py-2 px-4 shadow-xl",
+                    "text-black bg-gradient-to-br from-white to-neutral-400",
+                  ],
+                }}
+                content={renderToolTip(user?.rules)}
+              >
+                <button className="rounded-full bg-gray-400 px-2 py-1 text-center">
+                  i
+                </button>
+              </Tooltip>
+            </div>
+          );
+        case "link":
+          return (
+            <div className="flex">
+              <Button
+                isDisabled={d2.valueOf() >= d1.valueOf() ? true : false}
+                className="rounded-2xl  bg-green-600 p-2"
+              >
+                <Link href={`/tournaments/${user.id}`}>Accept</Link>
+              </Button>
+            </div>
+          );
+        default:
+          return cellValue as React.ReactNode;
+      }
+    },
+    [],
+  );
 
   const bottomContent = useMemo(() => {
     return (
@@ -246,8 +268,8 @@ export const TournamentMatchFinderTable = ({ data }: MatchListProps) => {
         )}
       </TableHeader>
       <TableBody items={items}>
-        {(item: any) => (
-          <TableRow key={item?.id}>
+        {(item) => (
+          <TableRow key={item.id}>
             {(columnKey) => (
               <TableCell className="text-center">
                 {renderCell(item, columnKey)}

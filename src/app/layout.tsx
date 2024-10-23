@@ -12,6 +12,7 @@ import { NextUiProvider } from "./_components/providers/NextUIProvider";
 import { ToastContainer } from "react-toastify";
 import Footer from "./_components/Footer";
 import "react-toastify/dist/ReactToastify.css";
+import { User } from "next-auth";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -57,7 +58,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
         <Provider>
-          <ReduxProvider user={session?.user}>
+          <ReduxProvider user={session?.user!}>
             <TRPCReactProvider>
               <NextUiProvider>
                 <div className="bg-slate-950">

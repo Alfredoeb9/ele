@@ -5,14 +5,14 @@ export function middleware(request: NextRequest) {
   // Assume a 'Cookie:nextjs=fast' header to be present on the incoming request
   // Getting cookies from the request using the 'RequestCookies' API
   // console.log("testing")
-  const { pathname, searchParams } = request.nextUrl;
+  // const { pathname, searchParams } = request.nextUrl;
 
   // console.log(pathname)
   // console.log(searchParams)
-  const cookie = request.cookies.get("next-auth.csrf-token")?.value;
+  // const cookie = request.cookies.get("next-auth.csrf-token")?.value;
 
   // console.log('cookie', cookie)
-  const allCookies = request.cookies.getAll();
+  // const allCookies = request.cookies.getAll();
   // console.log('allCookies', allCookies)
 
   const host = request.headers.get("host");
