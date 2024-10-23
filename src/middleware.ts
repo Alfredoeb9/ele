@@ -18,6 +18,8 @@ export function middleware(request: NextRequest) {
     );
   }
 
+  console.log(request.nextUrl);
+
   if (
     request.nextUrl.pathname === "/team-settings" ||
     request.nextUrl.pathname === "/team-settings/create-team" ||
@@ -36,7 +38,7 @@ export function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
-    return NextResponse.redirect("http:localhost:3000/sign-in", 301);
+    return NextResponse.redirect(`${request.nextUrl.origin}/sign-in`, 301);
   }
 
   return NextResponse.next();
