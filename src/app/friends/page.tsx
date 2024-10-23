@@ -70,7 +70,7 @@ export default function Friends() {
   const router = useRouter();
   // const utils = api.useUtils()
 
-  if (session.status === "unauthenticated") router.push("/sign-in");
+  // if (session.status === "unauthenticated") router.push("/sign-in");
 
   const userFriendData = api.user.getUserWithFriends.useQuery(
     { id: session.data?.user.id! },

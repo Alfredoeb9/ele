@@ -2,18 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  // Assume a 'Cookie:nextjs=fast' header to be present on the incoming request
-  // Getting cookies from the request using the 'RequestCookies' API
-  // console.log("testing")
-  // const { pathname, searchParams } = request.nextUrl;
-
-  // console.log(pathname)
-  // console.log(searchParams)
-  // const cookie = request.cookies.get("next-auth.csrf-token")?.value;
-
-  // console.log('cookie', cookie)
-  // const allCookies = request.cookies.getAll();
-  // console.log('allCookies', allCookies)
+  const sessionCookie = request.cookies.get("next-auth.session-token")?.value;
 
   const host = request.headers.get("host");
   const wwwRegex = /^www\./;
@@ -29,11 +18,41 @@ export function middleware(request: NextRequest) {
     );
   }
 
+  if (
+    request.nextUrl.pathname === "/team-settings" ||
+    request.nextUrl.pathname === "/team-settings/create-team" ||
+    request.nextUrl.pathname === "/match/create/:id" ||
+    request.nextUrl.pathname === "/match/enroll" ||
+    request.nextUrl.pathname === "/money-match/:id" ||
+    request.nextUrl.pathname === "/profile/:id" ||
+    request.nextUrl.pathname === "/tickets" ||
+    request.nextUrl.pathname === "/tickets/:id" ||
+    request.nextUrl.pathname === "/account-manage" ||
+    request.nextUrl.pathname === "/game/:id" ||
+    request.nextUrl.pathname === "/games" ||
+    request.nextUrl.pathname === "/friends"
+  ) {
+    if (sessionCookie) {
+      return NextResponse.next();
+    }
+
+    return NextResponse.redirect("http:localhost:3000/sign-in", 301);
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: "/",
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
+     */
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|images|svg).*)",
+  ],
 };
 
 /*

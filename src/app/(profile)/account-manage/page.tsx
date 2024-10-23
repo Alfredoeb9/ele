@@ -42,7 +42,7 @@ export default function AccountSettings() {
     { label: "Discord", value: "" },
   ]);
 
-  if (session.status === "unauthenticated") router.push("/");
+  // if (session.status === "unauthenticated") router.push("/");
 
   // useEffect(() => {
   //     if (gamerTags.length < currentInput) {

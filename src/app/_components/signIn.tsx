@@ -1,12 +1,12 @@
 "use client";
-import { useSession, signIn, getSession } from "next-auth/react";
-import { redirect } from "next/navigation";
 import React, { type FormEvent, useEffect, useState } from "react";
+import Link from "next/link";
+import { type Session } from "next-auth";
+import { useSession, signIn, getSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/redux/hooks";
 import { useResend } from "../hooks/resend";
-import Link from "next/link";
 import { login, type UserAuthProps } from "../redux/features/AuthContext";
-import { type Session } from "next-auth";
 
 const transformSessionToUserAuthProps = (session: Session): UserAuthProps => {
   return {
@@ -27,19 +27,24 @@ const transformSessionToUserAuthProps = (session: Session): UserAuthProps => {
 
 const SignIn = () => {
   const user = useSession();
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const [email, setEmail] = useState<string>("");
   const [, setLoading] = useState<boolean>(false);
-  const [spinnerLoading, ] = useState<boolean>(false);
+  const [spinnerLoading] = useState<boolean>(false);
   const [verifyEmail, setVerifyEmail] = useState<boolean>(false);
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
   const { resend, error2, isLoading2 } = useResend();
   const [show, setShow] = useState({ password: false });
 
-  if (user?.data !== null) {
-    redirect("/");
-  }
+  console.log("user", user);
+
+  useEffect(() => {
+    if (user.status == "authenticated") {
+      router.push("/");
+    }
+  }, [user]);
 
   useEffect(() => {
     if (error2) {
@@ -54,7 +59,7 @@ const SignIn = () => {
       if (email === "" || password === "") {
         return setError("Please provide a email and password");
       }
-      const signInData = await signIn("credentials", {
+      await signIn("credentials", {
         email: email,
         password: password,
         redirect: false,
@@ -63,7 +68,7 @@ const SignIn = () => {
           setVerifyEmail(false);
           if (!res) return null;
 
-          if (res?.ok === false) {
+          if (!res?.ok) {
             if (!res.error) return null;
             setError(res?.error);
             if (res?.error.includes("Email is not verified")) {
@@ -85,10 +90,14 @@ const SignIn = () => {
           console.log("error", error);
           return setError(error);
         });
-
-      return signInData;
     } catch (error) {
       return setError(error as string);
+    } finally {
+      setLoading(false);
+
+      if (!error) {
+        router.push("/");
+      }
     }
   };
 
@@ -103,40 +112,6 @@ const SignIn = () => {
 
   return (
     <div className="flex min-h-full w-96 flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      {/* <label htmlFor="email" className="block text-sm font-medium leading-6 text-white">Email:</label>
-							<input
-								className="block w-full rounded-md border-0 py-1.5 mt-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-								type="email"
-								onChange={(e) => setEmail(e.target.value)}
-								value={email}
-							/>
-
-<div className="flex items-center justify-between">
-								<label htmlFor="password" className="block text-sm font-medium leading-6 text-white">Password:</label>
-								<span
-									className="text-sm font-semibold text-indigo-600 hover:text-indigo-500"
-									onClick={() => setShow({ ...show, password: !show.password })}
-								>
-									<p className="font-semibold text-indigo-600 hover:text-indigo-500">Show Password</p>
-								</span>
-								
-							</div>
-							<input
-								name="password"
-								required
-								type={`${show.password ? "text" : "password"}`}
-								onChange={(e) => setPassword(e.target.value)}
-								value={password}
-								className="block w-full rounded-md border-0 mt-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-							/>	
-
-<button 
-							className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-slate-500" 
-							// disabled={isLoading2 || email === "" || password === "" || email.length === 0}
-							onClick={(e) => handleSubmit(e)}
-						>
-							Log in
-						</button> */}
       {isLoading2 || spinnerLoading ? (
         <p>this is suppose to be a spinner</p>
       ) : (

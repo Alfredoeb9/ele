@@ -62,17 +62,17 @@ export default function CreateMatch() {
   );
   const [selectedGameTitle, setSelectedGameTitle] = useState<string | null>("");
 
-  if (session.status === "unauthenticated") {
-    toast("Player must be signed in", {
-      position: "bottom-right",
-      autoClose: 2800,
-      closeOnClick: true,
-      draggable: false,
-      type: "error",
-      toastId: 66,
-    });
-    router.push("/sign-in");
-  }
+  // if (session.status === "unauthenticated") {
+  //   toast("Player must be signed in", {
+  //     position: "bottom-right",
+  //     autoClose: 2800,
+  //     closeOnClick: true,
+  //     draggable: false,
+  //     type: "error",
+  //     toastId: 66,
+  //   });
+  //   router.push("/sign-in");
+  // }
 
   if (teamCatNext === "trios" || teamIdNext === undefined) {
     toast("Seems to be an error please try again", {

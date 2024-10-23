@@ -44,7 +44,7 @@ export default function Enroll() {
   const [availableTeamMembers, setAvailableTeamMembers] = useState([""]);
   const [idx] = useState(0);
 
-  if (session.status === "unauthenticated") router.push("/sign-in");
+  // if (session.status === "unauthenticated") router.push("/sign-in");
 
   const search = searchParams.get("id");
   const category = searchParams.get("cat");

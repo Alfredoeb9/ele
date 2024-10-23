@@ -53,7 +53,7 @@ export default function TicketsDashboard() {
   const [modalPath, setModalPath] = useState<string>("");
   const router = useRouter();
 
-  if (session.status === "unauthenticated") router.push("/sign-in");
+  // if (session.status === "unauthenticated") router.push("/sign-in");
 
   const userFriendData = api.user.getUserDataWithTickets.useQuery(
     { id: session.data?.user.id! },
