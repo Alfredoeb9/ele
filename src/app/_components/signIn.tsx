@@ -175,7 +175,7 @@ const SignIn = () => {
             {error && <div className="text-red-500">{error.toString()}</div>}
           </form>
 
-          <p className="mt-10text-sm text-white hover:text-white">
+          <p className="mt-10 text-sm text-white hover:text-white">
             <Link href={"/forgot-password"}>Forgot Password?</Link>
           </p>
 

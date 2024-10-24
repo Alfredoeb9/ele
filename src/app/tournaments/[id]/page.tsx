@@ -389,8 +389,6 @@ export default function Tournaments({
     { enabled: tournamentId.length >= 0 },
   );
 
-  console.log("tournamentData", tournamentData);
-
   // ENABLE THIS ONLY WHEN THE TOURNAMENT TIMER IS DONE / 0
   const teamsEnrolled = api.matches.getEnrolledTeams.useQuery(
     { tournamentId: tournamentId },
@@ -436,8 +434,6 @@ export default function Tournaments({
   const pstDate = d1.toLocaleString("en-US", {
     timeZone: "America/Los_Angeles",
   });
-
-  console.log("data", tournamentData.data);
 
   return (
     <div>

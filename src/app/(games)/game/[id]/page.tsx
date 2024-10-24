@@ -56,8 +56,6 @@ export default function Game() {
     );
   }
 
-  console.log("gameData", gameData);
-
   return (
     <main className="bg-neutral-600">
       <div

@@ -123,8 +123,6 @@ export default function CreateTeam() {
     return <Spinner label="Loading..." color="warning" />;
   const headingClasses = "text-lg sm: text-xl";
 
-  console.log("teamCategoryPicked", teamCategoryPicked);
-
   return (
     <div className="mx-auto flex min-h-screen flex-col items-center justify-center bg-stone-900 px-6 py-8 md:h-screen lg:py-0">
       <div className="flex min-h-full w-96 flex-1 flex-col justify-center px-6 py-12 lg:px-8">
