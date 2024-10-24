@@ -5,8 +5,6 @@ import {
   ModalHeader,
   ModalBody,
   useDisclosure,
-  // Select,
-  // SelectItem,
   Input,
 } from "@nextui-org/react";
 import { useState } from "react";
@@ -32,7 +30,6 @@ export default function WithDrawCash({
 }: CreateNewTicketTypes) {
   const { onClose } = useDisclosure();
   const [size] = useState<string>("md");
-  // const [, setSelectedCategory] = useState("");
 
   const utils = api.useUtils();
 

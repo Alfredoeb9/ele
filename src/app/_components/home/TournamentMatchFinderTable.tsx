@@ -16,23 +16,6 @@ import { columns } from "@/lib/sharedData";
 import Link from "next/link";
 import Image from "next/image";
 
-// interface Match {
-//   id: string;
-//   name: string;
-//   game: string;
-//   created_by: string;
-//   platform: string[];
-//   entry: string;
-//   team_size: string;
-//   start_time: string;
-//   rules: Record<string, string>[];
-//   category: string | null;
-//   prize: number;
-//   tournament_type: string;
-//   max_teams: number | null;
-//   enrolled: number | null;
-// }
-
 interface MatchFinderTableProps {
   id: number | string;
   game: string;
@@ -209,7 +192,7 @@ export const TournamentMatchFinderTable = ({ data }: MatchListProps) => {
             <div className="flex">
               <Button
                 isDisabled={d2.valueOf() >= d1.valueOf() ? true : false}
-                className="rounded-2xl  bg-green-600 p-2"
+                className="rounded-2xl bg-green-600 p-2"
               >
                 <Link href={`/tournaments/${user.id}`}>Accept</Link>
               </Button>

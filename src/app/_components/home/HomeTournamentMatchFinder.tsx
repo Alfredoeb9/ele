@@ -2,22 +2,6 @@ import { Spinner } from "@nextui-org/react";
 import { TournamentMatchFinderTable } from "./TournamentMatchFinderTable";
 import { api } from "@/trpc/react";
 
-// interface TournamentMatch {
-//   platform: string | string[];
-//   [key: string]: any;
-
-//   id: string;
-//   game: string;
-//   entry: string;
-//   team_size: string;
-//   competition?: string;
-//   rules: Record<string, string>[];
-//   start_time: string | null;
-//   support?: string;
-//   starting?: string;
-//   // info?: MatchFinderInfoProps[];
-// }
-
 export default function HomeTournamentMatchFinder() {
   const tournamentMatches = api.matches.getAllTournaments.useQuery();
 

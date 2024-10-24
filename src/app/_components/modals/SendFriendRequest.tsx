@@ -11,8 +11,6 @@ import { api } from "@/trpc/react";
 import { ToastContainer, toast } from "react-toastify";
 import { useSession } from "next-auth/react";
 
-// import 'react-toastify/dist/ReactToastify.css';
-
 interface SendFriendProps {
   open: boolean;
   onOpenChange: () => void;
