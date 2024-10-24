@@ -21,7 +21,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 import {
   type Key,
-  ReactNode,
+  type ReactNode,
   useCallback,
   useEffect,
   useMemo,

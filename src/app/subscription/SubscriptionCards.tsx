@@ -70,7 +70,7 @@ export default function SubscriptionCards({ userId }: SubscribtionTypes) {
                           sessionId: session.id,
                         });
                       })
-                      .catch((error) => {
+                      .catch((error: Error) => {
                         if (error.message.includes("You must be logged in")) {
                           toast(CustomToastWithLink, {
                             position: "bottom-right",

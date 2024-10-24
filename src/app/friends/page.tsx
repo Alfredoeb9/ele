@@ -19,13 +19,7 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import type { Selection, ChipProps, SortDescriptor } from "@nextui-org/react";
-import {
-  type ReactNode,
-  type SetStateAction,
-  useCallback,
-  useMemo,
-  useState,
-} from "react";
+import { type ReactNode, useCallback, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { api } from "@/trpc/react";
 import {
@@ -38,7 +32,7 @@ import { SearchIcon } from "./SearchIcon";
 import type { UsersType } from "@/server/db/schema";
 import RemoveFriendModal from "../_components/modals/RemoveFriendModal";
 import SendFriendRequest from "../_components/modals/SendFriendRequest";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
   active: "success",
@@ -67,7 +61,7 @@ export default function Friends() {
   const [email, setEmail] = useState<string>("");
   const [modalPath, setModalPath] = useState<string>("");
   // const [error, setError] = useState("");
-  const router = useRouter();
+  // const router = useRouter();
   // const utils = api.useUtils()
 
   // if (session.status === "unauthenticated") router.push("/sign-in");

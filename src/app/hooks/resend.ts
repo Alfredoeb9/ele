@@ -1,5 +1,5 @@
-'use client';
-import { FormEvent, useState } from "react";
+"use client";
+import { type FormEvent, useState } from "react";
 import { useDispatch } from "react-redux";
 import { verifyEmail } from "@/redux/features/AuthContext";
 
@@ -13,14 +13,11 @@ export const useResend = () => {
     setIsLoading(true);
     setError("");
 
-    const response = await fetch(
-      '/api/auth/verify-email',
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email, path: path }),
-      }
-    );
+    const response = await fetch("/api/auth/verify-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email, path: path }),
+    });
 
     const json = await response.json();
 

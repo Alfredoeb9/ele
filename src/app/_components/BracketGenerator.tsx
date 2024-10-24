@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Participant } from "../tournaments/[id]/page";
 
 interface BracketGeneratorTypes {
@@ -23,11 +23,9 @@ export default function BracketGenerator({
   const [thirdLoop, setThirdLoop] = useState("undone");
   const [fourthLoop, setFourthLoop] = useState("undone");
   const [fifthLoop, setFifthLoop] = useState("undone");
-  const [roundTracker, setRoundTracker] = useState(totalRounds);
+  // const [roundTracker, setRoundTracker] = useState(totalRounds);
   const [teams, setTeams] = useState(reaminingTeams);
-  const [winnerBracket, setWinnerBracket] = useState(
-    reaminingTeams.length === 1,
-  );
+  const [, setWinnerBracket] = useState(reaminingTeams.length === 1);
   const winnerElement = document.createElement("div");
 
   const [loop, setLoop] = useState<number>(0);

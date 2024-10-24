@@ -27,7 +27,7 @@ export default function Pricing() {
         </Link>{" "}
         before buying credits. We do not issue refunds at this time.
       </p>
-      <SubscriptionCards userId={user?.user.id as string} />
+      <SubscriptionCards userId={user?.user.id!} />
     </section>
   );
 }

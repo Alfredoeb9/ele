@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
         metadata: Metadata;
       };
 
-      const userEmail = completedEvent.metadata.email;
+      // const userEmail = completedEvent.metadata.email;
       const userId = completedEvent.metadata.userId;
       const depositAmount = completedEvent.metadata.depositAmount;
 

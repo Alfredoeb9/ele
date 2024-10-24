@@ -27,7 +27,7 @@ import {
 } from "@/lib/sharedData";
 import { VerticalDotsIcon } from "../../../../public/svg/VerticalDotsIcon";
 import type { UsersType } from "@/server/db/schema";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import CreateNewTicket from "@/components/modals/CreateNewTicket";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
@@ -51,7 +51,7 @@ export default function TicketsDashboard() {
   const [page, setPage] = useState(1);
   const [, setUserId] = useState<string>("");
   const [modalPath, setModalPath] = useState<string>("");
-  const router = useRouter();
+  // const router = useRouter();
 
   // if (session.status === "unauthenticated") router.push("/sign-in");
 

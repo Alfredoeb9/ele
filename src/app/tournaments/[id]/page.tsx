@@ -1,6 +1,5 @@
 "use client";
-import React, { SetStateAction, useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -15,7 +14,6 @@ import {
 } from "@nextui-org/react";
 import Link from "next/link";
 import { api } from "@/trpc/react";
-import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import { statusGameMap, trophys } from "@/lib/sharedData";
 import { GrTrophy } from "react-icons/gr";
@@ -203,9 +201,9 @@ export interface Participant {
   id?: string;
 }
 
-interface RulesTypes {
-  value: string;
-}
+// interface RulesTypes {
+//   value: string;
+// }
 
 // const ParticipantComponent: React.FC<{
 //   participant: Participant;

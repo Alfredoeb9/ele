@@ -38,7 +38,7 @@ export default function Home() {
   noStore();
   // const session = await getServerAuthSession();
   const session = useSession();
-  const [error, setError] = useState<string>("");
+  const [error] = useState<string>("");
 
   // Example usage
   // let players = ["Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Player 6", "Player 7", "Player 8"];
@@ -98,17 +98,17 @@ export default function Home() {
 
   return (
     <main>
-      <section className="min-h-128 sm:h-lvh m-auto flex h-[80vh] w-full flex-col place-content-center items-start justify-center bg-hero_bg bg-cover bg-no-repeat object-cover px-12">
-        <div className=" flex max-h-full flex-row place-content-start">
+      <section className="min-h-128 m-auto flex h-[80vh] w-full flex-col place-content-center items-start justify-center bg-hero_bg bg-cover bg-no-repeat object-cover px-12 sm:h-lvh">
+        <div className="flex max-h-full flex-row place-content-start">
           <div className="mr-4 h-52 w-2 bg-red-400" />
           <div>
-            <h1 className="text-4xl text-white md:text-5xl	lg:text-6xl">
+            <h1 className="text-4xl text-white md:text-5xl lg:text-6xl">
               WELCOME TO YOUR NEW COMPETITIVE JOURNEY
             </h1>
-            <h1 className="text-3xl text-gray-400 md:text-4xl	lg:text-5xl">
+            <h1 className="text-3xl text-gray-400 md:text-4xl lg:text-5xl">
               COMPETE FOR CASH.
             </h1>
-            <h1 className="text-3xl text-gray-400 md:text-4xl	lg:text-5xl">
+            <h1 className="text-3xl text-gray-400 md:text-4xl lg:text-5xl">
               COMPETE FOR ...
             </h1>
 

@@ -1,15 +1,13 @@
 "use-client";
 import {
   EnhancedStore,
-  Tuple,
-  applyMiddleware,
   combineReducers,
   configureStore,
 } from "@reduxjs/toolkit";
 // import { persistReducer, persistStore } from "redux-persist";
-import thunkMiddleware, { thunk } from "redux-thunk";
-import logger from "redux";
-import { ThunkMiddleware } from "redux-thunk";
+// import thunkMiddleware, { thunk } from "redux-thunk";
+// import logger from "redux";
+// import { ThunkMiddleware } from "redux-thunk";
 // import geoQuizSlice from "./features/geolocationQuizSlice";
 import userAuthReducer from "./features/AuthContext";
 // import {

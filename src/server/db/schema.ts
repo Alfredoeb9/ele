@@ -484,10 +484,6 @@ export const tournamentTeamsEnrolled = createTable(
       .notNull(),
     updatedAt: int("updated_at", { mode: "timestamp" }),
   },
-  (team) => ({
-    // makes sure name coming in is unique
-    // teamNameIdx: uniqueIndex("team_name_idx").on(team.teamId)
-  }),
 );
 
 export type TournamentTeamsEnrolled =

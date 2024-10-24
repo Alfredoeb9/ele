@@ -8,14 +8,14 @@ import { useDisclosure } from "@nextui-org/react";
 import { Button, Spinner } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function TeamSettings() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const session = useSession();
-  const router = useRouter();
+  // const router = useRouter();
   const [teamName, setTeamName] = useState<string>("");
   const [teamId, setTeamId] = useState<string>("");
   const [modalPath, setModalPath] = useState<string>("");

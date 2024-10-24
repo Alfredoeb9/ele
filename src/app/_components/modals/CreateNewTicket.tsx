@@ -7,7 +7,6 @@ import {
   Textarea,
   Select,
   SelectItem,
-  SelectSection,
 } from "@nextui-org/react";
 import { useState } from "react";
 import { api } from "@/trpc/react";
