@@ -292,6 +292,7 @@ export const teamCategory = [
   {
     mw3: { category: ["solo", "duo", "trios", "quads"] },
     fornite: { category: ["solo", "duo", "trios", "quads"] },
+    "Black Ops 6": { category: ["solo", "duo", "trios", "quads"] },
   },
 ];
 

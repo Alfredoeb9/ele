@@ -12,7 +12,7 @@ export default function CreateTeam() {
   const router = useRouter();
   const session = useSession();
   const [teamName, setTeamName] = useState<string>("");
-
+  const [arrById, setArrayById] = useState<any[] | undefined>([]);
   const [error, setError] = useState<string>("");
   const [selectedGameId, setSelectedGameId] = useState<string>("");
   const [selectedGame, setSelectedGame] = useState<string>("");
@@ -81,7 +81,20 @@ export default function CreateTeam() {
   //   });
   // }
 
-  const arrById = gameCategory.data?.filter(filterByID);
+  const filterByID = React.useCallback(
+    (item: { game: string }) => {
+      if (selectedGame === item?.game) {
+        return true;
+      }
+
+      console.log("Id was not found");
+    },
+    [selectedGame],
+  );
+
+  useEffect(() => {
+    setArrayById(gameCategory.data?.filter(filterByID));
+  }, [filterByID, gameCategory.data]);
 
   useEffect(() => {
     if (arrById === undefined) return;
@@ -95,12 +108,6 @@ export default function CreateTeam() {
       });
     }
   }, [arrById, selectedGame]);
-
-  function filterByID(item: { game: string }) {
-    if (selectedGame === item?.game) {
-      return true;
-    }
-  }
 
   function handleRuleChange(e: string) {
     setSelectedCategory(e);
@@ -121,6 +128,7 @@ export default function CreateTeam() {
 
   if (createTeam.isPending)
     return <Spinner label="Loading..." color="warning" />;
+
   const headingClasses = "text-lg sm: text-xl";
 
   return (
