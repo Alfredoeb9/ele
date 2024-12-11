@@ -23,8 +23,12 @@ export default function Game() {
     (TournamentType | MoneyMatchType)[]
   >([]);
   const pathname = usePathname();
-  const gameFromPath = pathname.split("/")[2];
+  let gameFromPath = pathname.split("/")[2];
   const [active, setActive] = useState<string>("community tournaments");
+
+  if (gameFromPath.includes("%20")) {
+    gameFromPath = gameFromPath.replace(/%20/g, " ");
+  }
 
   // get data from params
   const gameData = api.games.getSingleGame.useQuery(
@@ -60,7 +64,7 @@ export default function Game() {
     <main className="bg-neutral-600">
       <div
         style={{
-          backgroundImage: `url(/images/${gameFromPath}_team_background.png)`,
+          backgroundImage: `url(/images/${gameFromPath.replaceAll(" ", "_")}_team_background.png)`,
         }}
         className={`relative z-0 h-[300px] w-full from-white to-neutral-400 bg-cover bg-no-repeat object-cover after:relative after:left-0 after:top-0 after:block after:h-full after:w-full after:bg-gradient-to-br after:opacity-50`}
       ></div>
@@ -96,6 +100,13 @@ export default function Game() {
                   value={"fornite"}
                 >
                   fornite
+                </SelectItem>
+                <SelectItem
+                  href={`/game/Black%20Ops%206`}
+                  key={"Black Ops 6"}
+                  value={"Black Ops 6"}
+                >
+                  Black Ops 6
                 </SelectItem>
               </Select>
             </div>
