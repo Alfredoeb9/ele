@@ -8,16 +8,39 @@ import type { TeamCategoryTypes } from "@/lib/sharedData";
 import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 
+interface GameCategory {
+  category: string[];
+}
+
+interface TeamCategory {
+  mw3: GameCategory;
+  fornite: GameCategory;
+  "Black Ops 6": GameCategory;
+}
+
+interface TeamArray {
+  id: string;
+  game: string;
+  platforms: unknown;
+  category: string[] | null;
+}
+
+interface ArrById {
+  game: keyof TeamCategory;
+}
+
 export default function CreateTeam() {
   const router = useRouter();
   const session = useSession();
   const [teamName, setTeamName] = useState<string>("");
-  const [arrById, setArrayById] = useState<any[] | undefined>([]);
+  const [arrById, setArrayById] = useState<TeamArray[] | ArrById[] | undefined>(
+    [],
+  );
   const [error, setError] = useState<string>("");
   const [selectedGameId, setSelectedGameId] = useState<string>("");
   const [selectedGame, setSelectedGame] = useState<string>("");
   const [teamCategoryPicked, setTeamCategoryPicked] = useState<
-    TeamCategoryTypes[]
+    TeamCategoryTypes[] | undefined
   >([]);
   const [selectedCategory, setSelectedCategory] = useState("");
 
@@ -86,14 +109,16 @@ export default function CreateTeam() {
       if (selectedGame === item?.game) {
         return true;
       }
-
-      console.log("Id was not found");
     },
     [selectedGame],
   );
 
   useEffect(() => {
-    setArrayById(gameCategory.data?.filter(filterByID));
+    console.log(gameCategory.data);
+    const filteredId = gameCategory.data?.filter(filterByID);
+
+    console.log("filteredId", filteredId);
+    setArrayById(filteredId);
   }, [filterByID, gameCategory.data]);
 
   useEffect(() => {
@@ -102,8 +127,8 @@ export default function CreateTeam() {
     if (selectedGame.length > 0) {
       teamCategory.find((ele) => {
         arrById.map((arr) => {
-          //@ts-expect-error ehh types are weird
-          setTeamCategoryPicked(ele[arr?.game]);
+          //@ts-expect-error - I know this is a key
+          setTeamCategoryPicked(ele[arr?.game].category);
         });
       });
     }
@@ -192,30 +217,37 @@ export default function CreateTeam() {
         />
 
         <div className="mb-2">
-          <label className="block text-sm font-medium leading-6">Rules:</label>
+          <label className="block pt-6 text-sm font-medium leading-6 text-white">
+            Team Category:
+          </label>
 
-          {Object?.entries(teamCategoryPicked)?.map(
-            (rule: any[], key: number) => (
-              <Select
-                label={rule[0].charAt(0).toUpperCase() + rule[0].slice(1)}
-                key={key}
-                id={`${key}`}
-                className="flex"
+          <Select
+            label="Select a Category"
+            className="max-w-xs"
+            classNames={{
+              label: headingClasses,
+            }}
+            size="md"
+            onSelectionChange={(e) => setSelectedCategory(Object.values(e)[0])}
+            required
+          >
+            {teamCategoryPicked.map((option, i) => (
+              <SelectItem
+                key={i}
+                onClick={(e) =>
+                  handleRuleChange((e.target as HTMLElement).innerText)
+                }
+                value={
+                  typeof option === "string" ? option : JSON.stringify(option)
+                }
+                classNames={{
+                  title: headingClasses,
+                }}
               >
-                {rule[1].map((option: string, i: number) => (
-                  <SelectItem
-                    value={option}
-                    key={i}
-                    onPress={(e) =>
-                      handleRuleChange((e.target as HTMLElement).innerText)
-                    }
-                  >
-                    {option}
-                  </SelectItem>
-                ))}
-              </Select>
-            ),
-          )}
+                {typeof option === "string" ? option : JSON.stringify(option)}
+              </SelectItem>
+            ))}
+          </Select>
         </div>
 
         <button
