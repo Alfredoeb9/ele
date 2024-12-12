@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, sql, asc, desc } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import {
@@ -384,8 +384,15 @@ export const userRouter = createTRPCRouter({
       }
     }),
 
-  getAllUsersRecords: publicProcedure.query(({ ctx }) => {
-    return ctx.db.select().from(usersRecordTable);
+  getAllUsersRecords: publicProcedure.query(async ({ ctx }) => {
+    try {
+      return await ctx.db
+        .select()
+        .from(usersRecordTable)
+        .orderBy(desc(usersRecordTable.wins));
+    } catch (error) {
+      throw new Error("Error retrieivng leaderboard data");
+    }
   }),
 
   sendFriendRequest: publicProcedure
