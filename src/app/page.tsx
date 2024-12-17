@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { ToastContainer, toast } from "react-toastify";
 import HomeMoneyMatch from "./_components/home/HomeMoneyMatch";
+import HomeMatchFinder from "./_components/home/HomeMatchFinder";
 import HomeTournamentMatchFinder from "./_components/home/HomeTournamentMatchFinder";
 
 // function singleEliminationTournament(players: string | any[]) {
@@ -137,6 +138,8 @@ export default function Home() {
       />
 
       <LoginBanner session={session} />
+
+      <HomeMatchFinder />
 
       <HomeMoneyMatch />
 

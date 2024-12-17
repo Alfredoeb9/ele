@@ -86,6 +86,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   payments: many(payments),
   gamerTags: many(gamerTags),
   socialMediaTags: many(socialTags),
+  nonCashMatch: many(nonCashMatch),
   moneyMatch: many(moneyMatch),
   transactions: many(transactions),
   tickets: many(tickets),
@@ -263,6 +264,42 @@ export const gameRelations = relations(tournaments, ({ one }) => ({
   }),
 }));
 
+export const nonCashMatch = createTable(
+  "non_cash_match",
+  {
+    matchId: text("match_id", { length: 255 }).notNull(),
+    gameTitle: text("game_title", { length: 255 }).notNull(),
+    teamName: text("team_name", { length: 255 }).notNull(),
+    createdBy: text("created_by", { length: 255 }).notNull(),
+    platform: text("platforms", { mode: "json" }).notNull(),
+    matchName: text("match_name", { length: 255 }).notNull(),
+    matchType: text("match_type", { length: 255 }).notNull(),
+    teamSize: text("team_size", { length: 255 }).notNull(),
+    startTime: text("start_time", { length: 300 }).notNull(),
+    rules: text("rules", { mode: "json" }).notNull(),
+    createdAt: int("created_at", { mode: "timestamp" }).default(
+      sql`CURRENT_TIMESTAMP`,
+    ),
+    updatedAt: int("updated_at", { mode: "timestamp" }),
+  },
+  (match) => ({
+    // makes sure a player can only create a match for the same given time
+    groupGameIdWithNameIdx: unique().on(match.createdBy, match.startTime),
+  }),
+);
+
+// the team.id will reference the moneyMatch.createdBy
+export const nonCashMatchRelation = relations(nonCashMatch, ({ one }) => ({
+  teams: one(teams, {
+    fields: [nonCashMatch.createdBy],
+    references: [teams.id],
+  }),
+  nonCashMatch: one(gameCategory, {
+    fields: [nonCashMatch.gameTitle],
+    references: [gameCategory.game],
+  }),
+}));
+
 export const moneyMatch = createTable(
   "money_match",
   {
@@ -420,6 +457,7 @@ export const teamsRelations = relations(teams, ({ one, many }) => ({
   members: many(teamMembersTable),
   invites: many(teamInvites),
   matches: many(matches),
+  nonCashMatch: many(nonCashMatch),
   moneyMatches: many(moneyMatch),
   tournamentsEnrolled: many(tournamentsToTeams),
 
@@ -602,6 +640,7 @@ export const matches = createTable("matches", {
 export const matchesRelations = relations(matches, ({ one, many }) => ({
   teams: many(teamsToMatches),
   users: many(usersToMatches),
+  nonCashMatch: many(nonCashMatch),
   moneyMatches: many(moneyMatch),
   author: one(teams, {
     fields: [matches.teamId],
