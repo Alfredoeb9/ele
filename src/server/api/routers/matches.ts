@@ -9,6 +9,7 @@ import {
   type TournamentType,
   matches,
   moneyMatch,
+  nonCashMatch,
   posts,
   teamsToMatches,
   tournamentTeamsEnrolled,
@@ -52,6 +53,13 @@ export const matchRouter = createTRPCRouter({
       .select()
       .from(moneyMatch)
       .where(gt(moneyMatch.startTime, new Date().toISOString().slice(0, -8)));
+  }),
+
+  getAllNonMoneyMatches: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.db
+      .select()
+      .from(nonCashMatch)
+      .where(gt(nonCashMatch.startTime, new Date().toISOString().slice(0, -8)));
   }),
 
   getSingleTournament: publicProcedure
@@ -103,6 +111,35 @@ export const matchRouter = createTRPCRouter({
           );
 
         return moneyMatchData;
+      } catch (error) {
+        throw new Error(error as string);
+      }
+    }),
+
+  getSingleMatch: publicProcedure
+    .input(
+      z.object({
+        matchId: z.string().min(1),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const matchData = await ctx.db
+          .select()
+          .from(nonCashMatch)
+          .where(eq(nonCashMatch.matchId, input.matchId));
+
+        if (matchData.length <= 0)
+          throw new Error(
+            "Money Match was not found, please try again or create a support ticket.",
+          );
+
+        if (!matchData)
+          throw new Error(
+            "Money Match was not found, please try again or create a support ticket.",
+          );
+
+        return matchData;
       } catch (error) {
         throw new Error(error as string);
       }
