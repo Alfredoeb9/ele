@@ -789,8 +789,3 @@ export const ticketRelations = relations(tickets, ({ one }) => ({
     references: [users.id],
   }),
 }));
-
-export const testTable = createTable("test", {
-  id: text("id", { length: 255 }).primaryKey(),
-  body: text("body").notNull(),
-});
