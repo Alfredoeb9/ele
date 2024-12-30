@@ -254,6 +254,7 @@ export type TournamentType = typeof tournaments.$inferSelect;
 export const tournamentRelations = relations(gameCategory, ({ many }) => ({
   tournaments: many(tournaments),
   moneyMatch: many(moneyMatch),
+  nonCashMatch: many(nonCashMatch),
 }));
 
 // tournament can only have one id
@@ -282,10 +283,13 @@ export const nonCashMatch = createTable(
     ),
     updatedAt: int("updated_at", { mode: "timestamp" }),
   },
-  (match) => ({
+  (nonCashMatch) => [
     // makes sure a player can only create a match for the same given time
-    groupGameIdWithNameIdx: unique().on(match.createdBy, match.startTime),
-  }),
+    unique("non_cash_match_createdBy_unique_idx").on(
+      nonCashMatch.createdBy,
+      nonCashMatch.startTime,
+    ),
+  ],
 );
 
 // the team.id will reference the moneyMatch.createdBy
@@ -371,6 +375,7 @@ export const usersRecordTable = createTable(
     userName: text("user_name", { length: 255 }).notNull(),
     wins: int("wins").default(0),
     losses: int("losses").default(0),
+    matchType: text("match_type"),
   },
   // (user) => ({
   //   userIdIdx: uniqueIndex("user_id_idx").on(user.userId)
@@ -784,3 +789,8 @@ export const ticketRelations = relations(tickets, ({ one }) => ({
     references: [users.id],
   }),
 }));
+
+export const testTable = createTable("test", {
+  id: text("id", { length: 255 }).primaryKey(),
+  body: text("body").notNull(),
+});

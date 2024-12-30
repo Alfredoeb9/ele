@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "next build",
-    "db:generate": "drizzle-kit generate:sqlite",
+    "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
@@ -32,7 +32,7 @@
     "@vercel/analytics": "1.2.2",
     "axios": "1.7.7",
     "bcrypt": "5.1.1",
-    "drizzle-orm": "0.38.2",
+    "drizzle-orm": "0.38.3",
     "framer-motion": "11.0.3",
     "handlebars": "4.7.8",
     "jsonwebtoken": "9.0.2",
