@@ -13,35 +13,9 @@ import {
   Tooltip,
 } from "@nextui-org/react";
 import { moneyMatchColumns } from "@/lib/sharedData";
+import { type MatchFinderTableProps, type MatchListProps } from "@/types/match";
 import Link from "next/link";
 import Image from "next/image";
-
-interface MatchFinderTableProps {
-  matchId: string;
-  // game: string;
-  platform: any;
-  matchEntry: number;
-  // entry: string;
-  // team_size: string;
-  tournament_type?: string;
-  rules: any;
-  startTime: string | number | Date;
-  gameTitle: string;
-  support?: string;
-  starting?: string;
-  info?: MatchFinderInfoProps[];
-}
-
-interface MatchListProps {
-  data: MatchFinderTableProps[];
-}
-
-interface MatchFinderInfoProps {
-  pc_players: string;
-  snipers: string;
-  snaking: string;
-  allowed_input: string;
-}
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
   "available now": "success",
@@ -191,7 +165,7 @@ export const MoneyMatchFinderTable = ({ data }: MatchListProps) => {
             <div className="flex">
               <Button
                 isDisabled={d2.valueOf() >= d1.valueOf() ? true : false}
-                className="rounded-2xl  bg-green-600 p-2"
+                className="rounded-2xl bg-green-600 p-2"
               >
                 <Link href={`/money-match/${moneyMatch.matchId}`}>Accept</Link>
               </Button>

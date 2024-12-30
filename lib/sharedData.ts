@@ -72,6 +72,37 @@ export const moneyMatchColumns = [
   },
 ];
 
+export const nonCashMatchColumns = [
+  {
+    key: "game",
+    label: "GAME",
+  },
+  {
+    key: "platforms",
+    label: "PLATFORMS",
+  },
+  {
+    key: "teamSize",
+    label: "TEAM SIZE",
+  },
+  {
+    key: "support",
+    label: "SUPPORT",
+  },
+  {
+    key: "start_time",
+    label: "STARTING",
+  },
+  {
+    key: "rules",
+    label: "RULES",
+  },
+  {
+    key: "link",
+    label: "Run It",
+  },
+];
+
 export const friendsColumns = [
   { key: "id", label: "ID", sortable: true },
   { key: "username", label: "USERNAME", sortable: true },

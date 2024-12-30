@@ -12,35 +12,10 @@ import {
   type ChipProps,
   Tooltip,
 } from "@nextui-org/react";
-import { moneyMatchColumns } from "@/lib/sharedData";
+import { nonCashMatchColumns } from "@/lib/sharedData";
+import { type MatchFinderTableProps, type MatchListProps } from "@/types/match";
 import Link from "next/link";
 import Image from "next/image";
-
-interface MatchFinderTableProps {
-  matchId: string;
-  // game: string;
-  platform: any;
-  // entry: string;
-  // team_size: string;
-  tournament_type?: string;
-  rules: any;
-  startTime: string | number | Date;
-  gameTitle: string;
-  support?: string;
-  starting?: string;
-  info?: MatchFinderInfoProps[];
-}
-
-interface MatchListProps {
-  data: MatchFinderTableProps[];
-}
-
-interface MatchFinderInfoProps {
-  pc_players: string;
-  snipers: string;
-  snaking: string;
-  allowed_input: string;
-}
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
   "available now": "success",
@@ -239,7 +214,7 @@ export const MatchFinderTable = ({ data }: MatchListProps) => {
       removeWrapper
       // onSelectionChange={setSelectedKeys}
     >
-      <TableHeader columns={moneyMatchColumns}>
+      <TableHeader columns={nonCashMatchColumns}>
         {(column) => (
           <TableColumn key={column.key} className="text-center">
             {column.label}
