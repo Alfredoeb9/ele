@@ -1,4 +1,4 @@
-CREATE TABLE `ele_account` (
+CREATE TABLE IF NOT EXISTS `ele_account` (
 	`userId` text(255) NOT NULL,
 	`type` text(255) NOT NULL,
 	`provider` text(255) NOT NULL,
@@ -13,19 +13,19 @@ CREATE TABLE `ele_account` (
 	PRIMARY KEY(`provider`, `providerAccountId`)
 );
 --> statement-breakpoint
-CREATE TABLE `ele_follows` (
+CREATE TABLE IF NOT EXISTS `ele_follows` (
 	`user_id` text(255) NOT NULL,
 	`target_user` text(255) NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE `ele_gameCategory` (
+CREATE TABLE IF NOT EXISTS `ele_gameCategory` (
 	`id` text(256) PRIMARY KEY NOT NULL,
 	`game` text(256) NOT NULL,
 	`platforms` text NOT NULL,
 	`category` text
 );
 --> statement-breakpoint
-CREATE TABLE `ele_gamer_tags` (
+CREATE TABLE IF NOT EXISTS `ele_gamer_tags` (
 	`user_id` text(255) NOT NULL,
 	`type` text(255) NOT NULL,
 	`gamer_tag` text(255) NOT NULL,
@@ -33,12 +33,12 @@ CREATE TABLE `ele_gamer_tags` (
 	`updatedAt` integer
 );
 --> statement-breakpoint
-CREATE TABLE `ele_matches` (
+CREATE TABLE IF NOT EXISTS `ele_matches` (
 	`id` text(255) PRIMARY KEY NOT NULL,
 	`team_id` text(255)
 );
 --> statement-breakpoint
-CREATE TABLE `ele_money_match` (
+CREATE TABLE IF NOT EXISTS `ele_money_match` (
 	`match_id` text(255) NOT NULL,
 	`game_title` text(255) NOT NULL,
 	`team_name` text(255) NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE `ele_money_match` (
 	`updated_at` integer
 );
 --> statement-breakpoint
-CREATE TABLE `ele_notifications` (
+CREATE TABLE IF NOT EXISTS `ele_notifications` (
 	`id` text(255) NOT NULL,
 	`user_id` text(255) NOT NULL,
 	`user_name` text(255) NOT NULL,
@@ -65,7 +65,7 @@ CREATE TABLE `ele_notifications` (
 	`meta_data` text
 );
 --> statement-breakpoint
-CREATE TABLE `ele_payments` (
+CREATE TABLE IF NOT EXISTS `ele_payments` (
 	`id` text PRIMARY KEY NOT NULL,
 	`user_id` integer NOT NULL,
 	`stripe_account_created_at` integer,
@@ -74,7 +74,7 @@ CREATE TABLE `ele_payments` (
 	`updated_at` integer
 );
 --> statement-breakpoint
-CREATE TABLE `ele_post` (
+CREATE TABLE IF NOT EXISTS `ele_post` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text(256),
 	`createdById` text(255) NOT NULL,
@@ -82,13 +82,13 @@ CREATE TABLE `ele_post` (
 	`updatedAt` integer
 );
 --> statement-breakpoint
-CREATE TABLE `ele_session` (
+CREATE TABLE IF NOT EXISTS `ele_session` (
 	`sessionToken` text(255) PRIMARY KEY NOT NULL,
 	`userId` text(255) NOT NULL,
 	`expires` integer NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE `ele_social_tags` (
+CREATE TABLE IF NOT EXISTS `ele_social_tags` (
 	`user_id` text(255) NOT NULL,
 	`type` text(255) NOT NULL,
 	`social_tag` text(255) NOT NULL,
@@ -96,14 +96,14 @@ CREATE TABLE `ele_social_tags` (
 	`updatedAt` integer
 );
 --> statement-breakpoint
-CREATE TABLE `ele_stripe_account` (
+CREATE TABLE IF NOT EXISTS `ele_stripe_account` (
 	`user_id` text(255),
 	`stripe_id` text(255),
 	`username` text(255),
 	`balance` integer DEFAULT 0
 );
 --> statement-breakpoint
-CREATE TABLE `ele_subscription` (
+CREATE TABLE IF NOT EXISTS `ele_subscription` (
 	`id` text(256) NOT NULL,
 	`user_id` text(256),
 	`stripe_subscription_id` text(191),
@@ -114,7 +114,7 @@ CREATE TABLE `ele_subscription` (
 	`updated_at` integer
 );
 --> statement-breakpoint
-CREATE TABLE `ele_team_invites` (
+CREATE TABLE IF NOT EXISTS `ele_team_invites` (
 	`id` text(255) NOT NULL,
 	`email` text(255) NOT NULL,
 	`team_id` text(255) NOT NULL,
@@ -124,7 +124,7 @@ CREATE TABLE `ele_team_invites` (
 	`accepted` integer
 );
 --> statement-breakpoint
-CREATE TABLE `ele_team_members` (
+CREATE TABLE IF NOT EXISTS `ele_team_members` (
 	`user_id` text(255) NOT NULL,
 	`user_name` text(255) NOT NULL,
 	`team_id` text(255) NOT NULL,
@@ -136,13 +136,13 @@ CREATE TABLE `ele_team_members` (
 	`updated_at` integer
 );
 --> statement-breakpoint
-CREATE TABLE `ele_team_record` (
+CREATE TABLE IF NOT EXISTS `ele_team_record` (
 	`team_id` text(255) PRIMARY KEY NOT NULL,
 	`wins` integer DEFAULT 0,
 	`losses` integer DEFAULT 0
 );
 --> statement-breakpoint
-CREATE TABLE `ele_team` (
+CREATE TABLE IF NOT EXISTS `ele_team` (
 	`id` text(255) NOT NULL,
 	`user_id` text(255) NOT NULL,
 	`game_id` text(255) NOT NULL,
@@ -153,12 +153,12 @@ CREATE TABLE `ele_team` (
 	`updatedAt` integer
 );
 --> statement-breakpoint
-CREATE TABLE `ele_teams_matches` (
+CREATE TABLE IF NOT EXISTS `ele_teams_matches` (
 	`team_id` text(255) NOT NULL,
 	`match_id` text(255) PRIMARY KEY NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE `ele_tickets` (
+CREATE TABLE IF NOT EXISTS `ele_tickets` (
 	`id` text(255) PRIMARY KEY NOT NULL,
 	`user_id` text(255) NOT NULL,
 	`user_email` text(255) NOT NULL,
@@ -170,16 +170,16 @@ CREATE TABLE `ele_tickets` (
 	`updated_at` integer
 );
 --> statement-breakpoint
-CREATE TABLE `ele_tournament_stages` (
+CREATE TABLE IF NOT EXISTS `ele_tournament_stages` (
 	`id` text(255) PRIMARY KEY NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE `ele_tournament_stages_teams` (
+CREATE TABLE IF NOT EXISTS `ele_tournament_stages_teams` (
 	`tournament_stage_id` text(255) NOT NULL,
 	`team_id` text(255) NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE `ele_tournament_teams_enrolled` (
+CREATE TABLE IF NOT EXISTS `ele_tournament_teams_enrolled` (
 	`id` text(255) NOT NULL,
 	`team_id` text(255) NOT NULL,
 	`team_name` text(255) NOT NULL,
@@ -187,7 +187,7 @@ CREATE TABLE `ele_tournament_teams_enrolled` (
 	`updated_at` integer
 );
 --> statement-breakpoint
-CREATE TABLE `ele_tournaments` (
+CREATE TABLE IF NOT EXISTS `ele_tournaments` (
 	`id` text(255) NOT NULL,
 	`name` text(255) NOT NULL,
 	`game` text(255) NOT NULL,
@@ -204,12 +204,12 @@ CREATE TABLE `ele_tournaments` (
 	`created_by` text(256) NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE `ele_tournaments_teams` (
+CREATE TABLE IF NOT EXISTS `ele_tournaments_teams` (
 	`tournament_id` text(255) NOT NULL,
 	`team_id` text(255) NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE `ele_transactions` (
+CREATE TABLE IF NOT EXISTS `ele_transactions` (
 	`transaction_id` text(255) NOT NULL,
 	`created_at` integer DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	`withdraw_amount` text,
@@ -218,7 +218,7 @@ CREATE TABLE `ele_transactions` (
 	`account_id` text(255) NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE `ele_user` (
+CREATE TABLE IF NOT EXISTS `ele_user` (
 	`id` text(255) PRIMARY KEY NOT NULL,
 	`username` text(255) DEFAULT 'anonccb651c0-dabe-436b-8a97-420b6fbf18c5',
 	`firstName` text(255),
@@ -235,18 +235,18 @@ CREATE TABLE `ele_user` (
 	`image` text(255)
 );
 --> statement-breakpoint
-CREATE TABLE `ele_users_record` (
+CREATE TABLE IF NOT EXISTS `ele_users_record` (
 	`user_id` text(255) NOT NULL,
 	`wins` integer DEFAULT 0,
 	`losses` integer DEFAULT 0
 );
 --> statement-breakpoint
-CREATE TABLE `ele_users_matches` (
+CREATE TABLE IF NOT EXISTS `ele_users_matches` (
 	`user_id` text(255) NOT NULL,
 	`match_id` text(255) PRIMARY KEY NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE `ele_activateToken` (
+CREATE TABLE IF NOT EXISTS `ele_activateToken` (
 	`id` text(255) NOT NULL,
 	`token` text(384) NOT NULL,
 	`created_at` integer DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -254,13 +254,13 @@ CREATE TABLE `ele_activateToken` (
 	PRIMARY KEY(`id`, `token`)
 );
 --> statement-breakpoint
-CREATE INDEX `accounts_userId_idx` ON `ele_account` (`userId`);--> statement-breakpoint
-CREATE UNIQUE INDEX `ele_money_match_created_by_start_time_unique` ON `ele_money_match` (`created_by`,`start_time`);--> statement-breakpoint
-CREATE INDEX `createdById_idx` ON `ele_post` (`createdById`);--> statement-breakpoint
-CREATE INDEX `name_idx` ON `ele_post` (`name`);--> statement-breakpoint
-CREATE INDEX `session_userId_idx` ON `ele_session` (`userId`);--> statement-breakpoint
-CREATE UNIQUE INDEX `ele_team_game_id_team_name_team_category_unique` ON `ele_team` (`game_id`,`team_name`,`team_category`);--> statement-breakpoint
-CREATE INDEX `createdById_TicketsIDX` ON `ele_tickets` (`created_by_id`);--> statement-breakpoint
-CREATE INDEX `name_TicketsIDX` ON `ele_tickets` (`created_by_id`);--> statement-breakpoint
-CREATE INDEX `createdById_tournamentIDX` ON `ele_tournaments` (`id`);--> statement-breakpoint
-CREATE INDEX `name_tournamentIDX` ON `ele_tournaments` (`name`);
+CREATE INDEX IF NOT EXISTS `accounts_userId_idx` ON `ele_account` (`userId`);--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS `ele_money_match_created_by_start_time_unique` ON `ele_money_match` (`created_by`,`start_time`);--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS `createdById_idx` ON `ele_post` (`createdById`);--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS `name_idx` ON `ele_post` (`name`);--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS `session_userId_idx` ON `ele_session` (`userId`);--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS `ele_team_game_id_team_name_team_category_unique` ON `ele_team` (`game_id`,`team_name`,`team_category`);--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS `createdById_TicketsIDX` ON `ele_tickets` (`created_by_id`);--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS `name_TicketsIDX` ON `ele_tickets` (`created_by_id`);--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS`createdById_tournamentIDX` ON `ele_tournaments` (`id`);--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS `name_tournamentIDX` ON `ele_tournaments` (`name`);

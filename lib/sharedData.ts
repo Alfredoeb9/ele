@@ -72,6 +72,37 @@ export const moneyMatchColumns = [
   },
 ];
 
+export const nonCashMatchColumns = [
+  {
+    key: "game",
+    label: "GAME",
+  },
+  {
+    key: "platforms",
+    label: "PLATFORMS",
+  },
+  {
+    key: "teamSize",
+    label: "TEAM SIZE",
+  },
+  {
+    key: "support",
+    label: "SUPPORT",
+  },
+  {
+    key: "start_time",
+    label: "STARTING",
+  },
+  {
+    key: "rules",
+    label: "RULES",
+  },
+  {
+    key: "link",
+    label: "Run It",
+  },
+];
+
 export const friendsColumns = [
   { key: "id", label: "ID", sortable: true },
   { key: "username", label: "USERNAME", sortable: true },
@@ -152,6 +183,19 @@ export const statusOptions = [
   { name: "Active", uid: "active" },
   { name: "Paused", uid: "paused" },
   { name: "Inactive", uid: "inactive" },
+];
+
+export const matchOptions = [
+  { name: "Tournament", uid: "tournament" },
+  { name: "Money Match", uid: "money-match" },
+  { name: "Regular Match", uid: "regular-match" },
+];
+
+export const teamSizeOptions = [
+  { name: "Solo", uid: "solo" },
+  { name: "Duos", uid: "duos" },
+  { name: "Trios", uid: "trios" },
+  { name: "Quads", uid: "quads" },
 ];
 
 export const tabs = [
@@ -411,5 +455,13 @@ export const leaderBoardColumns = [
   {
     key: "losses",
     label: "LOSSES",
+  },
+  {
+    key: "teamSize",
+    label: "Team Size",
+  },
+  {
+    key: "matchType",
+    label: "Match Type",
   },
 ];

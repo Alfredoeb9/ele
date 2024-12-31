@@ -1,6 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
+  "id": "253abffe-e050-4144-8749-35d4de3c08e0",
+  "prevId": "f80e8454-589b-40ea-b16a-0fb8852e9316",
   "tables": {
     "ele_account": {
       "name": "ele_account",
@@ -86,18 +88,24 @@
       "indexes": {
         "accounts_userId_idx": {
           "name": "accounts_userId_idx",
-          "columns": ["userId"],
+          "columns": [
+            "userId"
+          ],
           "isUnique": false
         }
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {
         "ele_account_provider_providerAccountId_pk": {
-          "columns": ["provider", "providerAccountId"],
+          "columns": [
+            "provider",
+            "providerAccountId"
+          ],
           "name": "ele_account_provider_providerAccountId_pk"
         }
       },
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_follows": {
       "name": "ele_follows",
@@ -120,7 +128,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_gameCategory": {
       "name": "ele_gameCategory",
@@ -157,7 +166,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_gamer_tags": {
       "name": "ele_gamer_tags",
@@ -202,7 +212,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_matches": {
       "name": "ele_matches",
@@ -225,7 +236,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_money_match": {
       "name": "ele_money_match",
@@ -326,13 +338,128 @@
       "indexes": {
         "ele_money_match_created_by_start_time_unique": {
           "name": "ele_money_match_created_by_start_time_unique",
-          "columns": ["created_by", "start_time"],
+          "columns": [
+            "created_by",
+            "start_time"
+          ],
           "isUnique": true
         }
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "ele_non_cash_match": {
+      "name": "ele_non_cash_match",
+      "columns": {
+        "match_id": {
+          "name": "match_id",
+          "type": "text(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "game_title": {
+          "name": "game_title",
+          "type": "text(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "team_name": {
+          "name": "team_name",
+          "type": "text(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "text(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "platforms": {
+          "name": "platforms",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "match_name": {
+          "name": "match_name",
+          "type": "text(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "match_type": {
+          "name": "match_type",
+          "type": "text(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "team_size": {
+          "name": "team_size",
+          "type": "text(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "start_time": {
+          "name": "start_time",
+          "type": "text(300)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "rules": {
+          "name": "rules",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "non_cash_match_id_idx": {
+          "name": "non_cash_match_id_idx",
+          "columns": [
+            "match_id"
+          ],
+          "isUnique": false
+        },
+        "non_cash_match_createdBy_unique_idx": {
+          "name": "non_cash_match_createdBy_unique_idx",
+          "columns": [
+            "created_by",
+            "start_time"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_notifications": {
       "name": "ele_notifications",
@@ -398,7 +525,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_payments": {
       "name": "ele_payments",
@@ -449,7 +577,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_post": {
       "name": "ele_post",
@@ -494,18 +623,23 @@
       "indexes": {
         "createdById_idx": {
           "name": "createdById_idx",
-          "columns": ["createdById"],
+          "columns": [
+            "createdById"
+          ],
           "isUnique": false
         },
         "name_idx": {
           "name": "name_idx",
-          "columns": ["name"],
+          "columns": [
+            "name"
+          ],
           "isUnique": false
         }
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_session": {
       "name": "ele_session",
@@ -535,13 +669,16 @@
       "indexes": {
         "session_userId_idx": {
           "name": "session_userId_idx",
-          "columns": ["userId"],
+          "columns": [
+            "userId"
+          ],
           "isUnique": false
         }
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_social_tags": {
       "name": "ele_social_tags",
@@ -586,7 +723,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_stripe_account": {
       "name": "ele_stripe_account",
@@ -624,7 +762,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_subscription": {
       "name": "ele_subscription",
@@ -690,7 +829,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_team_invites": {
       "name": "ele_team_invites",
@@ -748,7 +888,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_team_members": {
       "name": "ele_team_members",
@@ -822,7 +963,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_team_record": {
       "name": "ele_team_record",
@@ -854,7 +996,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_team": {
       "name": "ele_team",
@@ -920,13 +1063,18 @@
       "indexes": {
         "ele_team_game_id_team_name_team_category_unique": {
           "name": "ele_team_game_id_team_name_team_category_unique",
-          "columns": ["game_id", "team_name", "team_category"],
+          "columns": [
+            "game_id",
+            "team_name",
+            "team_category"
+          ],
           "isUnique": true
         }
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_teams_matches": {
       "name": "ele_teams_matches",
@@ -949,7 +1097,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_tickets": {
       "name": "ele_tickets",
@@ -1023,18 +1172,23 @@
       "indexes": {
         "createdById_TicketsIDX": {
           "name": "createdById_TicketsIDX",
-          "columns": ["created_by_id"],
+          "columns": [
+            "created_by_id"
+          ],
           "isUnique": false
         },
         "name_TicketsIDX": {
           "name": "name_TicketsIDX",
-          "columns": ["created_by_id"],
+          "columns": [
+            "created_by_id"
+          ],
           "isUnique": false
         }
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_tournament_stages": {
       "name": "ele_tournament_stages",
@@ -1050,7 +1204,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_tournament_stages_teams": {
       "name": "ele_tournament_stages_teams",
@@ -1073,7 +1228,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_tournament_teams_enrolled": {
       "name": "ele_tournament_teams_enrolled",
@@ -1118,7 +1274,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_tournaments": {
       "name": "ele_tournaments",
@@ -1229,18 +1386,23 @@
       "indexes": {
         "createdById_tournamentIDX": {
           "name": "createdById_tournamentIDX",
-          "columns": ["id"],
+          "columns": [
+            "id"
+          ],
           "isUnique": false
         },
         "name_tournamentIDX": {
           "name": "name_tournamentIDX",
-          "columns": ["name"],
+          "columns": [
+            "name"
+          ],
           "isUnique": false
         }
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_tournaments_teams": {
       "name": "ele_tournaments_teams",
@@ -1263,7 +1425,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_transactions": {
       "name": "ele_transactions",
@@ -1316,7 +1479,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_user": {
       "name": "ele_user",
@@ -1334,7 +1498,7 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false,
-          "default": "'anonccb651c0-dabe-436b-8a97-420b6fbf18c5'"
+          "default": "'anonb7488038-db08-4242-9dc3-dc3bb21c7ce4'"
         },
         "firstName": {
           "name": "firstName",
@@ -1430,13 +1594,21 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_users_record": {
       "name": "ele_users_record",
       "columns": {
         "user_id": {
           "name": "user_id",
+          "type": "text(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "user_name": {
+          "name": "user_name",
           "type": "text(255)",
           "primaryKey": false,
           "notNull": true,
@@ -1457,12 +1629,20 @@
           "notNull": false,
           "autoincrement": false,
           "default": 0
+        },
+        "match_type": {
+          "name": "match_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_users_matches": {
       "name": "ele_users_matches",
@@ -1485,7 +1665,8 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     },
     "ele_activateToken": {
       "name": "ele_activateToken",
@@ -1524,18 +1705,25 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {
         "ele_activateToken_id_token_pk": {
-          "columns": ["id", "token"],
+          "columns": [
+            "id",
+            "token"
+          ],
           "name": "ele_activateToken_id_token_pk"
         }
       },
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "checkConstraints": {}
     }
   },
+  "views": {},
   "enums": {},
   "_meta": {
+    "schemas": {},
     "tables": {},
     "columns": {}
   },
-  "id": "f80e8454-589b-40ea-b16a-0fb8852e9316",
-  "prevId": "00000000-0000-0000-0000-000000000000"
+  "internal": {
+    "indexes": {}
+  }
 }

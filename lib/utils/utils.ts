@@ -18,6 +18,11 @@ export async function createToken(id: string) {
   const secureToken = token1 + token2;
   return secureToken;
 }
+
+export function createRandomUUID() {
+  const uuid = crypto.randomUUID();
+  return uuid;
+}
 // module.exports = {
 //     emailRegex: async (value: string) => {
 //         const emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;

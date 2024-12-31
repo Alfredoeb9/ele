@@ -3,10 +3,12 @@ import { relations, sql } from "drizzle-orm";
 import {
   index,
   int,
+  integer,
   primaryKey,
   sqliteTableCreator,
   text,
   unique,
+  uniqueIndex,
 } from "drizzle-orm/sqlite-core";
 import { type AdapterAccount } from "next-auth/adapters";
 
@@ -254,6 +256,7 @@ export type TournamentType = typeof tournaments.$inferSelect;
 export const tournamentRelations = relations(gameCategory, ({ many }) => ({
   tournaments: many(tournaments),
   moneyMatch: many(moneyMatch),
+  nonCashMatch: many(nonCashMatch),
 }));
 
 // tournament can only have one id
@@ -282,10 +285,13 @@ export const nonCashMatch = createTable(
     ),
     updatedAt: int("updated_at", { mode: "timestamp" }),
   },
-  (match) => ({
+  (nonCashMatch) => [
     // makes sure a player can only create a match for the same given time
-    groupGameIdWithNameIdx: unique().on(match.createdBy, match.startTime),
-  }),
+    unique("non_cash_match_createdBy_unique_idx").on(
+      nonCashMatch.createdBy,
+      nonCashMatch.startTime,
+    ),
+  ],
 );
 
 // the team.id will reference the moneyMatch.createdBy
@@ -364,18 +370,14 @@ export const teams = createTable(
   }),
 );
 
-export const usersRecordTable = createTable(
-  "users_record",
-  {
-    userId: text("user_id", { length: 255 }).notNull(),
-    userName: text("user_name", { length: 255 }).notNull(),
-    wins: int("wins").default(0),
-    losses: int("losses").default(0),
-  },
-  // (user) => ({
-  //   userIdIdx: uniqueIndex("user_id_idx").on(user.userId)
-  // })
-);
+export const usersRecordTable = createTable("users_record", {
+  id: text("cuid").notNull(),
+  userId: text("user_id", { length: 255 }).notNull(),
+  userName: text("user_name", { length: 255 }).notNull(),
+  wins: int("wins").default(0),
+  losses: int("losses").default(0),
+  matchType: text("match_type"),
+});
 
 export type UsersRecordType = typeof usersRecordTable.$inferSelect;
 

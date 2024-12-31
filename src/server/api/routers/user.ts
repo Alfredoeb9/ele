@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { and, eq, sql, asc, desc } from "drizzle-orm";
+import { and, eq, sql, desc } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import {
@@ -9,13 +9,12 @@ import {
   socialTags,
   stripeAccount,
   teamMembersTable,
-  // teams,
   tickets,
   users,
   usersRecordTable,
   verificationTokens,
 } from "@/server/db/schema";
-import { createToken, emailRegx } from "@/lib/utils/utils";
+import { createRandomUUID, createToken, emailRegx } from "@/lib/utils/utils";
 import { sentVerifyUserEmail } from "@/app/api/auth/[...nextauth]/mailer";
 import { env } from "@/env";
 
@@ -136,6 +135,7 @@ export const userRouter = createTRPCRouter({
         }
 
         await ctx.db.insert(usersRecordTable).values({
+          id: createRandomUUID(),
           userId: userId,
           userName: userName,
         });
