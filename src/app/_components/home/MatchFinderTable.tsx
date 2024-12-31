@@ -181,7 +181,7 @@ export const MatchFinderTable = ({ data }: MatchListProps) => {
       <div className="block items-center px-2 py-2">
         <div className="flex justify-between">
           <p>
-            {currentSet[0]} out of {data.length} cash matches
+            {currentSet[0]} out of {data.length} matches
           </p>
           <div className="flex gap-2">
             <Button

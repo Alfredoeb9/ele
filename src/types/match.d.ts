@@ -1,7 +1,7 @@
 export interface MatchFinderTableProps {
   matchId: string;
   // game: string;
-  platform: any;
+  platform: string[];
   // team_size: string;
   matchEntry?: number;
   tournament_type?: string;

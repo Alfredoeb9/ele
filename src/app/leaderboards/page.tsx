@@ -32,15 +32,21 @@ export const statusOptions = [
   { name: "Regular Match", uid: "regular-match" },
 ];
 
-// const INITIAL_VISIBLE_COLUMNS = [", "role", "status", "actions"];
+export const teamSizeOptions = [
+  { name: "Solo", uid: "solo" },
+  { name: "Duos", uid: "duos" },
+  { name: "Trios", uid: "trios" },
+  { name: "Quads", uid: "quads" },
+];
 
 export default function Leaderboards() {
   const [filterValue, setFilterValue] = useState("");
-  const [visibleColumns, setVisibleColumns] = useState(
-    new Set(leaderBoardColumns),
-  );
   const [rowsPerPage, setRowsPerPage] = useState(15);
   const [statusFilter, setStatusFilter] = useState<Set<React.Key> | "all">(
+    "all",
+  );
+
+  const [teamSizeFilter, setTeamSizeFilter] = useState<Set<React.Key> | "all">(
     "all",
   );
   const [page, setPage] = useState(1);
@@ -77,7 +83,7 @@ export default function Leaderboards() {
       Array.from(statusFilter).length !== statusOptions.length
     ) {
       filteredUsers = filteredUsers.filter((user) =>
-        Array.from(statusFilter).includes(user.matchType!),
+        Array.from(statusFilter).includes(user.matchType?.replace(/ /g, "-")!),
       );
     }
 
@@ -125,6 +131,40 @@ export default function Leaderboards() {
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
+
+          <div className="flex gap-3">
+            <Dropdown>
+              <DropdownTrigger className="hidden sm:flex">
+                <Button
+                  endContent={<ChevronDownIcon className="text-small" />}
+                  variant="flat"
+                >
+                  Team Size
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="Table Columns"
+                closeOnSelect={false}
+                selectedKeys={teamSizeFilter as Iterable<Key>}
+                selectionMode="multiple"
+                onSelectionChange={(keys) =>
+                  setTeamSizeFilter(
+                    keys === "all"
+                      ? "all"
+                      : new Set(keys as Iterable<React.Key>),
+                  )
+                }
+              >
+                {teamSizeOptions.map((teamSize) => (
+                  <DropdownItem key={teamSize.uid} className="capitalize">
+                    {capitalize(teamSize.name)}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+
           <div className="flex gap-3">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
@@ -141,13 +181,14 @@ export default function Leaderboards() {
                 closeOnSelect={false}
                 selectedKeys={statusFilter as Iterable<Key>}
                 selectionMode="multiple"
-                onSelectionChange={(keys) =>
+                onSelectionChange={(keys) => {
+                  console.log("keys", keys);
                   setStatusFilter(
                     keys === "all"
                       ? "all"
                       : new Set(keys as Iterable<React.Key>),
-                  )
-                }
+                  );
+                }}
               >
                 {statusOptions.map((status) => (
                   <DropdownItem key={status.uid} className="capitalize">

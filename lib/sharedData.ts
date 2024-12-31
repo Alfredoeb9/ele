@@ -443,4 +443,12 @@ export const leaderBoardColumns = [
     key: "losses",
     label: "LOSSES",
   },
+  {
+    key: "teamSize",
+    label: "Team Size",
+  },
+  {
+    key: "matchType",
+    label: "Match Type",
+  },
 ];
