@@ -3,10 +3,12 @@ import { relations, sql } from "drizzle-orm";
 import {
   index,
   int,
+  integer,
   primaryKey,
   sqliteTableCreator,
   text,
   unique,
+  uniqueIndex,
 } from "drizzle-orm/sqlite-core";
 import { type AdapterAccount } from "next-auth/adapters";
 
@@ -368,19 +370,14 @@ export const teams = createTable(
   }),
 );
 
-export const usersRecordTable = createTable(
-  "users_record",
-  {
-    userId: text("user_id", { length: 255 }).notNull(),
-    userName: text("user_name", { length: 255 }).notNull(),
-    wins: int("wins").default(0),
-    losses: int("losses").default(0),
-    matchType: text("match_type"),
-  },
-  // (user) => ({
-  //   userIdIdx: uniqueIndex("user_id_idx").on(user.userId)
-  // })
-);
+export const usersRecordTable = createTable("users_record", {
+  id: text("cuid").notNull(),
+  userId: text("user_id", { length: 255 }).notNull(),
+  userName: text("user_name", { length: 255 }).notNull(),
+  wins: int("wins").default(0),
+  losses: int("losses").default(0),
+  matchType: text("match_type"),
+});
 
 export type UsersRecordType = typeof usersRecordTable.$inferSelect;
 

@@ -15,6 +15,13 @@
       "when": 1735588060924,
       "tag": "0001_amazing_trauma",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1735627565169,
+      "tag": "0002_uniqueUserRecord",
+      "breakpoints": true
     }
   ]
 }
