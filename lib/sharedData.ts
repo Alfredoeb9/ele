@@ -185,6 +185,19 @@ export const statusOptions = [
   { name: "Inactive", uid: "inactive" },
 ];
 
+export const matchOptions = [
+  { name: "Tournament", uid: "tournament" },
+  { name: "Money Match", uid: "money-match" },
+  { name: "Regular Match", uid: "regular-match" },
+];
+
+export const teamSizeOptions = [
+  { name: "Solo", uid: "solo" },
+  { name: "Duos", uid: "duos" },
+  { name: "Trios", uid: "trios" },
+  { name: "Quads", uid: "quads" },
+];
+
 export const tabs = [
   {
     id: "community tournaments",

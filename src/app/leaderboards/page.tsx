@@ -17,7 +17,11 @@ import {
   Pagination,
   getKeyValue,
 } from "@nextui-org/react";
-import { leaderBoardColumns } from "@/lib/sharedData";
+import {
+  leaderBoardColumns,
+  matchOptions,
+  teamSizeOptions,
+} from "@/lib/sharedData";
 import { type SetStateAction, useMemo, useState, useCallback } from "react";
 import { type Key } from "@react-types/shared";
 import { toast } from "react-toastify";
@@ -25,19 +29,6 @@ import { type UsersRecordType } from "@/server/db/schema";
 import { SearchIcon } from "public/svg/SearchIcon";
 import { ChevronDownIcon } from "public/svg/CheveroIcon";
 import { capitalize } from "@/lib/utils/capitalizeString";
-
-export const statusOptions = [
-  { name: "Tournament", uid: "tournament" },
-  { name: "Money Match", uid: "money-match" },
-  { name: "Regular Match", uid: "regular-match" },
-];
-
-export const teamSizeOptions = [
-  { name: "Solo", uid: "solo" },
-  { name: "Duos", uid: "duos" },
-  { name: "Trios", uid: "trios" },
-  { name: "Quads", uid: "quads" },
-];
 
 export default function Leaderboards() {
   const [filterValue, setFilterValue] = useState("");
@@ -80,7 +71,7 @@ export default function Leaderboards() {
 
     if (
       statusFilter !== "all" &&
-      Array.from(statusFilter).length !== statusOptions.length
+      Array.from(statusFilter).length !== matchOptions.length
     ) {
       filteredUsers = filteredUsers.filter((user) =>
         Array.from(statusFilter).includes(user.matchType?.replace(/ /g, "-")!),
@@ -190,9 +181,9 @@ export default function Leaderboards() {
                   );
                 }}
               >
-                {statusOptions.map((status) => (
-                  <DropdownItem key={status.uid} className="capitalize">
-                    {capitalize(status.name)}
+                {matchOptions.map((option) => (
+                  <DropdownItem key={option.uid} className="capitalize">
+                    {capitalize(option.name)}
                   </DropdownItem>
                 ))}
               </DropdownMenu>
