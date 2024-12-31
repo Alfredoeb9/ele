@@ -173,7 +173,6 @@ export default function Leaderboards() {
                 selectedKeys={statusFilter as Iterable<Key>}
                 selectionMode="multiple"
                 onSelectionChange={(keys) => {
-                  console.log("keys", keys);
                   setStatusFilter(
                     keys === "all"
                       ? "all"
@@ -188,30 +187,6 @@ export default function Leaderboards() {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            {/* <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button endContent={<ChevronDownIcon className="text-small" />} variant="flat">
-                  Columns
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={visibleColumns}
-                selectionMode="multiple"
-                onSelectionChange={setVisibleColumns}
-              >
-                {columns.map((column) => (
-                  <DropdownItem key={column.uid} className="capitalize">
-                    {capitalize(column.name)}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-            <Button color="primary" endContent={<PlusIcon />}>
-              Add New
-            </Button> */}
           </div>
         </div>
         <div className="flex items-center justify-between">
@@ -283,7 +258,7 @@ export default function Leaderboards() {
             loadingContent={<Spinner size="lg" label="Loading..." />}
           >
             {(item) => (
-              <TableRow key={item.userId}>
+              <TableRow key={Number(item.id)}>
                 {(columnKey) => (
                   <TableCell>{getKeyValue(item, columnKey)}</TableCell>
                 )}
