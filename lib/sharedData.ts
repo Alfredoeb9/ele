@@ -457,11 +457,8 @@ export const leaderBoardColumns = [
     label: "LOSSES",
   },
   {
-    key: "teamSize",
-    label: "Team Size",
-  },
-  {
     key: "matchType",
     label: "Match Type",
   },
+  { key: "actions", label: "Actions" },
 ];

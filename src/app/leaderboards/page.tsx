@@ -15,12 +15,14 @@ import {
   DropdownMenu,
   DropdownItem,
   Pagination,
-  getKeyValue,
+  // getKeyValue,
+  User,
+  Tooltip,
 } from "@nextui-org/react";
 import {
   leaderBoardColumns,
   matchOptions,
-  teamSizeOptions,
+  // teamSizeOptions,
 } from "@/lib/sharedData";
 import { type SetStateAction, useMemo, useState, useCallback } from "react";
 import { type Key } from "@react-types/shared";
@@ -29,6 +31,18 @@ import { type UsersRecordType } from "@/server/db/schema";
 import { SearchIcon } from "public/svg/SearchIcon";
 import { ChevronDownIcon } from "public/svg/CheveroIcon";
 import { capitalize } from "@/lib/utils/capitalizeString";
+import { EyeIcon } from "public/svg/EyeIcon";
+import Link from "next/link";
+
+interface User {
+  id: string;
+  losses: number | null;
+  wins: number | null;
+  matchType: string | null;
+  userId: string | null;
+  userName: string | null;
+  actions?: string; // Add the actions key if needed
+}
 
 export default function Leaderboards() {
   const [filterValue, setFilterValue] = useState("");
@@ -37,9 +51,9 @@ export default function Leaderboards() {
     "all",
   );
 
-  const [teamSizeFilter, setTeamSizeFilter] = useState<Set<React.Key> | "all">(
-    "all",
-  );
+  // const [teamSizeFilter, setTeamSizeFilter] = useState<Set<React.Key> | "all">(
+  //   "all",
+  // );
   const [page, setPage] = useState(1);
   const columns = leaderBoardColumns;
   const { data, isError, isLoading } = api.user.getAllUsersRecords.useQuery();
@@ -57,6 +71,50 @@ export default function Leaderboards() {
       },
     );
   }
+
+  const renderCell = useCallback((user: User, columnKey: keyof User) => {
+    const cellValue = user[columnKey];
+
+    switch (columnKey) {
+      case "userName":
+        return (
+          <User
+            avatarProps={{ radius: "lg", src: "" }}
+            description={user.userName}
+            name={cellValue}
+          >
+            {user.userName}
+          </User>
+        );
+      case "wins":
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-sm capitalize">{cellValue}</p>
+          </div>
+        );
+      case "losses":
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-sm capitalize">{cellValue}</p>
+          </div>
+        );
+      case "actions":
+        return (
+          <div className="relative flex items-center gap-2">
+            <Tooltip content="Details">
+              <span className="cursor-pointer text-lg text-default-400 active:opacity-50">
+                <Link href={`/profile/${user.userName}`}>
+                  {" "}
+                  <EyeIcon />
+                </Link>
+              </span>
+            </Tooltip>
+          </div>
+        );
+      default:
+        return cellValue;
+    }
+  }, []);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -123,7 +181,7 @@ export default function Leaderboards() {
             onValueChange={onSearchChange}
           />
 
-          <div className="flex gap-3">
+          {/* <div className="flex gap-3">
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
@@ -154,7 +212,7 @@ export default function Leaderboards() {
                 ))}
               </DropdownMenu>
             </Dropdown>
-          </div>
+          </div> */}
 
           <div className="flex gap-3">
             <Dropdown>
@@ -260,7 +318,10 @@ export default function Leaderboards() {
             {(item) => (
               <TableRow key={Number(item.id)}>
                 {(columnKey) => (
-                  <TableCell>{getKeyValue(item, columnKey)}</TableCell>
+                  <TableCell>
+                    {renderCell(item, columnKey as keyof User)}
+                  </TableCell>
+                  // <TableCell>{getKeyValue(item, columnKey)}</TableCell>
                 )}
               </TableRow>
             )}

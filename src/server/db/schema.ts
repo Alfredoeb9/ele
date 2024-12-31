@@ -393,8 +393,12 @@ export const teamRecordTable = createTable(
   "team_record",
   {
     teamId: text("team_id", { length: 255 }).notNull(),
+    teamName: text("team_name", { length: 255 })
+      .default(`anon${crypto.randomUUID()}`)
+      .notNull(),
     wins: int("wins").default(0),
     losses: int("losses").default(0),
+    matchType: text("match_type"),
   },
   (team) => ({
     compoundKey: primaryKey({ columns: [team.teamId] }),
