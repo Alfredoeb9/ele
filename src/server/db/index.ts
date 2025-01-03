@@ -12,9 +12,8 @@ import { createClient } from "@libsql/client";
 // );
 
 export const client = createClient({
-  url: "libsql://ele-alfredoeb9.turso.io",
-  authToken:
-    "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MjMyNDEzNTMsImlkIjoiOTg2ODQ5YzgtOWNjZC00OWQzLTlmYzUtNTNmZTFjN2FkMjMxIn0.Dlkh0GC7yCwbJQ8n6Ev7WZ_gq3EFLzlcBLbaEolbXzOXMC__binVZXDovBsVAcT34ki5HzuwyyCYvznT_OlqCw",
+  url: env.DATABASE_URL,
+  authToken: env.AUTH_TOKEN,
 });
 
 console.log("client", client);
