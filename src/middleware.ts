@@ -30,7 +30,8 @@ export function middleware(request: NextRequest) {
     request.nextUrl.pathname === "/account-manage" ||
     request.nextUrl.pathname === "/game/:id" ||
     request.nextUrl.pathname === "/games" ||
-    request.nextUrl.pathname === "/friends"
+    request.nextUrl.pathname === "/friends" ||
+    request.nextUrl.pathname === "/chat-feature"
   ) {
     if (sessionCookie) {
       return NextResponse.next();

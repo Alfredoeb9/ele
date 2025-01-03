@@ -418,6 +418,13 @@ export default function Header() {
                     Team Settings
                   </DropdownItem>
                   <DropdownItem
+                    key="chat_feature"
+                    textValue="chat-feature"
+                    href="/chat-feature"
+                  >
+                    Chat Feature
+                  </DropdownItem>
+                  <DropdownItem
                     key="leaderboards"
                     textValue="leaderboards"
                     href="/leaderboards"

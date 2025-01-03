@@ -1,9 +1,17 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { loggerLink, unstable_httpBatchStreamLink } from "@trpc/client";
+import {
+  createWSClient,
+  loggerLink,
+  unstable_httpBatchStreamLink,
+  wsLink,
+  createTRPCClient,
+  splitLink,
+} from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
 import { useState } from "react";
+import superjson from "superjson";
 
 import { type AppRouter } from "@/server/api/root";
 import { getUrl, transformer } from "./shared";
@@ -34,6 +42,17 @@ const getQueryClient = () => {
   return (clientQueryClientSingleton ??= createQueryClient());
 };
 
+// create persistent WebSocket connection
+// const wsClient = createWSClient({
+//   url: `ws://localhost:3001`,
+// });
+
+// console.log("wsClient", wsClient);
+
+// export const trpc = createTRPCClient<AppRouter>({
+//   links: [wsLink({ client: wsClient, transformer })],
+// });
+
 export const api = createTRPCReact<AppRouter>();
 
 export function TRPCReactProvider(props: { children: React.ReactNode }) {
@@ -47,14 +66,29 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
             env.NODE_ENV === "development" ||
             (op.direction === "down" && op.result instanceof Error),
         }),
-        unstable_httpBatchStreamLink({
-          url: getUrl(),
+        wsLink({
+          client: createWSClient({
+            url: env.NEXT_PUBLIC_WS_URL,
+          }),
           transformer,
-          headers: () => {
-            const headers = new Headers();
-            headers.set("x-trpc-source", "nextjs-react");
-            return headers;
-          },
+        }),
+        splitLink({
+          condition: (op) => op.type === "subscription",
+          false: unstable_httpBatchStreamLink({
+            url: getUrl(),
+            transformer,
+            headers: () => {
+              const headers = new Headers();
+              headers.set("x-trpc-source", "nextjs-react");
+              return headers;
+            },
+          }),
+          true: wsLink({
+            client: createWSClient({
+              url: env.NEXT_PUBLIC_WS_URL,
+            }),
+            transformer,
+          }),
         }),
       ],
     }),

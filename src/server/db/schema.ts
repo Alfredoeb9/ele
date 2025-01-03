@@ -25,17 +25,20 @@ export const posts = createTable(
   {
     id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
     name: text("name", { length: 256 }),
+    message: text("message", { length: 256 }),
     createdById: text("createdById", { length: 255 }).notNull(),
     createdAt: int("created_at", { mode: "timestamp" })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: int("updatedAt", { mode: "timestamp" }),
   },
-  (example) => ({
-    createdByIdIdx: index("createdById_idx").on(example.createdById),
-    nameIndex: index("name_idx").on(example.name),
-  }),
+  (example) => [
+    index("createdById_idx").on(example.createdById),
+    index("name_idx").on(example.name),
+  ],
 );
+
+export type PostsTypes = typeof posts.$inferSelect;
 
 // bigInt --> int
 // text --> text
