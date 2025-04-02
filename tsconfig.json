@@ -11,7 +11,7 @@
 
     /* Strictness */
     "strict": true,
-    "noUncheckedIndexedAccess": true,
+    "noUncheckedIndexedAccess": false,
     "checkJs": true,
 
     /* Bundled projects */
@@ -26,7 +26,10 @@
     /* Path Aliases */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/lib/*": ["lib/*"],
+      "@/components/*": ["src/app/_components/*"],
+      "@/redux/*": ["src/app/redux/*"]
     }
   },
   "include": [

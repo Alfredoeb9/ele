@@ -15,6 +15,7 @@ import {
 } from "@/server/db/schema";
 import Link from "next/link";
 import WithDrawCash from "@/app/_components/modals/WithdrawCash";
+import { formatStripeBalance } from "@/lib/utils/utils";
 
 interface gamerTagDataTypes {
   gamerTagData: [{ type: string; gamerTag: string }];
@@ -84,7 +85,7 @@ export default function Profile() {
     follows: FollowsType[];
     userRecord: UsersRecordType;
     gamerTags: gamerTagDataTypes["gamerTagData"];
-    stripeAccount: { balance: number };
+    stripeAccount: { balance: number; stripeId: string };
   };
 
   const usersFriends = user?.follows;
@@ -355,7 +356,8 @@ export default function Profile() {
           open={isOpen}
           onOpenChange={onOpenChange}
           userId={userSession?.id!}
-          balance={stripeAccount?.balance}
+          balance={formatStripeBalance(stripeAccount?.balance)}
+          stripeId={stripeAccount.stripeId}
         />
       )}
     </div>

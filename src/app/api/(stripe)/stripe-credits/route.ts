@@ -9,54 +9,57 @@ import { eq, sql } from "drizzle-orm";
 import { env } from "@/env";
 
 type Metadata = {
-    userId: string;
-    credits: string;
-}
+  userId: string;
+  credits: string;
+};
 
 export async function POST(req: NextRequest) {
-    const body = await req.text();
-    const signature = headers().get("Stripe-Signature") ?? "";
+  const body = await req.text();
+  const signature = headers().get("Stripe-Signature") ?? "";
 
-    let event: Stripe.Event;
+  let event: Stripe.Event;
 
-    try {
-        event = stripe.webhooks.constructEvent(
-            body,
-            signature,
-            env.SRIPE_WEBHOOK_SECRET
-        )
-    } catch (err) {
-        return new Response(
-            `Webhook Error: ${err instanceof Error ? err.message : "Unknown Error"}`,
-            { status: 400 }
-        )
-    }
+  try {
+    event = stripe.webhooks.constructEvent(
+      body,
+      signature,
+      env.SRIPE_WEBHOOK_SECRET,
+    );
+  } catch (err) {
+    return new Response(
+      `Webhook Error: ${err instanceof Error ? err.message : "Unknown Error"}`,
+      { status: 400 },
+    );
+  }
 
-    switch(event.type) {
-        case "checkout.session.completed": 
-            const completedEvent = event.data.object as Stripe.Checkout.Session & {
-                metadata: Metadata;
-            };
+  switch (event.type) {
+    case "checkout.session.completed":
+      const completedEvent = event.data.object as Stripe.Checkout.Session & {
+        metadata: Metadata;
+      };
 
-            const userEmail = completedEvent.metadata.email;
-            const credits = completedEvent.metadata.credits;
+      const userEmail = completedEvent.metadata.email;
+      const credits = completedEvent.metadata.credits;
 
-            await db.update(users).set({credits: sql`${parseInt(credits)} + ${users?.credits}`}).where(eq(users.email, userEmail))
+      await db
+        .update(users)
+        .set({ credits: sql`${parseInt(credits)} + ${users?.credits}` })
+        .where(eq(users.email, userEmail));
 
-            // await db.user.update({
-            //     where: {
-            //         email: userEmail,
-            //     },
-            //     data: {
-            //         credits: {
-            //             increment: parseInt(credits)
-            //         }
-            //     }
-            // });
+      // await db.user.update({
+      //     where: {
+      //         email: userEmail,
+      //     },
+      //     data: {
+      //         credits: {
+      //             increment: parseInt(credits)
+      //         }
+      //     }
+      // });
 
-            break;
-        default:
-            console.log(`Unhandled event type ${event.type}`)
-    }
-    return new Response(null, { status: 200 })
+      break;
+    default:
+      console.log(`Unhandled event type ${event.type}`);
+  }
+  return new Response(null, { status: 200 });
 }

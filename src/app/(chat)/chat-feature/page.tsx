@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "@/trpc/react";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { format } from "date-fns";
 
 function AddMessageForm({ onMessagePost }: { onMessagePost: () => void }) {
@@ -17,6 +17,7 @@ function AddMessageForm({ onMessagePost }: { onMessagePost: () => void }) {
     };
 
     try {
+      console.log("adding input", input);
       await addPost.mutateAsync(input);
       await utils.post.infinite.invalidate();
       setMessage("");
@@ -72,7 +73,8 @@ function AddMessageForm({ onMessagePost }: { onMessagePost: () => void }) {
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="flex-1 bg-transparent outline-0"
+              maxLength={325}
+              className={`max-h-40 flex-1 bg-transparent outline-0 ${message.length > 250 && "text-red-500"}`}
               rows={message.split(/\r|\n/).length}
               id="text"
               name="text"
@@ -97,7 +99,11 @@ function AddMessageForm({ onMessagePost }: { onMessagePost: () => void }) {
               }}
             />
             <div>
-              <button type="submit" className="rounded bg-indigo-500 px-4 py-1">
+              <button
+                disabled={message.length > 250}
+                type="submit"
+                className="rounded bg-indigo-500 px-4 py-1"
+              >
                 Submit
               </button>
             </div>
@@ -105,6 +111,11 @@ function AddMessageForm({ onMessagePost }: { onMessagePost: () => void }) {
         </fieldset>
         {addPost.error && (
           <p style={{ color: "red" }}>{addPost.error.message}</p>
+        )}
+        {message.length > 250 && (
+          <p style={{ color: "red" }}>
+            Message must be less than 250 characters.
+          </p>
         )}
       </form>
     </>
@@ -121,11 +132,11 @@ export default function ChatFeature() {
 
   const utils = api.useUtils();
   const { hasNextPage, isFetchingNextPage, fetchNextPage } = postsQuery;
+  const [typingUsers, setTypingUsers] = useState<string[]>([]);
 
   //lis of messages that are rendered
   const [messages, setMessages] = useState(() => {
     const msgs = postsQuery.data?.pages.map((page) => page.items).flat();
-    console.log("messages coming in", msgs);
     return msgs;
   });
 
@@ -147,10 +158,9 @@ export default function ChatFeature() {
         map[msg.id] = msg;
       }
 
-      console.log("map", map);
-
       return Object.values(map).sort(
-        (a, b) => a.createdAt?.getTime() - b.createdAt?.getTime(),
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
       );
     });
   }, []);
@@ -174,7 +184,6 @@ export default function ChatFeature() {
 
   useEffect(() => {
     scrollToBottomOfList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function timeFormatter(date: Date) {
@@ -187,9 +196,20 @@ export default function ChatFeature() {
 
   // subscribe to new posts and add
   api.post.onAdd.useSubscription(undefined, {
-    onData(post) {
+    enabled: true,
+    onData: (data) => {
+      console.log("Received new post:", data); // Add debugging
+      // Convert timestamp if needed
+      const formattedData = {
+        ...data,
+        createdAt: new Date(
+          typeof data.createdAt === "number"
+            ? data.createdAt * 1000
+            : data.createdAt,
+        ),
+      };
+      addMessages([data]);
       void utils.post.infinite.invalidate();
-      addMessages([post]);
     },
 
     onError(err) {
@@ -200,49 +220,28 @@ export default function ChatFeature() {
     },
   });
 
-  const whoIsTypingResult = api.post.whoIsTyping.useSubscription();
-
-  console.log("messages", messages);
+  api.post.whoIsTyping.useSubscription(undefined, {
+    enabled: true,
+    onData: (data) => {
+      setTypingUsers(data);
+    },
+    onError(err) {
+      console.error("Typing subscription error:", err);
+    },
+  });
 
   return (
     <>
-      {/* <Head>
-      <title>Prisma Starter</title>
-      <link rel="icon" href="/favicon.ico" />
-    </Head> */}
       <div className="flex h-screen flex-col md:flex-row">
         <section className="flex w-full flex-col bg-gray-800 md:w-72">
           <div className="flex-1 overflow-y-hidden">
             <div className="flex h-full flex-col divide-y divide-gray-700">
               <header className="p-4">
                 <h1 className="text-3xl font-bold text-gray-50">
-                  tRPC WebSocket starter
+                  tRPC WebSocket
                 </h1>
-                <p className="text-sm text-gray-400">
-                  Showcases WebSocket + subscription support
-                  <br />
-                  <a
-                    className="text-gray-100 underline"
-                    href="https://github.com/trpc/examples-next-prisma-starter-websockets"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    View Source on GitHub
-                  </a>
-                </p>
               </header>
               <div className="hidden flex-1 space-y-6 overflow-y-auto p-4 text-gray-400 md:block">
-                <article className="space-y-2">
-                  <h2 className="text-lg text-gray-200">Introduction</h2>
-                  <ul className="list-inside list-disc space-y-2">
-                    <li>Open inspector and head to Network tab</li>
-                    <li>All client requests are handled through WebSockets</li>
-                    <li>
-                      We have a simple backend subscription on new messages that
-                      adds the newly added message to the current state
-                    </li>
-                  </ul>
-                </article>
                 {userName && (
                   <article>
                     <h2 className="text-lg text-gray-200">User information</h2>
@@ -257,9 +256,6 @@ export default function ChatFeature() {
                           className="bg-transparent"
                           value={userName}
                         />
-                      </li>
-                      <li>
-                        <button onClick={() => signOut()}>Sign Out</button>
                       </li>
                     </ul>
                   </article>
@@ -288,24 +284,11 @@ export default function ChatFeature() {
                 {messages?.map((item) => (
                   <article key={item.id} className="text-gray-50">
                     <header className="flex space-x-2 text-sm">
-                      {/* <h3 className="text-base">
-                      {item.source === "RAW" ? (
-                        item.name
-                      ) : (
-                        <a
-                          href={`https://github.com/${item.name}`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {item.name}
-                        </a>
-                      )}
-                    </h3> */}
                       <span className="text-gray-500">
-                        {new Intl.DateTimeFormat("en", {
-                          // month: "short",
+                        {new Intl.DateTimeFormat("en-GB", {
+                          dateStyle: "short",
                           timeStyle: "short",
-                        }).format(item.createdAt)}
+                        }).format(new Date(item.createdAt))}
                       </span>
                     </header>
                     <p className="whitespace-pre-line text-xl leading-tight">
@@ -319,17 +302,11 @@ export default function ChatFeature() {
             <div className="w-full">
               <AddMessageForm onMessagePost={() => scrollToBottomOfList()} />
               <p className="h-2 italic text-gray-400">
-                {/* {whoIsTypingResult.data?.length
-                ? `${whoIsTypingResult.data.join(", ")} typing...`
-                : ""} */}
+                {typingUsers.length > 0
+                  ? `${typingUsers.join(", ")} typing...`
+                  : ""}
               </p>
             </div>
-
-            {/* {process.env.NODE_ENV !== "production" && (
-            <div className="hidden md:block">
-              <ReactQueryDevtools initialIsOpen={false} />
-            </div>
-          )} */}
           </section>
         </div>
       </div>

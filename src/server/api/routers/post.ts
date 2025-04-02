@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import { z } from "zod";
 import { EventEmitter } from "events";
 import { observable } from "@trpc/server/observable";
@@ -7,49 +6,56 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
-import { posts, PostsTypes } from "@/server/db/schema";
+import { posts, type PostsTypes } from "@/server/db/schema";
 import { desc } from "drizzle-orm/sql";
+import { on } from "node:events";
+import { useCallback } from "react";
+// import { debounce } from "lodash";
+
+type EventMap<T> = Record<keyof T, any[]>;
+
+class IterableEventEmitter<T extends EventMap<T>> extends EventEmitter<T> {
+  toIterable<TEventName extends keyof T & string>(
+    eventName: TEventName,
+    opts?: NonNullable<Parameters<typeof on>[2]>,
+  ): AsyncIterable<T[TEventName]> {
+    return on(this as any, eventName, opts) as any;
+  }
+}
 
 interface MyEvents {
-  add: (data: PostsTypes) => void;
-  isTypingUpdate: () => void;
+  add: [PostsTypes];
+  isTypingUpdate: [];
 }
-declare interface MyEventEmitter {
-  on<TEv extends keyof MyEvents>(event: TEv, listener: MyEvents[TEv]): this;
-  off<TEv extends keyof MyEvents>(event: TEv, listener: MyEvents[TEv]): this;
-  once<TEv extends keyof MyEvents>(event: TEv, listener: MyEvents[TEv]): this;
-  emit<TEv extends keyof MyEvents>(
-    event: TEv,
-    ...args: Parameters<MyEvents[TEv]>
-  ): boolean;
-}
-
-class MyEventEmitter extends EventEmitter {}
 
 // In a real app, you'd probably use Redis or something
-const ee = new MyEventEmitter();
+const ee = new IterableEventEmitter<MyEvents>();
 
-// who is currently typing, key is `name`
-const currentlyTyping: Record<string, { lastTyped: Date }> =
-  Object.create(null);
+// Use a Map instead of a plain object for better performance with frequent additions/deletions
+const currentlyTyping = new Map<
+  string,
+  { lastTyped: number; timeoutId?: NodeJS.Timeout }
+>();
 
-// every 1s, clear old "isTyping"
-const interval = setInterval(() => {
-  let updated = false;
-  const now = Date.now();
-  for (const [key, value] of Object.entries(currentlyTyping)) {
-    if (now - value.lastTyped.getTime() > 3e3) {
-      delete currentlyTyping[key];
-      updated = true;
-    }
+// Replace global interval with individual timeouts
+function setTypingTimeout(username: string) {
+  // Clear any existing timeout
+  if (currentlyTyping.has(username)) {
+    const existing = currentlyTyping.get(username);
+    if (existing?.timeoutId) clearTimeout(existing.timeoutId);
   }
-  if (updated) {
+
+  // Set new timeout
+  const timeoutId = setTimeout(() => {
+    currentlyTyping.delete(username);
     ee.emit("isTypingUpdate");
-  }
-}, 3e3);
-process.on("SIGTERM", () => {
-  clearInterval(interval);
-});
+  }, 3000);
+
+  currentlyTyping.set(username, {
+    lastTyped: Date.now(),
+    timeoutId,
+  });
+}
 
 export const postRouter = createTRPCRouter({
   hello: publicProcedure
@@ -91,32 +97,39 @@ export const postRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      console.log("add", ctx.session.user.user);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      const user = ctx.session.user.user.username;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      const userId = ctx.session.user.user.id;
+      const userId = ctx.session.user.id;
+      const username = ctx.session.user.username;
 
-      console.log("UserId", userId);
+      const [post] = await ctx.db
+        .insert(posts)
+        .values({
+          message: input.text,
+          createdById: userId,
+          name: username,
+        })
+        .returning();
 
-      await ctx.db.insert(posts).values({
-        message: input.text,
-        createdById: userId,
-        name: user,
-      });
+      console.log("post", post);
 
-      const post = await ctx.db.query.posts.findFirst({
-        where: (posts, { eq }) => eq(posts.createdById, userId),
-        orderBy: (posts, { desc }) => [desc(posts.createdAt)],
-      });
+      // const post = await ctx.db.query.posts.findFirst({
+      //   where: (posts, { eq }) => eq(posts.createdById, userId),
+      //   orderBy: (posts, { desc }) => [desc(posts.createdAt)],
+      // });
 
-      // es
-      ee.emit("add", post as PostsTypes);
-      delete currentlyTyping[user];
+      // Convert the timestamp to a Date object before emitting
+      const formattedPost = {
+        ...post,
+        // Convert Unix timestamp to Date object
+        createdAt: new Date(Number(post.createdAt) * 1000), // Multiply by 1000 to convert seconds to milliseconds
+      };
+
+      console.log("emitting post: ", formattedPost);
+
+      ee.emit("add", post);
+      // delete currentlyTyping[username];
+      const userData = currentlyTyping.get(username);
+      if (userData?.timeoutId) clearTimeout(userData.timeoutId);
+      currentlyTyping.delete(username);
       ee.emit("isTypingUpdate");
 
       return post;
@@ -131,35 +144,33 @@ export const postRouter = createTRPCRouter({
     )
     .query(async ({ input, ctx }) => {
       const take = input.take ?? 10;
+      // Only use the cursor from the client, not a new date
       const cursor = input.cursor;
+      const dateString = new Date().toISOString();
+
+      console.log("cursor", cursor);
 
       const page = await ctx.db.query.posts.findMany({
         orderBy: [desc(posts.createdAt)], // Corrected the orderBy syntax.
         limit: take + 1, // Fetch one extra record to check for pagination.
         offset: 0, // Keep the offset as 0 (you can omit this if not needed).
-        where: cursor // Apply cursor-based filtering if provided.
-          ? (posts, { lt }) => lt(posts.createdAt, cursor) // Assuming cursor is the timestamp you are using for pagination.
+        where: dateString // Apply cursor-based filtering if provided.
+          ? (posts, { lt }) => lt(posts.createdAt, dateString) // Assuming cursor is the timestamp you are using for pagination.
           : undefined, // If no cursor, fetch without the where condition.
       });
 
-      // const page = await ctx.db.posts.findMany({
-      //   orderBy: {
-      //     createdAt: "desc",
-      //   },
-      //   cursor: cursor ? { createdAt: cursor } : undefined,
-      //   take: take + 1,
-      //   skip: 0,
-      // });
+      let nextCursor: Date | null = null;
 
-      const items = page.reverse();
-      let nextCursor: typeof cursor | null = null;
-      if (items.length > take) {
-        const prev = items.shift();
-
-        nextCursor = prev!.createdAt;
+      if (page.length > take) {
+        const nextItem = page.pop();
+        // Convert the string date from the database back to a Date object
+        nextCursor = nextItem?.createdAt ? new Date(nextItem.createdAt) : null;
       }
+
+      console.log("page", page);
+
       return {
-        items,
+        items: page,
         nextCursor,
       };
     }),
@@ -167,25 +178,40 @@ export const postRouter = createTRPCRouter({
   isTyping: protectedProcedure
     .input(z.object({ typing: z.boolean() }))
     .mutation(({ input, ctx }) => {
-      const user = ctx.session.username;
+      const user = ctx.session.user.username;
+
+      // Use the debounced version for emitting updates
+      // const debouncedEmit = useCallback(
+      //   debounce(() => {
+      //     ee.emit("isTypingUpdate");
+      //   }, 300),
+      //   []
+      // );
 
       if (!input.typing) {
-        delete currentlyTyping[user];
+        const userData = currentlyTyping.get(user);
+
+        if (userData?.timeoutId) clearTimeout(userData.timeoutId);
+        currentlyTyping.delete(user);
       } else {
-        currentlyTyping[user] = {
-          lastTyped: new Date(),
-        };
+        setTypingTimeout(user);
       }
 
       ee.emit("isTypingUpdate");
     }),
 
   onAdd: publicProcedure.subscription(() => {
+    console.log("Client subscribed to post.onAdd"); // Add debugging
+
     return observable<PostsTypes>((emit) => {
       const onAdd = (data: PostsTypes) => {
+        console.log("Post received in subscription:", data); // Add debugging
+
         emit.next(data);
       };
+
       ee.on("add", onAdd);
+
       return () => {
         ee.off("add", onAdd);
       };
@@ -193,17 +219,26 @@ export const postRouter = createTRPCRouter({
   }),
 
   whoIsTyping: publicProcedure.subscription(() => {
-    let prev: string[] | null = null;
+    // Use Set for more efficient comparison
+    let prevTyping = new Set<string>();
 
     return observable<string[]>((emit) => {
       const onIsTypingUpdate = () => {
-        const newData = Object.keys(currentlyTyping);
+        // const newData = Object.keys(currentlyTyping);
+        const newData = Array.from(currentlyTyping.keys());
+        const newTyping = new Set(newData);
 
-        if (!prev || prev.toString() !== newData.toString()) {
+        // More efficient comparison with Sets
+        if (
+          prevTyping.size !== newTyping.size ||
+          !Array.from(prevTyping).every((user) => newTyping.has(user))
+        ) {
           emit.next(newData);
+          prevTyping = newTyping;
         }
-        prev = newData;
       };
+      // Initial emit
+      emit.next(Array.from(currentlyTyping.keys()));
       ee.on("isTypingUpdate", onIsTypingUpdate);
       return () => {
         ee.off("isTypingUpdate", onIsTypingUpdate);

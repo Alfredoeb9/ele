@@ -157,6 +157,7 @@ export default function Team() {
                   <DropdownItem
                     href={`/profile/${user?.userName}`}
                     aria-label="view"
+                    key={"view"}
                   >
                     View
                   </DropdownItem>
@@ -168,6 +169,7 @@ export default function Team() {
                     //     setUserId(user.id)
                     //   }}
                     aria-label="delete"
+                    key={"delete"}
                   >
                     Delete
                   </DropdownItem>

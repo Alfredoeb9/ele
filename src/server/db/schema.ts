@@ -27,10 +27,13 @@ export const posts = createTable(
     name: text("name", { length: 256 }),
     message: text("message", { length: 256 }),
     createdById: text("createdById", { length: 255 }).notNull(),
-    createdAt: int("created_at", { mode: "timestamp" })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: int("updatedAt", { mode: "timestamp" }),
+    createdAt: text("created_at")
+      .notNull()
+      .default(sql`(CURRENT_TIMESTAMP)`),
+    updatedAt: text("updated_at")
+      .notNull()
+      .default(sql`(CURRENT_TIMESTAMP)`)
+      .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
   },
   (example) => [
     index("createdById_idx").on(example.createdById),
@@ -98,6 +101,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   stripeAccount: one(stripeAccount),
   subscription: one(subscription),
   userRecord: one(usersRecordTable),
+  posts: many(posts),
 }));
 
 export const gamerTags = createTable("gamer_tags", {
@@ -205,9 +209,9 @@ export const transactions = createTable("transactions", {
   transactionsDate: int("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
-  withdrawAmt: text("withdraw_amount"),
-  depositAmt: text("deposit_amount").notNull().default("0"),
-  balance: text("balance"),
+  withdrawAmt: int("withdraw_amount"),
+  depositAmt: int("deposit_amount").notNull().default(0),
+  balance: int("balance"),
   accountId: text("account_id", { length: 255 }).notNull(),
 });
 
@@ -730,7 +734,7 @@ export const subscription = createTable("subscription", {
   stripeCustomerId: text("stripe_customer_id", { length: 191 }),
   stripeCurrentPeriodEnd: int("stripe_current_period_end"),
   createdAt: int("created_at", { mode: "timestamp" })
-    .default(sql`CURRENT_TIMESTAMP`)
+    .default(sql`(strftime('%s', 'now'))`)
     .notNull(),
   updatedAt: int("updated_at", { mode: "timestamp" }),
 });

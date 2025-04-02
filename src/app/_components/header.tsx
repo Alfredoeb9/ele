@@ -19,6 +19,7 @@ import type { NotificationType } from "@/server/db/schema";
 import { api } from "@/trpc/react";
 import AddCashModal from "./modals/AddCashModal";
 import OnboardToStripe from "./modals/OnboardToStripe";
+import { formatStripeBalance } from "@/lib/utils/utils";
 
 export default function Header() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -185,8 +186,11 @@ export default function Header() {
   //   },
   // });
 
+  console.log("userData", userData);
+
   const sub = userData?.subscription;
   const stripeAccount = userData?.stripeAccount;
+  const balance = formatStripeBalance(stripeAccount?.balance);
 
   return (
     <header className="nav">
@@ -326,7 +330,7 @@ export default function Header() {
                                 }
                                 onPress={() => {
                                   declineFriendRequest.mutate({
-                                    userId: session?.data?.user?.id,
+                                    userId: session?.data?.user?.id as string,
                                     targetId: notification.from,
                                     notificationID: notification.id,
                                   });
@@ -394,13 +398,11 @@ export default function Header() {
                   </DropdownItem>
                   <DropdownItem
                     key="cash_balance"
-                    textValue={stripeAccount?.balance?.toString() || "0"}
+                    textValue={"$" + balance || "0"}
                     className="h-14 gap-2"
                   >
                     <p className="font-semibold">Cash Balance:</p>
-                    <p className="font-semibold">
-                      {stripeAccount?.balance || "Err"}
-                    </p>
+                    <p className="font-semibold">{"$" + balance}</p>
                   </DropdownItem>
                   <DropdownItem
                     key="settings"
@@ -524,6 +526,7 @@ export default function Header() {
           open={isOpen}
           onOpenChange={onOpenChange}
           userId={sessionUser?.id!}
+          stripeId={userData?.stripeAccount?.stripeId}
         />
       )}
 

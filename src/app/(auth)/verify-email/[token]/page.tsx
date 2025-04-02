@@ -154,7 +154,7 @@ export default function VerifyEmail() {
   });
 
   useEffect(() => {
-    verifyUser.mutate({ token: params.token?.toString() });
+    verifyUser.mutate({ token: params.token?.toString() as string });
   }, [params.token, verifyUser]);
 
   return (

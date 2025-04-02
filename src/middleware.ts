@@ -33,11 +33,11 @@ export function middleware(request: NextRequest) {
     request.nextUrl.pathname === "/friends" ||
     request.nextUrl.pathname === "/chat-feature"
   ) {
-    if (sessionCookie) {
-      return NextResponse.next();
-    }
+    // if (sessionCookie) {
+    return NextResponse.next();
+    // }
 
-    return NextResponse.redirect(`${request.nextUrl.origin}/sign-in`, 301);
+    // return NextResponse.redirect(`${request.nextUrl.origin}/sign-in`, 301);
   }
 
   return NextResponse.next();

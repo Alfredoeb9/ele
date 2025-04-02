@@ -168,7 +168,10 @@ export default function Friends() {
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu>
-                  <DropdownItem href={`/profile/${user?.username}`}>
+                  <DropdownItem
+                    key={"view"}
+                    href={`/profile/${user?.username}`}
+                  >
                     View
                   </DropdownItem>
                   <DropdownItem
@@ -178,6 +181,7 @@ export default function Friends() {
                       setEmail(user.email);
                       setUserId(user.id);
                     }}
+                    key={"delete"}
                   >
                     Delete
                   </DropdownItem>

@@ -6,12 +6,16 @@ import { useState } from "react";
 import { api } from "@/trpc/react";
 
 export function CreatePost() {
+  const [latestPost] = api.post.getLatest.useSuspenseQuery();
   const router = useRouter();
+
+  const utils = api.useUtils();
+
   const [name, setName] = useState("");
 
   const createPost = api.post.create.useMutation({
-    onSuccess: () => {
-      router.refresh();
+    onSuccess: async () => {
+      await utils.post.invalidate();
       setName("");
     },
   });

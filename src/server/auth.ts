@@ -208,7 +208,8 @@ export const authOptions: NextAuthOptions = {
         return {
           ...token,
           id: (user as unknown as User).id,
-          username: (user as unknown as User).username,
+          name: user.name || `${user.firstName || ""} ${user.lastName}`.trim(),
+          username: user.username,
           firstName: (user as unknown as User).firstName,
           lastName: (user as unknown as User).lastName,
           role: user.role,
@@ -232,20 +233,20 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     session({ session, token }) {
-      // if (token) {
-      return {
-        ...session,
+      if (token) {
+        return {
+          ...session,
 
-        user: {
-          ...session.user,
-          id: token?.id,
-          username: token?.username,
-          firstName: token?.firstName,
-          lastName: token?.lastName,
-          role: token?.role,
-        },
-      };
-      // }
+          user: {
+            ...session.user,
+            id: token?.id,
+            username: token?.username,
+            firstName: token?.firstName,
+            lastName: token?.lastName,
+            role: token?.role,
+          },
+        };
+      }
 
       return session;
     },

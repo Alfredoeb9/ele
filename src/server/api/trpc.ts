@@ -40,8 +40,6 @@ export const createTRPCContext = async (
 ) => {
   const session = await getServerAuthSession();
 
-  console.log("session", session);
-
   return {
     db,
     session,
@@ -93,6 +91,11 @@ export const createCallerFactory = t.createCallerFactory;
 export const createTRPCRouter = t.router;
 
 /**
+ * @see https://trpc.io/docs/v11/merging-routers
+ */
+export const mergeRouters = t.mergeRouters;
+
+/**
  * Public (unauthenticated) procedure
  *
  * This is the base piece you use to build new queries and mutations on your tRPC API. It does not
@@ -110,7 +113,6 @@ export const publicProcedure = t.procedure;
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
-  console.log("session protected procedure", ctx.session);
   if (!ctx.session) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
