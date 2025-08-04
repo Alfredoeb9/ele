@@ -19,6 +19,7 @@ import type { NotificationType } from "@/server/db/schema";
 import { api } from "@/trpc/react";
 import AddCashModal from "./modals/AddCashModal";
 import OnboardToStripe from "./modals/OnboardToStripe";
+import { formatStripeBalance } from "@/lib/utils/utils";
 
 export default function Header() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -29,6 +30,11 @@ export default function Header() {
   const router = useRouter();
 
   const sessionUser = session.data?.user;
+
+  // if (!sessionUser) {
+  //   router.push("/sign-in");
+  //   return null;
+  // }
 
   const currentUser = api.user.getSingleUser.useQuery(
     { email: session.data?.user?.email! },
@@ -185,8 +191,11 @@ export default function Header() {
   //   },
   // });
 
+  // console.log("userData", userData);
+
   const sub = userData?.subscription;
   const stripeAccount = userData?.stripeAccount;
+  const balance = formatStripeBalance(stripeAccount?.balance);
 
   return (
     <header className="nav">
@@ -301,16 +310,21 @@ export default function Header() {
                                   declineFriendRequest.isPending
                                 }
                                 onPress={() => {
+                                  if (!sessionUser?.id || !sessionUser?.username) {
+                                    console.error("Missing user data");
+                                    return;
+                                  }
+                                  
                                   acceptRequest.mutate({
-                                    userId: sessionUser?.id!,
+                                    userId: sessionUser.id,
                                     targetId: notification.from,
                                     id: notification.id,
                                     type: notification.type,
                                     teamId: notification.metaData.teamId,
                                     game: notification.metaData.game,
                                     teamName: notification.metaData.teamName,
-                                    targetEmail: sessionUser?.email!,
-                                    userName: sessionUser?.username!,
+                                    targetEmail: sessionUser.email!,
+                                    userName: sessionUser.username,
                                   });
                                 }}
                               >
@@ -394,13 +408,11 @@ export default function Header() {
                   </DropdownItem>
                   <DropdownItem
                     key="cash_balance"
-                    textValue={stripeAccount?.balance?.toString() || "0"}
+                    textValue={"$" + balance || "0"}
                     className="h-14 gap-2"
                   >
                     <p className="font-semibold">Cash Balance:</p>
-                    <p className="font-semibold">
-                      {stripeAccount?.balance || "Err"}
-                    </p>
+                    <p className="font-semibold">{"$" + balance}</p>
                   </DropdownItem>
                   <DropdownItem
                     key="settings"
@@ -416,6 +428,13 @@ export default function Header() {
                     href="/team-settings"
                   >
                     Team Settings
+                  </DropdownItem>
+                  <DropdownItem
+                    key="chat_feature"
+                    textValue="chat-feature"
+                    href="/chat-feature"
+                  >
+                    Chat Feature
                   </DropdownItem>
                   <DropdownItem
                     key="leaderboards"
@@ -512,19 +531,20 @@ export default function Header() {
       </nav>
       <ToastContainer containerId={"header-toast"} />
       {/* {error && <ErrorComponent message="There was problem retrieving your credits, please refresh and try agian. If this problem presist please reach out to customer service"/>} */}
-      {modalPath === "add_cash" && isOpen && (
+      {modalPath === "add_cash" && isOpen && sessionUser && (
         <AddCashModal
           open={isOpen}
           onOpenChange={onOpenChange}
-          userId={sessionUser?.id!}
+          userId={sessionUser?.id}
+          stripeId={userData?.stripeAccount?.stripeId}
         />
       )}
 
-      {modalPath === "stripe_connect_onboarding" && isOpen && (
+      {modalPath === "stripe_connect_onboarding" && isOpen && sessionUser && (
         <OnboardToStripe
           open={isOpen}
           onOpenChange={onOpenChange}
-          userId={sessionUser?.id!}
+          userId={sessionUser?.id}
         />
       )}
     </header>

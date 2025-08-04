@@ -6,6 +6,14 @@ await import("./src/env.js");
 
 /** @type {import("next").NextConfig} */
 const config = {
+  serverRuntimeConfig: {},
+  publicRuntimeConfig: {
+    // Will be available on both server and client
+    APP_URL: process.env.REACT_APP_BASE_URL,
+    WS_URL: process.env.WS_URL,
+  },
+  /** We run eslint as a separate task in CI */
+  eslint: { ignoreDuringBuilds: !!process.env.CI },
   redirects: async () => {
     return [
       {

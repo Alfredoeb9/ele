@@ -3,7 +3,7 @@ const config = {
   parserOptions: {
     project: true,
   },
-  plugins: ["@typescript-eslint"],
+  plugins: ["@typescript-eslint", "drizzle"],
   extends: [
     "next/core-web-vitals",
     "plugin:@typescript-eslint/recommended-type-checked",
@@ -41,6 +41,18 @@ const config = {
       "error",
       {
         checksVoidReturn: { attributes: false },
+      },
+    ],
+    "drizzle/enforce-delete-with-where": [
+      "error",
+      {
+        drizzleObjectName: ["db", "ctx.db"],
+      },
+    ],
+    "drizzle/enforce-update-with-where": [
+      "error",
+      {
+        drizzleObjectName: ["db", "ctx.db"],
       },
     ],
   },

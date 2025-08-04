@@ -140,9 +140,10 @@ export default function Enroll() {
     }
   }
 
-  //@ts-expect-error teams is present as this level
-  const teams = currentUser?.data?.teams;
+  const data = currentUser?.data;
+  const teams = data?.teams;
 
+  console.log('teams', teams);
   return (
     <div className="container m-auto px-4 pt-2">
       <div className="px-4">
@@ -213,7 +214,10 @@ export default function Enroll() {
               onSelectionChange={(e) => setSelectedGames(Object.values(e)[0])}
               required
             >
-              {
+              <>
+              hello
+              </>
+              {/* {
                 teams?.map((match: { teamId: string; teamName: string }) => (
                   <SelectItem
                     key={match.teamId}
@@ -223,7 +227,7 @@ export default function Enroll() {
                     {match.teamName}
                   </SelectItem>
                 )) as []
-              }
+              } */}
             </Select>
           </div>
 

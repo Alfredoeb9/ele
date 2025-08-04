@@ -27,15 +27,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@/lib/*": [
-        "lib/*"
-      ],
-      "@/components/*": [
-        "src/app/_components/*"
-      ],
-      "@/redux/*": [
-        "src/app/redux/*"
-      ]
+      "@/lib/*": ["lib/*"],
+      "@/components/*": ["src/app/_components/*"],
+      "@/redux/*": ["src/app/redux/*"]
     }
   },
   "include": [
@@ -47,5 +41,5 @@
     "**/*.js",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules",]
+  "exclude": ["node_modules"]
 }

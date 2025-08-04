@@ -3,12 +3,10 @@ import { relations, sql } from "drizzle-orm";
 import {
   index,
   int,
-  integer,
   primaryKey,
   sqliteTableCreator,
   text,
   unique,
-  uniqueIndex,
 } from "drizzle-orm/sqlite-core";
 import { type AdapterAccount } from "next-auth/adapters";
 
@@ -25,17 +23,23 @@ export const posts = createTable(
   {
     id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
     name: text("name", { length: 256 }),
+    message: text("message", { length: 256 }),
     createdById: text("createdById", { length: 255 }).notNull(),
-    createdAt: int("created_at", { mode: "timestamp" })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: int("updatedAt", { mode: "timestamp" }),
+    createdAt: text("created_at")
+      .notNull()
+      .default(sql`(CURRENT_TIMESTAMP)`),
+    updatedAt: text("updated_at")
+      .notNull()
+      .default(sql`(CURRENT_TIMESTAMP)`)
+      .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
   },
-  (example) => ({
-    createdByIdIdx: index("createdById_idx").on(example.createdById),
-    nameIndex: index("name_idx").on(example.name),
-  }),
+  (example) => [
+    index("createdById_idx").on(example.createdById),
+    index("name_idx").on(example.name),
+  ],
 );
+
+export type PostsTypes = typeof posts.$inferSelect;
 
 // bigInt --> int
 // text --> text
@@ -95,6 +99,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   stripeAccount: one(stripeAccount),
   subscription: one(subscription),
   userRecord: one(usersRecordTable),
+  posts: many(posts),
 }));
 
 export const gamerTags = createTable("gamer_tags", {
@@ -202,9 +207,9 @@ export const transactions = createTable("transactions", {
   transactionsDate: int("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
-  withdrawAmt: text("withdraw_amount"),
-  depositAmt: text("deposit_amount").notNull().default("0"),
-  balance: text("balance"),
+  withdrawAmt: int("withdraw_amount"),
+  depositAmt: int("deposit_amount").notNull().default(0),
+  balance: int("balance"),
   accountId: text("account_id", { length: 255 }).notNull(),
 });
 
@@ -409,9 +414,9 @@ export type TeamRecordType = typeof teamRecordTable.$inferSelect;
 
 // This is needed for a one-one realtion
 export const teamRecordRelations = relations(teamRecordTable, ({ one }) => ({
-  user: one(teamMembersTable, {
+  team: one(teams, {
     fields: [teamRecordTable.teamId],
-    references: [teamMembersTable.teamId],
+    references: [teams.id],
   }),
 }));
 
@@ -477,23 +482,6 @@ export const teamsRelations = relations(teams, ({ one, many }) => ({
     references: [users.id],
   }),
 }));
-
-// // A member can
-// export const teamMembersRelations = relations(teamMembersTable, ({ one }) => ({
-// 	team: one(teams, {
-// 		fields: [teamMembersTable.teamId],
-// 		references: [teams.id],
-// 	}),
-// 	user: one(users, {
-// 		fields: [teamMembersTable.userId],
-// 		references: [users.id],
-// 	}),
-// }))
-
-// // A team can only have one user per id
-// export const teamssRelations = relations(teams, ({ one }) => ({
-
-// }));
 
 export const teamInvites = createTable("team_invites", {
   id: text("id", { length: 255 }).notNull(),
@@ -708,16 +696,16 @@ export const teamsToMatchesRelations = relations(teamsToMatches, ({ one }) => ({
 export type TeamsToMatches = typeof teamsToMatches.$inferSelect;
 export type TeamsToMatchesInsert = typeof teamsToMatches.$inferInsert;
 
-export const teamMembersRelations = relations(teams, ({ one }) => ({
-  team: one(teams, {
-    fields: [teams.id],
-    references: [teams.id],
-  }),
-  users: one(users, {
-    fields: [teams.id],
-    references: [users.id],
-  }),
-}));
+// export const teamMembersRelations = relations(teamMembersTable, ({ one }) => ({
+//   team: one(teams, {
+//     fields: [teamMembersTable.teamId],
+//     references: [teams.id],
+//   }),
+//   users: one(users, {
+//     fields: [teamMembersTable.userId],
+//     references: [users.id],
+//   }),
+// }));
 
 export const subscription = createTable("subscription", {
   id: text("id", { length: 256 }).notNull(),
@@ -727,7 +715,7 @@ export const subscription = createTable("subscription", {
   stripeCustomerId: text("stripe_customer_id", { length: 191 }),
   stripeCurrentPeriodEnd: int("stripe_current_period_end"),
   createdAt: int("created_at", { mode: "timestamp" })
-    .default(sql`CURRENT_TIMESTAMP`)
+    .default(sql`(strftime('%s', 'now'))`)
     .notNull(),
   updatedAt: int("updated_at", { mode: "timestamp" }),
 });

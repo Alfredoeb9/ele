@@ -2,8 +2,9 @@
 
 import { env } from "@/env";
 import { stripe } from "@/lib/stripe";
+import { getServerAuthSession } from "@/server/auth";
 // import { getIPAddress } from "@/lib/utils/getIPAddress";
-import { getServerSession } from "next-auth";
+// import { auth } from "@/server/auth/index";
 
 export async function createStripeConnectedAccount(
   email: string,
@@ -65,9 +66,13 @@ export async function withdrawMoney(account: { id: string }) {
   });
 }
 
-export async function addCashToAccount(cashAmount: string, userId: string) {
-  const session = await getServerSession();
-  if (!session?.user.email) {
+export async function addCashToAccount(
+  cashAmount: string,
+  userId: string,
+  stripeId: string,
+) {
+  const session = await getServerAuthSession();
+  if (!session?.email) {
     throw new Error("You must be logged in to checkout!");
   }
 
@@ -88,21 +93,45 @@ export async function addCashToAccount(cashAmount: string, userId: string) {
   if (!priceId) {
     throw new Error("invalid price id");
   }
-  return stripe.checkout.sessions.create({
-    mode: "payment",
-    payment_method_types: ["card", "us_bank_account"],
-    metadata: {
-      email: session.user.email,
-      depositAmount: cashAmount,
-      userId: userId,
-    },
-    line_items: [
-      {
-        price: priceId,
-        quantity: 1,
+
+  try {
+    // Step 1: Create a payment intent for the user to deposit funds into their stripe account
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Number(priceExtracted) * 100,
+      currency: "usd",
+      payment_method_types: ["card", "us_bank_account"],
+      metadata: {
+        email: session.email,
+        userId: userId,
       },
-    ],
-    success_url: `${env.REACT_APP_BASE_URL}/`,
-    cancel_url: `${env.REACT_APP_BASE_URL}/`,
-  });
+      transfer_data: {
+        destination: stripeId,
+      },
+      description: "Deposit funds for ele",
+    });
+
+    return paymentIntent;
+  } catch (error) {
+    console.log("error", error);
+    throw new Error(`Error on depositing funds`);
+  }
+
+  // code used for one time payments.
+  // return stripe.checkout.sessions.create({
+  //   mode: "payment",
+  //   payment_method_types: ["card", "us_bank_account"],
+  //   metadata: {
+  //     email: session.user.email,
+  //     depositAmount: cashAmount,
+  //     userId: userId,
+  //   },
+  //   line_items: [
+  //     {
+  //       price: priceId,
+  //       quantity: 1,
+  //     },
+  //   ],
+  //   success_url: `${env.REACT_APP_BASE_URL}/`,
+  //   cancel_url: `${env.REACT_APP_BASE_URL}/`,
+  // });
 }

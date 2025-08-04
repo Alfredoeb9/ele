@@ -10,6 +10,7 @@ import { compare } from "bcrypt";
 
 import validator from "validator";
 import { type DefaultSQLiteSchema } from "node_modules/@auth/drizzle-adapter/lib/sqlite";
+import Credentials from "next-auth/providers/credentials";
 // import { type SQLiteTableFn, type DefaultSQLiteSchema } from 'drizzle-orm/libsql';
 
 /**
@@ -42,43 +43,10 @@ import { type DefaultSQLiteSchema } from "node_modules/@auth/drizzle-adapter/lib
 //   // }
 // }
 
-/**
- * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
- *
- * @see https://next-auth.js.org/configuration/options
- */
-export const authOptions: NextAuthOptions = {
-  // callbacks: {
-  //   session: ({ session, user }) => ({
-  //     ...session,
-  //     user: {
-  //       ...session.user,
-  //       id: user.id,
-  //     },
-  //   }),
-  // },
+const providers = [];
 
-  // providers: [
-  //   DiscordProvider({
-  //     clientId: env.DISCORD_CLIENT_ID,
-  //     clientSecret: env.DISCORD_CLIENT_SECRET,
-  //   }),
-  //   /**
-  //    * ...add more providers here.
-  //    *
-  //    * Most other providers require a bit more work than the Discord provider. For example, the
-  //    * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-  //    * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-  //    *
-  //    * @see https://next-auth.js.org/providers/github
-  //    */
-  // ],
-  providers: [
-    // EmailProvider({
-    // 	server: process.env.EMAIL_SERVER,
-    // 	from: process.env.EMAIL_FROM
-    // })
-
+if (typeof CredentialsProvider === "function") {
+  providers.push(
     CredentialsProvider({
       name: "Credentials",
 
@@ -128,7 +96,97 @@ export const authOptions: NextAuthOptions = {
         };
       },
     }),
-  ],
+  );
+}
+
+/**
+ * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
+ *
+ * @see https://next-auth.js.org/configuration/options
+ */
+export const authOptions: NextAuthOptions = {
+  // callbacks: {
+  //   session: ({ session, user }) => ({
+  //     ...session,
+  //     user: {
+  //       ...session.user,
+  //       id: user.id,
+  //     },
+  //   }),
+  // },
+
+  // providers: [
+  //   DiscordProvider({
+  //     clientId: env.DISCORD_CLIENT_ID,
+  //     clientSecret: env.DISCORD_CLIENT_SECRET,
+  //   }),
+  //   /**
+  //    * ...add more providers here.
+  //    *
+  //    * Most other providers require a bit more work than the Discord provider. For example, the
+  //    * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
+  //    * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
+  //    *
+  //    * @see https://next-auth.js.org/providers/github
+  //    */
+  // ],
+  providers,
+  // providers: [
+  //   // EmailProvider({
+  //   // 	server: process.env.EMAIL_SERVER,
+  //   // 	from: process.env.EMAIL_FROM
+  //   // })
+
+  //   CredentialsProvider({
+  //     name: "Credentials",
+
+  //     credentials: {
+  //       email: { label: "Email", type: "email", placeholder: "jsmith" },
+  //       password: { label: "Password", type: "password" },
+  //     },
+  //     async authorize(credentials) {
+  //       // Add logic here to look up the user from the credentials supplied
+  //       if (!credentials?.email || !credentials?.password) {
+  //         throw new Error("Email and or password is not registered");
+  //       }
+
+  //       if (!validator.isEmail(credentials?.email))
+  //         throw new Error("Please provide a proper email");
+
+  //       const existingUserByEmail = await db
+  //         .select()
+  //         .from(users)
+  //         .where(eq(users.email, credentials.email));
+
+  //       if (!existingUserByEmail[0]) {
+  //         throw new Error("Email and or password is not registered");
+  //       }
+
+  //       const passwordMatch = await compare(
+  //         credentials.password,
+  //         existingUserByEmail[0].password,
+  //       );
+
+  //       if (!passwordMatch) {
+  //         throw new Error("Email and or password is not registered");
+  //       }
+
+  //       if (existingUserByEmail[0].isVerified == false) {
+  //         throw new Error("Email is not verified, Please verify email!");
+  //         // return NextResponse.json({ user: null, message: "Email is not verified, Please verify email!"}, { status: 500 })
+  //       }
+
+  //       return {
+  //         id: `${existingUserByEmail[0].id}`,
+  //         username: existingUserByEmail[0].username!,
+  //         email: existingUserByEmail[0].email,
+  //         firstName: existingUserByEmail[0].firstName!,
+  //         role: existingUserByEmail[0].role!,
+  //         lastName: existingUserByEmail[0].lastName!,
+  //       };
+  //     },
+  //   }),
+  // ],
   jwt: {
     maxAge: 24 * 60 * 60 * 1000,
   },
@@ -150,7 +208,8 @@ export const authOptions: NextAuthOptions = {
         return {
           ...token,
           id: (user as unknown as User).id,
-          username: (user as unknown as User).username,
+          name: user.name || `${user.firstName || ""} ${user.lastName}`.trim(),
+          username: user.username,
           firstName: (user as unknown as User).firstName,
           lastName: (user as unknown as User).lastName,
           role: user.role,
@@ -180,11 +239,11 @@ export const authOptions: NextAuthOptions = {
 
           user: {
             ...session.user,
-            id: token.id,
-            username: token.username,
-            firstName: token.firstName,
-            lastName: token.lastName,
-            role: token.role,
+            id: token?.id,
+            username: token?.username,
+            firstName: token?.firstName,
+            lastName: token?.lastName,
+            role: token?.role,
           },
         };
       }

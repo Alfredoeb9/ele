@@ -15,6 +15,10 @@ import { getServerAuthSession } from "@/server/auth";
 // import { getSession } from "next-auth/react";
 
 import { db } from "@/server/db";
+import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { type NodeHTTPCreateContextFnOptions } from "@trpc/server/adapters/node-http";
+import { type IncomingMessage } from "http";
+import type ws from "ws";
 
 /**
  * 1. CONTEXT
@@ -28,7 +32,12 @@ import { db } from "@/server/db";
  *
  * @see https://trpc.io/docs/server/context
  */
-export const createTRPCContext = async (opts: { headers: Headers }) => {
+export const createTRPCContext = async (
+  opts:
+    | { headers: Headers }
+    | CreateNextContextOptions
+    | NodeHTTPCreateContextFnOptions<IncomingMessage, ws>,
+) => {
   const session = await getServerAuthSession();
 
   return {
@@ -37,6 +46,8 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
     ...opts,
   };
 };
+
+export type Context = Awaited<ReturnType<typeof createTRPCContext>>;
 
 /**
  * 2. INITIALIZATION
@@ -80,6 +91,11 @@ export const createCallerFactory = t.createCallerFactory;
 export const createTRPCRouter = t.router;
 
 /**
+ * @see https://trpc.io/docs/v11/merging-routers
+ */
+export const mergeRouters = t.mergeRouters;
+
+/**
  * Public (unauthenticated) procedure
  *
  * This is the base piece you use to build new queries and mutations on your tRPC API. It does not
@@ -97,7 +113,7 @@ export const publicProcedure = t.procedure;
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.email) {
+  if (!ctx.session) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({

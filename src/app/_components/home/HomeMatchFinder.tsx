@@ -5,6 +5,8 @@ import { MatchFinderTable } from "./MatchFinderTable";
 export default function HomeMatchFinder() {
   const matches = api.matches.getAllNonMoneyMatches.useQuery();
 
+  // console.log("matches", matches);
+
   if (matches.isPending) return <Spinner label="Loading..." color="warning" />;
 
   return (

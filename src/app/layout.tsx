@@ -8,10 +8,12 @@ import Provider from "./_components/providers/SessionProvider";
 import Header from "./_components/header";
 import ReduxProvider from "./_components/providers/ReduxProvider";
 import { getServerSession } from "next-auth/next";
+
 import { NextUiProvider } from "./_components/providers/NextUIProvider";
 import { ToastContainer } from "react-toastify";
 import Footer from "./_components/Footer";
 import "react-toastify/dist/ReactToastify.css";
+import { getServerAuthSession } from "@/server/auth";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,7 +31,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession();
+  const session = await getServerAuthSession();
 
   // const user = await db.query.users.findMany({
   //   with: {
@@ -57,7 +59,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
         <Provider>
-          <ReduxProvider user={session?.user!}>
+          <ReduxProvider user={session!}>
             <TRPCReactProvider>
               <NextUiProvider>
                 <div className="bg-slate-950">

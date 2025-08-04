@@ -114,10 +114,10 @@ export default function CreateTeam() {
   );
 
   useEffect(() => {
-    console.log(gameCategory.data);
+    // console.log(gameCategory.data);
     const filteredId = gameCategory.data?.filter(filterByID);
 
-    console.log("filteredId", filteredId);
+    // console.log("filteredId", filteredId);
     setArrayById(filteredId);
   }, [filterByID, gameCategory.data]);
 

@@ -24,11 +24,16 @@ export const gameCategoryRouter = createTRPCRouter({
   getSingleGame: publicProcedure
     .input(
       z.object({
-        gameName: z.string().min(1),
+        gameName: z.string().min(1)
+          .transform((val) => decodeURIComponent(val))
+          .transform((val) => val
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ')
+          ),
       }),
     )
     .query(async ({ ctx, input }) => {
-      console.log("game", input.gameName);
       try {
         const data = await ctx.db.query.gameCategory.findMany({
           where: eq(gameCategory.game, input.gameName),
@@ -49,6 +54,8 @@ export const gameCategoryRouter = createTRPCRouter({
             },
           },
         });
+
+        console.log('data', data)
 
         if (data.length <= 0)
           throw new Error("Please select a game we support");

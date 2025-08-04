@@ -151,10 +151,11 @@ export default function TicketsDashboard() {
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu>
-                  <DropdownItem href={`/tickets/${ticket?.id}`}>
+                  <DropdownItem key={"view"} href={`/tickets/${ticket?.id}`}>
                     View
                   </DropdownItem>
                   <DropdownItem
+                    key={"delete"}
                     onPress={() => {
                       onOpen();
                       // setUsername(ticket.username);

@@ -11,7 +11,8 @@ export const env = createEnv({
       .string()
       .url()
       .refine(
-        (/** @type {string | string[]} */ str) => !str.includes("YOUR_MYSQL_URL_HERE"),
+        (/** @type {string | string[]} */ str) =>
+          !str.includes("YOUR_MYSQL_URL_HERE"),
         "You forgot to change the default URL",
       ),
     NODE_ENV: z
@@ -36,6 +37,7 @@ export const env = createEnv({
     EMAIL_PWD: z.string(),
     JWT_EXPIRATION_MINUTES: z.string(),
     STRIPE_API_KEY: z.string(),
+    STRIPE_PLATFORM_ACCOUNT_ID: z.string(),
     PRICE_ID_25: z.string(),
     PRICE_ID_50: z.string(),
     PRICE_ID_100: z.string(),
@@ -63,6 +65,7 @@ export const env = createEnv({
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string(),
+    NEXT_PUBLIC_WS_URL: z.string(),
   },
 
   /**
@@ -83,6 +86,7 @@ export const env = createEnv({
     EMAIL_PWD: process.env.EMAIL_PWD,
     JWT_EXPIRATION_MINUTES: process.env.JWT_EXPIRATION_MINUTES,
     STRIPE_API_KEY: process.env.STRIPE_API_KEY,
+    STRIPE_PLATFORM_ACCOUNT_ID: process.env.STRIPE_PLATFORM_ACCOUNT_ID,
     PRICE_ID_25: process.env.PRICE_ID_25,
     PRICE_ID_50: process.env.PRICE_ID_50,
     PRICE_ID_100: process.env.PRICE_ID_100,
@@ -95,6 +99,7 @@ export const env = createEnv({
     ADD_CASH_50: process.env.ADD_CASH_50,
     ADD_CASH_75: process.env.ADD_CASH_75,
     ADD_CASH_100: process.env.ADD_CASH_100,
+    NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     SRIPE_WEBHOOK_SECRET: process.env.SRIPE_WEBHOOK_SECRET,
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:

@@ -11,15 +11,23 @@ import { useState } from "react";
 import { api } from "@/trpc/react";
 import { ToastContainer, toast } from "react-toastify";
 
-// import { addCashSelectOptions } from "@/lib/sharedData";
-// import { addCashToAccount } from "../actions/actions";
-// import getStripe from "@/lib/utils/get-stripejs";
-
-interface CreateNewTicketTypes {
+interface WithdrawCashProps {
   open: boolean;
   onOpenChange: () => void;
   userId: string;
-  balance: number;
+  balance: string;
+  stripeId: string;
+}
+
+// Add this utility function
+function parseMoneyString(str: string): number {
+  if (!str) return 0;
+
+  // Remove all non-numeric characters except period
+  const cleaned = str.replace(/[^0-9.]/g, "");
+  const parsed = parseFloat(cleaned);
+
+  return isNaN(parsed) ? 0 : parsed;
 }
 
 export default function WithDrawCash({
@@ -27,65 +35,89 @@ export default function WithDrawCash({
   onOpenChange,
   userId,
   balance,
-}: CreateNewTicketTypes) {
+  stripeId,
+}: WithdrawCashProps) {
   const { onClose } = useDisclosure();
   const [size] = useState<string>("md");
-
+  const [amount, setAmount] = useState<string>("");
   const utils = api.useUtils();
 
-  const createTicket = api.create.createNewTicket.useMutation({
-    onSuccess: async () => {
-      await utils.user.getUserDataWithTickets.invalidate();
+  // Create withdrawal mutation
+  const withdrawMutation = api.stripe.withdrawCash.useMutation({
+    onSuccess: async (data) => {
+      toast.success(`Successfully withdrew $${parseFloat(amount).toFixed(2)}`);
+      setAmount("");
       onClose();
-      toast(`Ticket has been created`, {
-        position: "bottom-right",
-        autoClose: 4500,
-        closeOnClick: true,
-        draggable: false,
-        type: "success",
-        toastId: 88,
-      });
-    },
 
-    onError: (e) => {
-      if (e.data?.zodError) {
-        e.data?.zodError?.fieldErrors.userName?.map((error) => {
-          if (error.includes("String must contain at least 1")) {
-            toast("Please insert a text in the body", {
-              position: "bottom-right",
-              autoClose: 4500,
-              closeOnClick: true,
-              draggable: false,
-              type: "error",
-              toastId: 89,
-            });
-          }
-        });
-      } else if (e.message.includes("already sent user a friend request")) {
-        toast("You have already sent user a friend request", {
-          position: "bottom-right",
-          autoClose: 4500,
-          closeOnClick: true,
-          draggable: false,
-          type: "error",
-          toastId: 90,
-        });
-      } else if (e.message.includes("No user found")) {
-        toast(`User does not exist`, {
-          position: "bottom-right",
-          autoClose: 4500,
-          closeOnClick: true,
-          draggable: false,
-          type: "error",
-          toastId: 91,
-        });
-      }
+      // Invalidate queries to refresh the data
+      await utils.user.getSingleUser.invalidate();
+    },
+    onError: async (error) => {
+      toast.error(`Withdrawal failed: ${error.message}`);
     },
   });
 
-  // function handleAddCashChange(e: string) {
-  //   setSelectedCategory(e);
-  // }
+  // Handle withdraw action
+  const handleWithdraw = () => {
+    // Validate amount
+    const withdrawAmount = Number(parseFloat(amount).toFixed(2));
+    // Validate amount
+    if (!amount || isNaN(withdrawAmount) || withdrawAmount <= 0) {
+      toast.error("Please enter a valid amount");
+      return;
+    }
+
+    // Use the utility function to parse balance
+    const numericBalance = parseMoneyString(balance);
+
+    const balanceIsStoredInCents = false; // Set this based on your application logic
+
+    const balanceInCorrectUnit = balanceIsStoredInCents
+      ? numericBalance / 100
+      : numericBalance;
+
+    // try {
+    //   // Remove any formatting (commas, dollar signs) and parse as float
+    //   const cleanBalance = balance.replace(/[$,]/g, "");
+    //   numericBalance = parseFloat(cleanBalance);
+
+    //   // Check for invalid parsing
+    //   if (isNaN(numericBalance)) {
+    //     console.error("Failed to parse balance:", balance);
+    //     toast.error("Error reading your balance");
+    //     return;
+    //   }
+    // } catch (error) {
+    //   console.error("Balance parsing error:", error);
+    //   toast.error("Error processing your balance");
+    //   return;
+    // }
+
+    // const numericAmount = parseFloat(amount);
+
+    // Debug information
+    console.log("Original balance string:", balance);
+    console.log("balanceInCorrectUnit:", balanceInCorrectUnit);
+    console.log("Withdrawal amount:", withdrawAmount);
+    console.log(
+      "Withdrawal amount - balance:",
+      balanceInCorrectUnit - withdrawAmount,
+    );
+
+    if (withdrawAmount > balanceInCorrectUnit) {
+      toast.error("Insufficient balance for withdrawal");
+      return;
+    }
+
+    // Proceed with withdrawal
+    withdrawMutation.mutate({
+      stripeId,
+      amount: withdrawAmount,
+      currentBalance: balanceInCorrectUnit,
+    });
+  };
+
+  console.log("amount", amount);
 
   return (
     <>
@@ -104,7 +136,7 @@ export default function WithDrawCash({
               <ModalHeader className="flex flex-col gap-1 text-xl text-red-600 sm:text-2xl">
                 Withdraw Cash{" "}
                 <p className="sm:text-md text-sm">
-                  Balance:{" "}
+                  Available Balance:{" "}
                   {balance ||
                     (balance === undefined && "Err") ||
                     (balance === null && "Err")}
@@ -113,14 +145,15 @@ export default function WithDrawCash({
               <ModalBody>
                 <Input
                   type="number"
-                  label="Price"
-                  placeholder="1%"
+                  label="Amount to Withdraw"
+                  placeholder="0"
                   minLength={1}
-                  maxLength={100}
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
                   labelPlacement="outside"
                   endContent={
                     <div className="pointer-events-none flex items-center">
-                      <span className="text-small text-default-400">%</span>
+                      <span className="text-small text-default-400">$</span>
                     </div>
                   }
                 />
@@ -132,12 +165,13 @@ export default function WithDrawCash({
                   <button
                     className="rounded-2xl bg-green-500 p-3 text-white"
                     disabled={
-                      createTicket.isPending ||
+                      withdrawMutation.isPending ||
                       balance === undefined ||
                       balance === null
                     }
+                    onClick={handleWithdraw}
                   >
-                    Add Cash
+                    {withdrawMutation.isPending ? "Processing..." : "Withdraw"}
                   </button>
                 </div>
               </ModalBody>
