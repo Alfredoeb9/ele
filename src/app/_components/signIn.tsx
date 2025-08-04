@@ -15,7 +15,7 @@ const transformSessionToUserAuthProps = (session: Session): UserAuthProps => {
     isLoading: false, // Set appropriate values
     message: "User authenticated successfully", // Set appropriate message
     user: {
-      id: session.user.id as string,
+      id: session.user.id,
       username: session.user.username,
       email: session.user.email!,
       firstName: session.user.firstName,

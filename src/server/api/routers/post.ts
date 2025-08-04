@@ -109,7 +109,7 @@ export const postRouter = createTRPCRouter({
         })
         .returning();
 
-      console.log("post", post);
+      // console.log("post", post);
 
       // const post = await ctx.db.query.posts.findFirst({
       //   where: (posts, { eq }) => eq(posts.createdById, userId),

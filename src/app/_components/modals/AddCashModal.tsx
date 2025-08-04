@@ -51,9 +51,9 @@ export function StripePaymentForm({
   const [clientSecret, setClientSecret] = useState("");
 
   const updateBalance = api.stripe.updateStripeBalance.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       // Invalidate the query that fetches user data with stripe balance
-      utils.user.getSingleUser.invalidate();
+      await utils.user.getSingleUser.invalidate();
     },
   });
 

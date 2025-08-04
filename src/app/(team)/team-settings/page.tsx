@@ -12,6 +12,32 @@ import Link from "next/link";
 import React, { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 
+interface TeamRecord {
+  teamId: string;
+  teamName: string;
+  matchType: string | null;
+  wins: number | null;
+  losses: number | null;
+}
+
+interface TeamMember {
+  role: string;
+  [key: string]: any; // Allow additional properties
+}
+
+interface Team {
+  id: string;
+  createdAt: number;
+  updatedAt: Date | null;
+  userId: string;
+  gameId: string;
+  gameTitle: string;
+  team_name: string;
+  teamCategory: string;
+  record: TeamRecord;
+  members: TeamMember[];
+}
+
 export default function TeamSettings() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const session = useSession();
@@ -61,7 +87,6 @@ export default function TeamSettings() {
     return null;
   }
 
-  //@ts-expect-error teams is present at this level
   const teams = currentUser.data.teams;
 
   return (
@@ -76,14 +101,7 @@ export default function TeamSettings() {
           ) : (
             <>
               {teams.map(
-                (team: {
-                  id: string;
-                  team_name: string;
-                  teamCategory: string;
-                  gameTitle: string;
-                  record: { wins: string; losses: string };
-                  members: { role: string }[];
-                }) => (
+                (team: Team) => (
                   <div
                     className="w-[100%] rounded-xl bg-slate-800 p-2 text-white sm:w-[32.2%]"
                     key={team?.id}

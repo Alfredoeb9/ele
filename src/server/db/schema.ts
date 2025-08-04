@@ -3,12 +3,10 @@ import { relations, sql } from "drizzle-orm";
 import {
   index,
   int,
-  integer,
   primaryKey,
   sqliteTableCreator,
   text,
   unique,
-  uniqueIndex,
 } from "drizzle-orm/sqlite-core";
 import { type AdapterAccount } from "next-auth/adapters";
 
@@ -416,9 +414,9 @@ export type TeamRecordType = typeof teamRecordTable.$inferSelect;
 
 // This is needed for a one-one realtion
 export const teamRecordRelations = relations(teamRecordTable, ({ one }) => ({
-  user: one(teamMembersTable, {
+  team: one(teams, {
     fields: [teamRecordTable.teamId],
-    references: [teamMembersTable.teamId],
+    references: [teams.id],
   }),
 }));
 
@@ -484,23 +482,6 @@ export const teamsRelations = relations(teams, ({ one, many }) => ({
     references: [users.id],
   }),
 }));
-
-// // A member can
-// export const teamMembersRelations = relations(teamMembersTable, ({ one }) => ({
-// 	team: one(teams, {
-// 		fields: [teamMembersTable.teamId],
-// 		references: [teams.id],
-// 	}),
-// 	user: one(users, {
-// 		fields: [teamMembersTable.userId],
-// 		references: [users.id],
-// 	}),
-// }))
-
-// // A team can only have one user per id
-// export const teamssRelations = relations(teams, ({ one }) => ({
-
-// }));
 
 export const teamInvites = createTable("team_invites", {
   id: text("id", { length: 255 }).notNull(),
@@ -715,16 +696,16 @@ export const teamsToMatchesRelations = relations(teamsToMatches, ({ one }) => ({
 export type TeamsToMatches = typeof teamsToMatches.$inferSelect;
 export type TeamsToMatchesInsert = typeof teamsToMatches.$inferInsert;
 
-export const teamMembersRelations = relations(teams, ({ one }) => ({
-  team: one(teams, {
-    fields: [teams.id],
-    references: [teams.id],
-  }),
-  users: one(users, {
-    fields: [teams.id],
-    references: [users.id],
-  }),
-}));
+// export const teamMembersRelations = relations(teamMembersTable, ({ one }) => ({
+//   team: one(teams, {
+//     fields: [teamMembersTable.teamId],
+//     references: [teams.id],
+//   }),
+//   users: one(users, {
+//     fields: [teamMembersTable.userId],
+//     references: [users.id],
+//   }),
+// }));
 
 export const subscription = createTable("subscription", {
   id: text("id", { length: 256 }).notNull(),

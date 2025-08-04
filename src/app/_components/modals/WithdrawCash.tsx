@@ -44,15 +44,15 @@ export default function WithDrawCash({
 
   // Create withdrawal mutation
   const withdrawMutation = api.stripe.withdrawCash.useMutation({
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       toast.success(`Successfully withdrew $${parseFloat(amount).toFixed(2)}`);
       setAmount("");
       onClose();
 
       // Invalidate queries to refresh the data
-      utils.user.getSingleUser.invalidate();
+      await utils.user.getSingleUser.invalidate();
     },
-    onError: (error) => {
+    onError: async (error) => {
       toast.error(`Withdrawal failed: ${error.message}`);
     },
   });

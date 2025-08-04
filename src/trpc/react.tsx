@@ -1,5 +1,4 @@
 "use client";
-import type { TRPCLink } from "@trpc/client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
@@ -31,28 +30,28 @@ const httpLink = httpBatchLink({
   maxURLLength: 2000, // Reasonable limit for URL length
 });
 
-function getEndingLink(): TRPCLink<AppRouter> {
-  if (typeof window === "undefined") {
-    return httpLink;
-  }
-  // Reuse WebSocket connection with reconnection logic
-  if (!wsClient) {
-    wsClient = createWSClient({
-      url: env.NEXT_PUBLIC_WS_URL,
-      retryDelayMs: (attempt) => Math.min(attempt * 1000, 10000),
-      onOpen: () => console.log("WebSocket connection established"),
-      onClose: () => console.log("WebSocket connection closed"),
-    });
-  }
-  return splitLink({
-    condition: (op) => op.type === "subscription",
-    true: wsLink({
-      client: wsClient,
-      transformer,
-    }),
-    false: httpLink,
-  });
-}
+// function getEndingLink(): TRPCLink<AppRouter> {
+//   if (typeof window === "undefined") {
+//     return httpLink;
+//   }
+//   // Reuse WebSocket connection with reconnection logic
+//   if (!wsClient) {
+//     wsClient = createWSClient({
+//       url: env.NEXT_PUBLIC_WS_URL,
+//       retryDelayMs: (attempt) => Math.min(attempt * 1000, 10000),
+//       onOpen: () => console.log("WebSocket connection established"),
+//       onClose: () => console.log("WebSocket connection closed"),
+//     });
+//   }
+//   return splitLink({
+//     condition: (op) => op.type === "subscription",
+//     true: wsLink({
+//       client: wsClient,
+//       transformer,
+//     }),
+//     false: httpLink,
+//   });
+// }
 
 const createQueryClient = () =>
   new QueryClient({
@@ -65,6 +64,7 @@ const createQueryClient = () =>
         refetchOnReconnect: true,
         retry: (failureCount, error) => {
           // Only retry network-related errors, not application errors
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
           const err = error as Error;
           const shouldRetry =
             !err.message?.includes("UNAUTHORIZED") &&
@@ -160,29 +160,7 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
         ],
       });
     },
-    // api.createClient({
-    //   links: [
-    //     loggerLink({
-    //       enabled: (op) =>
-    //         env.NODE_ENV === "development" ||
-    //         (op.direction === "down" && op.result instanceof Error),
-    //     }),
-    // splitLink({
-    //   condition: (op) => op.type === "subscription",
-    //   false: unstable_httpBatchStreamLink({
-    //     url: getUrl(),
-    //     transformer,
-    //     headers: () => {
-    //       const headers = new Headers();
-    //       headers.set("x-trpc-source", "nextjs-react");
-    //       return headers;
-    //     },
-    //   }),
 
-    // }),
-    // getEndingLink(),
-    // ],
-    // }),
   );
 
   // Add cleanup logic

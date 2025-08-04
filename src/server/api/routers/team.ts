@@ -17,23 +17,30 @@ export const teamRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      try {
-        const team = await ctx.db.query.teams.findFirst({
-          where: eq(teams.id, input.id),
-          with: {
-            // @ts-expect-error memebers should be available
-            members: true,
-            record: true,
-            matches: true,
-          },
-        });
+      // Get the team
+      const team = await ctx.db.query.teams.findFirst({
+        where: eq(teams.id, input.id),
+      });
 
-        if (!team) throw new Error("Team does not exist");
-
-        return team;
-      } catch (error) {
-        throw new Error(error as string);
+      if (!team) {
+        throw new Error("Team not found");
       }
+
+      // Get members separately
+      const members = await ctx.db.query.teamMembersTable.findMany({
+        where: eq(teamMembersTable.teamId, input.id),
+      });
+
+      // Get record separately
+      const record = await ctx.db.query.teamRecordTable.findFirst({
+        where: eq(teamRecordTable.teamId, input.id),
+      });
+
+      return {
+        ...team,
+        members,
+        record,
+      };
     }),
 
   leaveTeam: publicProcedure

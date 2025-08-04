@@ -198,7 +198,6 @@ export const userRouter = createTRPCRouter({
                     eq(teams.teamCategory, input.cat!),
                   ),
                 with: {
-                  //@ts-expect-error members should be here
                   members: {
                     with: {
                       user: {
@@ -244,7 +243,6 @@ export const userRouter = createTRPCRouter({
           };
         }
 
-        // return data that is only needed
       } catch (error) {
         throw new Error(error as string);
       }
@@ -273,7 +271,6 @@ export const userRouter = createTRPCRouter({
                 userRecord: true,
                 teams: {
                   with: {
-                    //@ts-expect-error tournamentsEnrolled should be here
                     tournamentsEnrolled: true,
                   },
                 },
@@ -340,7 +337,6 @@ export const userRouter = createTRPCRouter({
           with: {
             teams: {
               with: {
-                //@ts-expect-error members should be here
                 members: true,
                 record: true,
               },

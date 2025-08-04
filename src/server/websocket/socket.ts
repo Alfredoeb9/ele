@@ -17,8 +17,7 @@ const handler = applyWSSHandler({
 
       const headers = new Headers(
         Object.entries(req.headers)
-          .filter(([, value]) => value !== undefined)
-          .map(([k, v]) => [k, v!.toString()]) as [string, string][],
+          .map(([k, v]) => [k ?? "", v !== undefined ? v.toString() : ""] as [string, string])
       );
 
       return { ...rest, req, res, session: user, db, headers };

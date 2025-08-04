@@ -28,7 +28,7 @@ export const gameCategoryRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      console.log("game", input.gameName);
+      // console.log("game", input.gameName);
       try {
         const data = await ctx.db.query.gameCategory.findMany({
           where: eq(gameCategory.game, input.gameName),

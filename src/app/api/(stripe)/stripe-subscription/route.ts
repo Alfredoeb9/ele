@@ -13,7 +13,7 @@ type Metadata = {
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
-  const signature = (await headers()).get("Stripe-Signature") ?? "";
+  const signature = (headers()).get("Stripe-Signature") ?? "";
 
   let event: Stripe.Event;
 

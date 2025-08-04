@@ -36,20 +36,10 @@ import SendTeamInvite from "@/app/_components/modals/SendTeamInvite";
 import LeaveTeamModal from "@/app/_components/modals/LeaveTeamModal";
 
 export default function Team() {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const session = useSession();
   const pathname = usePathname();
-  const router = useRouter();
-  // const [error, setError] = useState<string>("");
-  const [rowsPerPage] = useState<number>(5);
-  const [page] = useState<number>(1);
-  const [, setCurrentSet] = useState<number[]>([0, 0]);
-  const [isUserOwner, setIsUserOwner] = useState(false);
-  const [isUserMember, setIsUserMember] = useState(false);
   const teamIdFromPath = pathname.split("/")[2];
 
   if (!teamIdFromPath) {
-    // setError("Please provide a user")
     toast("Please provide a user", {
       position: "bottom-right",
       autoClose: 5000,
@@ -60,6 +50,22 @@ export default function Team() {
     });
     return null;
   }
+
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const session = useSession();
+  const router = useRouter();
+  // const [error, setError] = useState<string>("");
+  const [rowsPerPage] = useState<number>(5);
+  const [page] = useState<number>(1);
+  const [, setCurrentSet] = useState<number[]>([0, 0]);
+  // const [isUserOwner, setIsUserOwner] = useState(false);
+  // const [isUserMember, setIsUserMember] = useState(false);
+    const [state, setState] = useState({
+    isUserOwner: false,
+    isUserMember: false,
+    currentSet: [0, 0] as [number, number],
+  });
+  
 
   const getTeamData = api.team.getSingleTeam.useQuery(
     { id: teamIdFromPath },
@@ -80,10 +86,8 @@ export default function Team() {
   }
 
   const team = getTeamData?.data;
-  //@ts-expect-error members should be present
-  const members: TeamMembersType[] = team?.members,
-    //@ts-expect-error members should be present
-    teamRecord: TeamRecordType = team?.record;
+  const members = team?.members,
+    teamRecord = team?.record;
 
   // type User = typeof members;
 
@@ -202,23 +206,39 @@ export default function Team() {
     );
   }, []);
 
+  // useEffect(() => {
+  //   //@ts-expect-error members is expected
+  //   if ((team?.members && (team?.members as TeamMembersType[]))?.length > 0) {
+  //     //@ts-expect-error members is expected
+  //     team?.members?.map(
+  //       (member: { userId: string | null | undefined; role: string }) => {
+  //         if (member?.userId === session?.data?.user?.email) {
+  //           if (member?.role === "owner") {
+  //             setIsUserOwner(true);
+  //           } else if (member?.role === "member") {
+  //             setIsUserMember(true);
+  //           }
+  //         }
+  //       },
+  //     );
+  //   }
+  // }, [team, session.data]);
+
   useEffect(() => {
-    //@ts-expect-error members is expected
-    if ((team?.members && (team?.members as TeamMembersType[]))?.length > 0) {
-      //@ts-expect-error members is expected
-      team?.members?.map(
-        (member: { userId: string | null | undefined; role: string }) => {
-          if (member?.userId === session?.data?.user?.email) {
-            if (member?.role === "owner") {
-              setIsUserOwner(true);
-            } else if (member?.role === "member") {
-              setIsUserMember(true);
-            }
-          }
-        },
-      );
+    if (!team?.members || !session?.data?.user?.email) return;
+
+    const userMember = team.members.find(
+      (member: TeamMembersType) => member.userId === session.data.user.email
+    );
+
+    if (userMember) {
+      setState(prev => ({
+        ...prev,
+        isUserOwner: userMember.role === "owner",
+        isUserMember: userMember.role === "member",
+      }));
     }
-  }, [team, session.data]);
+  }, [team?.members, session?.data?.user?.email]);
 
   return (
     <div className="bg-neutral-600">
@@ -248,7 +268,7 @@ export default function Team() {
               </div>
 
               <div className="flex flex-col gap-1">
-                {isUserOwner && (
+                {state.isUserOwner && (
                   <>
                     <Button
                       onPress={() => [
@@ -283,7 +303,7 @@ export default function Team() {
                   </>
                 )}
 
-                {isUserMember && (
+                {state.isUserMember && (
                   <CustomLeaveTeamButton
                     teamName={team?.team_name!}
                     userEmail={session.data?.user.email!}

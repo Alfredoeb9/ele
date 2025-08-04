@@ -107,7 +107,8 @@ export const stripeRouter = createTRPCRouter({
             message: "Withdrawal amount must be at least $1.00",
           });
         }
-
+        
+        // eslint-disable-next-line @typescript-eslint/no-inferrable-types
         const FEE_PERCENTAGE: number = 3.5; // 3.5%
         const feeAmount: number = parseFloat(
           (input.amount * (FEE_PERCENTAGE / 100)).toFixed(2),

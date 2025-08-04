@@ -3,14 +3,6 @@ import { drizzle } from "drizzle-orm/libsql";
 import { env } from "@/env";
 import * as schema from "./schema";
 import { Client, createClient } from "@libsql/client";
-
-// export const db = drizzle(
-//   new Client({
-//     url: env.DATABASE_URL,
-//   }).connection(),
-//   { schema, logger: true }
-// );
-
 /**
  * Cache the database connection in development. This avoids creating a new connection on every HMR
  * update.
@@ -27,10 +19,4 @@ export const client =
   });
 if (env.NODE_ENV !== "production") globalForDb.client = client;
 
-// export const db = drizzle(client, { schema });
-
-// export const client = createClient({
-
-// });
-
-export const db = drizzle(client, { schema, logger: true });
+export const db = drizzle(client, { schema, logger: env.NODE_ENV === "development" });

@@ -31,6 +31,11 @@ export default function Header() {
 
   const sessionUser = session.data?.user;
 
+  // if (!sessionUser) {
+  //   router.push("/sign-in");
+  //   return null;
+  // }
+
   const currentUser = api.user.getSingleUser.useQuery(
     { email: session.data?.user?.email! },
     { enabled: session.status === "authenticated" ? true : false },
@@ -186,7 +191,7 @@ export default function Header() {
   //   },
   // });
 
-  console.log("userData", userData);
+  // console.log("userData", userData);
 
   const sub = userData?.subscription;
   const stripeAccount = userData?.stripeAccount;
@@ -305,16 +310,21 @@ export default function Header() {
                                   declineFriendRequest.isPending
                                 }
                                 onPress={() => {
+                                  if (!sessionUser?.id || !sessionUser?.username) {
+                                    console.error("Missing user data");
+                                    return;
+                                  }
+                                  
                                   acceptRequest.mutate({
-                                    userId: sessionUser?.id!,
+                                    userId: sessionUser.id,
                                     targetId: notification.from,
                                     id: notification.id,
                                     type: notification.type,
                                     teamId: notification.metaData.teamId,
                                     game: notification.metaData.game,
                                     teamName: notification.metaData.teamName,
-                                    targetEmail: sessionUser?.email!,
-                                    userName: sessionUser?.username!,
+                                    targetEmail: sessionUser.email!,
+                                    userName: sessionUser.username,
                                   });
                                 }}
                               >
@@ -330,7 +340,7 @@ export default function Header() {
                                 }
                                 onPress={() => {
                                   declineFriendRequest.mutate({
-                                    userId: session?.data?.user?.id as string,
+                                    userId: session?.data?.user?.id,
                                     targetId: notification.from,
                                     notificationID: notification.id,
                                   });
@@ -521,20 +531,20 @@ export default function Header() {
       </nav>
       <ToastContainer containerId={"header-toast"} />
       {/* {error && <ErrorComponent message="There was problem retrieving your credits, please refresh and try agian. If this problem presist please reach out to customer service"/>} */}
-      {modalPath === "add_cash" && isOpen && (
+      {modalPath === "add_cash" && isOpen && sessionUser && (
         <AddCashModal
           open={isOpen}
           onOpenChange={onOpenChange}
-          userId={sessionUser?.id!}
+          userId={sessionUser?.id}
           stripeId={userData?.stripeAccount?.stripeId}
         />
       )}
 
-      {modalPath === "stripe_connect_onboarding" && isOpen && (
+      {modalPath === "stripe_connect_onboarding" && isOpen && sessionUser && (
         <OnboardToStripe
           open={isOpen}
           onOpenChange={onOpenChange}
-          userId={sessionUser?.id!}
+          userId={sessionUser?.id}
         />
       )}
     </header>

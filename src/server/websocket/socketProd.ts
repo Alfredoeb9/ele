@@ -24,7 +24,22 @@ void app.prepare().then(() => {
   const handler = applyWSSHandler({
     wss,
     router: appRouter,
-    createContext: createTRPCContext,
+    createContext: async (opts) => {
+      // Ensure 'info' is present for WebSocket context
+      const headers = new Headers();
+      for (const [key, value] of Object.entries(opts.req.headers)) {
+        if (Array.isArray(value)) {
+          value.forEach(v => headers.append(key, v));
+        } else if (value !== undefined) {
+          headers.append(key, value);
+        }
+      }
+      return await createTRPCContext({
+        req: opts.req,
+        res: opts.res,
+        headers,
+      });
+    },
   });
 
   process.on("SIGTERM", () => {
@@ -40,10 +55,10 @@ void app.prepare().then(() => {
 
   // Keep the next.js upgrade handler from being added to our custom server
   // so sockets stay open even when not HMR.
-  const originalOn = server.on.bind(server);
-  server.on = function (event, listener) {
-    return event !== "upgrade" ? originalOn(event, listener) : server;
-  };
+  // const originalOn = server.on.bind(server);
+  // server.on = function (event, listener) {
+  //   return event !== "upgrade" ? originalOn(event, listener) : server;
+  // };
   server.listen(port);
 
   console.log(
