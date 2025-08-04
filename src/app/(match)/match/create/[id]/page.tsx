@@ -15,6 +15,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Rules, gameTitles, teamSizeRender } from "@/lib/sharedData";
 import { useSession } from "next-auth/react";
 import { ToastContainer, toast } from "react-toastify";
+import { decodeUrlString } from "@/lib/utils/utils";
+import { capitalizeWords } from "@/lib/utils/capitalizeString";
 
 // interface CreateMatchType {
 //   mw3: {
@@ -45,7 +47,7 @@ export default function CreateMatch() {
   // const [error, setError] = useState<string>("");
   // const [previousGameName, setPreviousGameName] = useState<string>("");
   const [selectedGames, setSelectedGames] = useState<string>(
-    pathname.split("/")[3],
+    decodeUrlString(pathname.split("/")[3]),
   );
   // const [teamId, setTeamId] = useState(formattedParmas[0]?.split("=")[1] || "");
   // const [teamCat, setTeamCat] = useState(
@@ -173,7 +175,7 @@ export default function CreateMatch() {
   }
 
   function filterByID(item: { game: string }) {
-    if (selectedGames === item?.game) {
+    if (capitalizeWords(selectedGames) === item?.game) {
       return true;
     }
   }

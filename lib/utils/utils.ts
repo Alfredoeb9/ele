@@ -82,6 +82,15 @@ function formatTimestamp(timestamp: number, timezone: string) {
   });
 }
 
+export function decodeUrlString(str: string): string {
+  try {
+    return decodeURIComponent(str);
+  } catch (error) {
+    // Fallback if decoding fails
+    return str.replace(/%20/g, ' ');
+  }
+}
+
 // import { format, fromUnixTime } from 'date-fns';
 // import { formatInTimeZone } from 'date-fns-tz';
 

@@ -401,6 +401,28 @@ export const gameTitles = [
         "Zone Wars",
       ],
     },
+    'Black Ops 6': {
+      solo: [
+        "CDL Search and Destory",
+        "CDL Hardpoint",
+        "CDL Variant",
+        "Rio Only SND",
+      ],
+      duo: [
+        "CDL Search and Destory (duo)",
+        "CDL Hardpoint (duo)",
+        "CDL Variant (duo)",
+        "Rio Only SND (duo)",
+        "CDL Control (duo)",
+      ],
+      trios: [
+        "CDL Search and Destory (trios)",
+        "CDL Hardpoint (trios)",
+        "CDL Variant (trios)",
+        "Rio Only SND (trios)",
+        "CDL Control (trios)",
+      ],
+    }
   },
 ];
 
@@ -423,6 +445,13 @@ export const Rules = [
       snipers: ["Allowed", "Not Allowed"],
       helicopters: ["Allowed", "Not Allowed"],
     },
+
+    'Black Ops 6': {
+      pc_player: ["Allowed", "Not Allowed"],
+      snaking: ["Allowed", "Not Allowed"],
+      snipers: ["Allowed", "Not Allowed"],
+      allowed_input: ["Controller", "MKB", "Controller + MKB"],
+    }
   },
 ];
 
@@ -440,6 +469,12 @@ export const teamSizeRender = [
       trios: 3,
       quads: 4,
     },
+    "black ops 6": {
+      solo: 1,
+      duo: 2,
+      trios: 3,
+      quads: 4,
+    }
   },
 ];
 
