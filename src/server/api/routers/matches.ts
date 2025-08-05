@@ -41,21 +41,27 @@ export const matchRouter = createTRPCRouter({
       });
     }),
 
-  getAllTournaments: publicProcedure.query(({ ctx }) => {
+  getAllTournaments: publicProcedure
+  .input(z.void())
+  .query(({ ctx }) => {
     return ctx.db
       .select()
       .from(tournaments)
       .where(gt(tournaments.start_time, new Date().toISOString().slice(0, -8)));
   }),
 
-  getAllMoneyMatches: publicProcedure.query(async ({ ctx }) => {
+  getAllMoneyMatches: publicProcedure
+  .input(z.void())
+  .query(async ({ ctx }) => {
     return await ctx.db
       .select()
       .from(moneyMatch)
       .where(gt(moneyMatch.startTime, new Date().toISOString().slice(0, -8)));
   }),
 
-  getAllNonMoneyMatches: publicProcedure.query(async ({ ctx }) => {
+  getAllNonMoneyMatches: publicProcedure
+  .input(z.void())
+  .query(async ({ ctx }) => {
     return await ctx.db
       .select()
       .from(nonCashMatch)

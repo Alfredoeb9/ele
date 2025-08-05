@@ -34,6 +34,7 @@ import Disband from "@/app/_components/modals/Disband";
 import { VerticalDotsIcon } from "@/app/friends/VerticalDotsIcon";
 import SendTeamInvite from "@/app/_components/modals/SendTeamInvite";
 import LeaveTeamModal from "@/app/_components/modals/LeaveTeamModal";
+import { formatDate, formatTeamDate } from "@/lib/utils/utils";
 
 export default function Team() {
   const pathname = usePathname();
@@ -86,6 +87,8 @@ export default function Team() {
   }
 
   const team = getTeamData?.data;
+
+  console.log("team", team);
   const members = team?.members,
     teamRecord = team?.record;
 
@@ -257,7 +260,7 @@ export default function Team() {
                     {team?.teamCategory.toUpperCase()}
                   </p>
                   <p className="font-semibold">
-                    EST. {team?.createdAt.toLocaleString()}
+                    EST. {formatTeamDate(team?.createdAt)}
                   </p>
                   {team?.gameTitle.toLowerCase() === "mw3" &&
                     statusGameMap[team?.gameTitle]}
