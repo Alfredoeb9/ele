@@ -31,9 +31,9 @@ import type { UsersType } from "@/server/db/schema";
 import CreateNewTicket from "@/components/modals/CreateNewTicket";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
-  open: "success",
-  closed: "danger",
-  pending: "warning",
+  Open: "success",
+  Closed: "danger",
+  Pending: "warning",
 };
 
 export default function TicketsDashboard() {
