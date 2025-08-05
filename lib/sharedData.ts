@@ -342,7 +342,7 @@ export const teamCategory = [
 
 export const gameTitles = [
   {
-    mw3: {
+    Mw3: {
       solo: [
         "CDL Search and Destory",
         "CDL Hardpoint",

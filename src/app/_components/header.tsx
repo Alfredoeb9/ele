@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -21,83 +20,84 @@ import AddCashModal from "./modals/AddCashModal";
 import OnboardToStripe from "./modals/OnboardToStripe";
 import { formatStripeBalance } from "@/lib/utils/utils";
 
+// Define the metaData structure
+interface TeamInviteMetaData {
+  teamId?: string;
+  game?: string;
+  teamName?: string;
+}
+
+interface FriendInviteMetaData {
+  // Add properties specific to friend invites if any
+  [key: string]: any;
+}
+
+// Create a proper notification type
+type TypedNotification = Omit<NotificationType, 'metaData'> & {
+  metaData: TeamInviteMetaData | FriendInviteMetaData;
+};
+
 export default function Header() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const utils = api.useUtils();
   const [modalPath, setModalPath] = useState("");
   const session = useSession();
-
   const router = useRouter();
-
   const sessionUser = session.data?.user;
-
-  // if (!sessionUser) {
-  //   router.push("/sign-in");
-  //   return null;
-  // }
 
   const currentUser = api.user.getSingleUser.useQuery(
     { email: session.data?.user?.email! },
     { enabled: session.status === "authenticated" ? true : false },
   );
 
-  // const CustomToastWithLink = () => (
-  //   <div>
-  //     There was a problem adding cash to account please create a{" "}
-  //     <Link href="/tickets" className="text-blue-600 hover:text-blue-500">
-  //       Tickets
-  //     </Link>{" "}
-  //     in which one of our team members will help.
-  //   </div>
-  // );
-
-  if (currentUser.isError) {
-    toast(`There was a problem getting user data`, {
-      position: "bottom-right",
-      autoClose: 3000,
-      closeOnClick: true,
-      draggable: false,
-      type: "error",
-      toastId: 10,
-    });
-  }
-
-  const userData = currentUser?.data;
-
   const usersNotifications = api.user.getNotifications.useQuery(
     { id: session.data?.user?.id! },
     {
-      enabled: currentUser.isSuccess,
+      enabled: !!sessionUser?.id && currentUser.isSuccess,
       refetchOnMount: true,
       refetchOnReconnect: true,
       refetchOnWindowFocus: true,
     },
   );
 
-  if (usersNotifications.isError) {
-    toast("Notification Service is down, please reach out to admin", {
-      position: "bottom-right",
-      autoClose: 3000,
-      closeOnClick: true,
-      draggable: false,
-      type: "error",
-      toastId: 8,
-    });
-  }
+  const userData = currentUser?.data;
+  const sub = userData?.subscription;
+  const stripeAccount = userData?.stripeAccount;
+  const balance = formatStripeBalance(stripeAccount?.balance);
+  
+  const notificationCount = useMemo(() => {
+    return usersNotifications?.data?.length || 0;
+  }, [usersNotifications?.data?.length]);
 
-  if (userData && userData.credits === undefined) {
-    toast(
-      `There was problem retrieving your credits, please refresh and try agian. If this problem presist please reach out to customer service`,
-      {
+  const hasSubscription = useMemo(() => {
+    return sub?.id && sub.id !== "";
+  }, [sub?.id]);
+
+  useEffect(() => {
+    const errors = [];
+    
+    if (currentUser.isError) {
+      errors.push({ id: 10, message: "There was a problem getting user data" });
+    }
+    
+    if (usersNotifications.isError) {
+      errors.push({ id: 8, message: "Notification Service is down, please reach out to admin" });
+    }
+    
+    if (userData && userData.credits === undefined) {
+      errors.push({ id: 3, message: "There was problem retrieving your credits..." });
+    }
+
+    errors.forEach(error => {
+      toast.error(error.message, {
         position: "bottom-right",
         autoClose: 3000,
         closeOnClick: true,
         draggable: false,
-        type: "error",
-        toastId: 3,
-      },
-    );
-  }
+        toastId: error.id,
+      });
+    });
+  }, [currentUser.isError, usersNotifications.isError, userData?.credits]);
 
   const acceptRequest = api.user.acceptFriendRequest.useMutation({
     onSuccess: async () => {
@@ -167,6 +167,50 @@ export default function Header() {
     },
   });
 
+  const handleAcceptRequest = useCallback((notification: TypedNotification) => {
+    if (!sessionUser?.id || !sessionUser?.username) {
+      console.error("Missing user data");
+      return;
+    }
+    
+    acceptRequest.mutate({
+      userId: sessionUser.id,
+      targetId: notification.from,
+      id: notification.id,
+      type: notification.type,
+      teamId: notification.metaData?.teamId,
+      game: notification.metaData?.game,
+      teamName: notification.metaData?.teamName,
+      targetEmail: sessionUser.email!,
+      userName: sessionUser.username,
+    });
+  }, [sessionUser, acceptRequest]);
+
+  const handleDeclineRequest = useCallback((notification: TypedNotification) => {
+    if (!session.data?.user?.id) {
+      console.error("Missing user ID");
+      return;
+    }
+
+    declineFriendRequest.mutate({
+      userId: session.data?.user?.id,
+      targetId: notification.from,
+      notificationID: notification.id,
+    });
+  }, [session.data?.user?.id, declineFriendRequest]);
+
+  const handleAddCash = useCallback(() => {
+    if (
+      stripeAccount !== undefined &&
+      stripeAccount !== null
+    ) {
+      setModalPath("add_cash");
+    } else {
+      setModalPath("stripe_connect_onboarding");
+    }
+    onOpen();
+  }, [stripeAccount, onOpen]);
+
   // const withdrawCash = api.user.updateUsersStripeData.useMutation({
   //   onSuccess: async () => {
   //     toast("Cash has been withdrawn", {
@@ -190,12 +234,6 @@ export default function Header() {
   //     });
   //   },
   // });
-
-  // console.log("userData", userData);
-
-  const sub = userData?.subscription;
-  const stripeAccount = userData?.stripeAccount;
-  const balance = formatStripeBalance(stripeAccount?.balance);
 
   return (
     <header className="nav">
@@ -254,22 +292,19 @@ export default function Header() {
                   <DropdownTrigger>
                     <Button variant="bordered">
                       <FaBell />
-                      {usersNotifications?.data?.length}
+                      {notificationCount}
                     </Button>
                   </DropdownTrigger>
                   <DropdownMenu
                     aria-label="Notification Actions"
                     closeOnSelect={false}
                   >
-                    {(usersNotifications?.data as NotificationType[])?.map(
-                      (notification: {
-                        userName: string;
-                        from: string;
-                        id: string;
-                        isRead: boolean | null;
-                        type: string;
-                        metaData: any;
-                      }) => (
+                    {(usersNotifications?.data as TypedNotification[])?.map(
+                      (notification) => {
+                        // Type-safe access to metaData
+                        const metaData = notification.metaData as TeamInviteMetaData;
+
+                        return (
                         <DropdownItem
                           key={notification?.id + notification?.userName}
                           textValue="notifications"
@@ -296,7 +331,7 @@ export default function Header() {
                             {notification.type === "team-invite" && (
                               <>
                                 {notification.userName} wants you to join team{" "}
-                                {notification.metaData.teamName}
+                                {metaData?.teamName}
                               </>
                             )}
 
@@ -310,22 +345,7 @@ export default function Header() {
                                   declineFriendRequest.isPending
                                 }
                                 onPress={() => {
-                                  if (!sessionUser?.id || !sessionUser?.username) {
-                                    console.error("Missing user data");
-                                    return;
-                                  }
-                                  
-                                  acceptRequest.mutate({
-                                    userId: sessionUser.id,
-                                    targetId: notification.from,
-                                    id: notification.id,
-                                    type: notification.type,
-                                    teamId: notification.metaData.teamId,
-                                    game: notification.metaData.game,
-                                    teamName: notification.metaData.teamName,
-                                    targetEmail: sessionUser.email!,
-                                    userName: sessionUser.username,
-                                  });
+                                  handleAcceptRequest(notification as TypedNotification);
                                 }}
                               >
                                 Accept
@@ -339,11 +359,7 @@ export default function Header() {
                                   declineFriendRequest.isPending
                                 }
                                 onPress={() => {
-                                  declineFriendRequest.mutate({
-                                    userId: session?.data?.user?.id,
-                                    targetId: notification.from,
-                                    notificationID: notification.id,
-                                  });
+                                  handleDeclineRequest(notification as TypedNotification);
                                 }}
                               >
                                 Decline
@@ -351,7 +367,7 @@ export default function Header() {
                             </div>
                           </div>
                         </DropdownItem>
-                      ),
+                      )}
                     )}
                   </DropdownMenu>
                 </Dropdown>
@@ -453,18 +469,7 @@ export default function Header() {
                   <DropdownItem
                     key="add_cash"
                     textValue="pricing"
-                    onPress={async () => {
-                      if (
-                        stripeAccount !== undefined &&
-                        stripeAccount !== null
-                      ) {
-                        setModalPath("add_cash");
-                        onOpen();
-                      } else {
-                        setModalPath("stripe_connect_onboarding");
-                        onOpen();
-                      }
-                    }}
+                    onPress={handleAddCash}
                   >
                     Add Cash
                   </DropdownItem>

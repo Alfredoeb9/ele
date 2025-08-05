@@ -3,6 +3,7 @@ import { relations, sql } from "drizzle-orm";
 import {
   index,
   int,
+  integer,
   primaryKey,
   sqliteTableCreator,
   text,
@@ -67,6 +68,7 @@ export const users = createTable("user", {
 });
 
 export const stripeAccount = createTable("stripe_account", {
+  id: integer("id").primaryKey(),
   userId: text("user_id", { length: 255 }),
   stripeId: text("stripe_id", { length: 255 }),
   username: text("username", { length: 255 }),
@@ -376,7 +378,7 @@ export const teams = createTable(
 );
 
 export const usersRecordTable = createTable("users_record", {
-  id: text("cuid").notNull(),
+  id: text("cuid").notNull().primaryKey(),
   userId: text("user_id", { length: 255 }).notNull(),
   userName: text("user_name", { length: 255 }).notNull(),
   wins: int("wins").default(0),
@@ -593,14 +595,18 @@ export const followsTables = createTable("follows", {
 export type FollowsType = typeof followsTables.$inferSelect;
 
 export const notificationsTable = createTable("notifications", {
-  id: text("id", { length: 255 }).notNull(),
+  id: text("id", { length: 255 }).notNull().primaryKey(),
   userId: text("user_id", { length: 255 }).notNull(),
   userName: text("user_name", { length: 255 }).notNull(),
   type: text("type", { enum: ["invite", "team-invite"] }).notNull(),
   from: text("from", { length: 255 }).notNull(),
   resourceId: text("resource_id", { length: 255 }),
   isRead: int("is_read", { mode: "boolean" }).default(false),
-  metaData: text("meta_data", { mode: "json" }),
+  metaData: text("meta_data", { mode: "json" }).$type<{
+    teamId?: string;
+    game?: string;
+    teamName?: string;
+  }>(),
 });
 
 export type NotificationType = typeof notificationsTable.$inferSelect;

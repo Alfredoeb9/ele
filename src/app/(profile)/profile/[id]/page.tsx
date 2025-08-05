@@ -79,6 +79,8 @@ export default function Profile() {
     }
   }, [getUserData, router]);
 
+  console.log("getUserData", getUserData?.data);
+
   const user = getUserData?.data as UsersType & {
     teams: TeamTypes[];
     matches: Match[];
@@ -158,17 +160,22 @@ export default function Profile() {
     {
       "Battle.net": "",
       Playstation: "",
+      "Xbox Live ID": "",
+      "Steam Friend Code": "",
+      "EPIC Display Name": "",
+      "Switch Friend Code": "",
+      "2K ID": "",
+      "Activision ID": "",
     },
   ];
 
   if (gamerTagData?.length > 0) {
-    // eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let i = 0; i < gamerTagData?.length; i++) {
       if (gamerTagData[i].type === "Battle.net") {
         gamerTags[0]["Battle.net"] = gamerTagData[i].gamerTag;
       }
 
-      if (gamerTagData[i].type === "Playstation") {
+      if (gamerTagData[i].type === "PSN ID") {
         gamerTags[0].Playstation = gamerTagData[i].gamerTag;
       }
     }
@@ -204,14 +211,19 @@ export default function Profile() {
                     <div className="flex">
                       <h4 className="pr-1 font-semibold">Game ID:</h4>
                       <div className="">
-                        <p className="flex">
-                          <span className="font-semibold">Playstation:</span>{" "}
-                          {gamerTags[0]?.Playstation}
-                        </p>
-                        <p className="flex">
-                          <span className="font-semibold">Battlenet:</span>{" "}
-                          {gamerTags[0]["Battle.net"]}
-                        </p>
+                        {gamerTags[0]?.Playstation && (
+                          <p className="flex">
+                            <span className="font-semibold">Playstation: </span>{" "}
+                            {gamerTags[0]?.Playstation}
+                          </p>
+                        )}
+
+                        {gamerTags[0]?.["Battle.net"] && (
+                          <p className="flex">
+                            <span className="font-semibold">Battlenet: </span>{" "}
+                            {gamerTags[0]["Battle.net"]}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
