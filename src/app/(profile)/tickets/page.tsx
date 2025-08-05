@@ -27,7 +27,6 @@ import {
 } from "@/lib/sharedData";
 import { VerticalDotsIcon } from "../../../../public/svg/VerticalDotsIcon";
 import type { UsersType } from "@/server/db/schema";
-// import { useRouter } from "next/navigation";
 import CreateNewTicket from "@/components/modals/CreateNewTicket";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
@@ -51,36 +50,31 @@ export default function TicketsDashboard() {
   const [page, setPage] = useState(1);
   const [, setUserId] = useState<string>("");
   const [modalPath, setModalPath] = useState<string>("");
-  // const router = useRouter();
 
-  // if (session.status === "unauthenticated") router.push("/sign-in");
-
-  const userFriendData = api.user.getUserDataWithTickets.useQuery(
+  const userTicketsData = api.user.getUserDataWithTickets.useQuery(
     { id: session.data?.user.id! },
-    { enabled: session.status === "authenticated" ? true : false },
+    { enabled: session.status === "authenticated" },
   );
 
-  const pages = Math.ceil(userFriendData.data?.length! / rowsPerPage);
+  const tickets = userTicketsData.data ?? [];
+  const pages = Math.ceil(tickets.length / rowsPerPage);
 
   const hasSearchFilter = Boolean(filterValue);
 
   const filteredItems = useMemo(() => {
-    let filteredUsers = userFriendData.data;
+    if (!tickets.length) return [];
+
+    let filteredTickets = tickets;
 
     if (hasSearchFilter) {
-      filteredUsers = filteredUsers?.filter((user) =>
-        user.createdById?.toLowerCase().includes(filterValue.toLowerCase()),
+      filteredTickets = filteredTickets.filter((ticket) =>
+        ticket.id.toLowerCase().includes(filterValue.toLowerCase()) ||
+        ticket.body.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
 
-    // if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
-    //   filteredUsers = filteredUsers?.filter((user) =>
-    //     Array.from(statusFilter).includes(user?.status),
-    //   );
-    // }
-
-    return filteredUsers;
-  }, [userFriendData.data, filterValue, statusFilter]);
+    return filteredTickets;
+  }, [tickets, filterValue, statusFilter]);
 
   const items = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -89,11 +83,26 @@ export default function TicketsDashboard() {
     return filteredItems?.slice(start, end);
   }, [page, filteredItems, rowsPerPage, hasSearchFilter]);
 
+  // const sortedItems = useMemo(() => {
+  //   return items?.sort((a: UsersType | any, b: UsersType | any) => {
+  //     const first = a[sortDescriptor.column as keyof UsersType] as number;
+  //     const second = b[sortDescriptor.column as keyof UsersType] as number;
+  //     const cmp = first < second ? -1 : first > second ? 1 : 0;
+
+  //     return sortDescriptor.direction === "descending" ? -cmp : cmp;
+  //   });
+  // }, [sortDescriptor, items]);
   const sortedItems = useMemo(() => {
     return items?.sort((a: UsersType | any, b: UsersType | any) => {
-      const first = a[sortDescriptor.column as keyof UsersType] as number;
-      const second = b[sortDescriptor.column as keyof UsersType] as number;
-      const cmp = first < second ? -1 : first > second ? 1 : 0;
+      const first = a[sortDescriptor.column as any] as string | number | bigint;
+      const second = b[sortDescriptor.column as any] as string | number | bigint;
+      
+      let cmp = 0;
+      if (typeof first === 'string' && typeof second === 'string') {
+        cmp = first.localeCompare(second);
+      } else {
+        cmp = (first as number) < (second as number) ? -1 : (first as number) > (second as number) ? 1 : 0;
+      }
 
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
@@ -105,14 +114,14 @@ export default function TicketsDashboard() {
     return ticketColumns.filter((column) =>
       Array.from(visibleColumns).includes(column.key),
     );
-  }, [visibleColumns, userFriendData.data]);
+  }, [visibleColumns, userTicketsData.data]);
 
   const renderCell = useCallback(
     (
       ticket: { [x: string]: any; id: string; status: string | number },
       columnKey: React.Key,
     ) => {
-      const cellValue = ticket[columnKey as keyof UsersType];
+      const cellValue = ticket[columnKey as string];
 
       switch (columnKey) {
         case "id":
@@ -121,7 +130,6 @@ export default function TicketsDashboard() {
           return (
             <div className="flex flex-col">
               <p className="text-bold text-small capitalize">{cellValue}</p>
-              {/* <p className="text-bold text-tiny capitalize text-default-500">{user.team}</p> */}
             </div>
           );
         case "email":
@@ -173,7 +181,7 @@ export default function TicketsDashboard() {
           return cellValue as ReactNode;
       }
     },
-    [userFriendData.data],
+    [userTicketsData.data],
   );
 
   const onRowsPerPageChange = useCallback(
@@ -238,34 +246,8 @@ export default function TicketsDashboard() {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            {/* <Dropdown>
-              <DropdownTrigger className="hidden sm:flex">
-                <Button
-                  // endContent={<ChevronDownIcon className="text-small" />}
-                  size="sm"
-                  variant="flat"
-                >
-                  Columns
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Table Columns"
-                closeOnSelect={false}
-                selectedKeys={visibleColumns}
-                selectionMode="multiple"
-                onSelectionChange={setVisibleColumns}
-              >
-                {ticketColumns.map((column) => (
-                  <DropdownItem key={column.key} className="capitalize">
-                    {column.label}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown> */}
             <Button
               className="bg-foreground text-background"
-              // endContent={<PlusIcon />}
               size="sm"
               onPress={() => {
                 setModalPath("new ticket");
@@ -300,7 +282,7 @@ export default function TicketsDashboard() {
     visibleColumns,
     onSearchChange,
     onRowsPerPageChange,
-    userFriendData.data?.length,
+    userTicketsData.data?.length,
     hasSearchFilter,
   ]);
 
@@ -358,7 +340,14 @@ export default function TicketsDashboard() {
     }
   }, []);
 
-  if (userFriendData.data === undefined) return null;
+  if (userTicketsData.isLoading) {
+    return <div>Loading tickets...</div>;
+  }
+
+  if (userTicketsData.isError) {
+    return <div>Error loading tickets</div>;
+  }
+
   return (
     <div className="m-auto mt-2 flex h-full max-w-7xl flex-col place-content-center items-start justify-center px-2 sm:px-10">
       <h1>Tickets</h1>

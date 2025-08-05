@@ -43,7 +43,7 @@ export default function CreateNewTicket({
   const createTicket = api.ticket.createNewTicket.useMutation({
     onSuccess: async () => {
       await utils.user.getUserDataWithTickets.invalidate();
-      onClose();
+      
       toast(`Ticket has been created`, {
         position: "bottom-right",
         autoClose: 4500,
@@ -53,6 +53,9 @@ export default function CreateNewTicket({
         toastId: 76,
       });
       setTicketText("");
+
+      handleModalPath("");
+      onOpenChange();
     },
 
     onError: (e) => {

@@ -602,7 +602,7 @@ export const userRouter = createTRPCRouter({
           .where(eq(tickets.userId, input.id));
 
         if (!userWithTickets) {
-          throw new Error("No friends found");
+          throw new Error("No tickets found");
         }
 
         return userWithTickets;
