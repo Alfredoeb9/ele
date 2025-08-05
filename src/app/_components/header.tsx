@@ -20,7 +20,6 @@ import AddCashModal from "./modals/AddCashModal";
 import OnboardToStripe from "./modals/OnboardToStripe";
 import { formatStripeBalance } from "@/lib/utils/utils";
 
-// Define the metaData structure
 interface TeamInviteMetaData {
   teamId?: string;
   game?: string;
@@ -28,13 +27,15 @@ interface TeamInviteMetaData {
 }
 
 interface FriendInviteMetaData {
-  // Add properties specific to friend invites if any
-  [key: string]: any;
+  // Add actual properties you use for friend invites
+  userId?: string;
+  message?: string;
 }
 
-// Create a proper notification type
+type NotificationMetaData = TeamInviteMetaData | FriendInviteMetaData;
+
 type TypedNotification = Omit<NotificationType, 'metaData'> & {
-  metaData: TeamInviteMetaData | FriendInviteMetaData;
+  metaData: NotificationMetaData;
 };
 
 export default function Header() {
@@ -172,18 +173,36 @@ export default function Header() {
       console.error("Missing user data");
       return;
     }
-    
-    acceptRequest.mutate({
-      userId: sessionUser.id,
-      targetId: notification.from,
-      id: notification.id,
-      type: notification.type,
-      teamId: notification.metaData?.teamId,
-      game: notification.metaData?.game,
-      teamName: notification.metaData?.teamName,
-      targetEmail: sessionUser.email!,
-      userName: sessionUser.username,
-    });
+
+    // Type guard to safely access team-specific properties
+    if (notification.type === "team-invite") {
+      const metaData = notification.metaData as TeamInviteMetaData;
+      
+      acceptRequest.mutate({
+        userId: sessionUser.id,
+        targetId: notification.from,
+        id: notification.id,
+        type: notification.type,
+        teamId: metaData?.teamId ?? "",
+        game: metaData?.game ?? "",
+        teamName: metaData?.teamName ?? "",
+        targetEmail: sessionUser.email!,
+        userName: sessionUser.username,
+      });
+    } else if (notification.type === "invite") {
+      // Friend invite - no team properties needed
+      acceptRequest.mutate({
+        userId: sessionUser.id,
+        targetId: notification.from,
+        id: notification.id,
+        type: notification.type,
+        teamId: "", // Empty for friend requests
+        game: "",
+        teamName: "",
+        targetEmail: sessionUser.email!,
+        userName: sessionUser.username,
+      });
+    }
   }, [sessionUser, acceptRequest]);
 
   const handleDeclineRequest = useCallback((notification: TypedNotification) => {
@@ -345,7 +364,7 @@ export default function Header() {
                                   declineFriendRequest.isPending
                                 }
                                 onPress={() => {
-                                  handleAcceptRequest(notification as TypedNotification);
+                                  handleAcceptRequest(notification);
                                 }}
                               >
                                 Accept
@@ -359,7 +378,7 @@ export default function Header() {
                                   declineFriendRequest.isPending
                                 }
                                 onPress={() => {
-                                  handleDeclineRequest(notification as TypedNotification);
+                                  handleDeclineRequest(notification);
                                 }}
                               >
                                 Decline
@@ -369,6 +388,8 @@ export default function Header() {
                         </DropdownItem>
                       )}
                     )}
+
+                    
                   </DropdownMenu>
                 </Dropdown>
               </div>
