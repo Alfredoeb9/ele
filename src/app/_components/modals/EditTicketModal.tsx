@@ -52,7 +52,7 @@ export default function editNewTicket({
       handleModalPath("");
       onOpenChange();
       
-      toast(`Ticket has been editd`, {
+      toast(`Ticket has been edited`, {
         position: "bottom-right",
         autoClose: 4500,
         closeOnClick: true,
