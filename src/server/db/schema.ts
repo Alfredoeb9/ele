@@ -837,8 +837,8 @@ export const tickets = createTable(
     createdById: text("created_by_id", { length: 255 }).notNull(),
     body: text("body").notNull(),
     category: text("category", { length: 255 }).notNull(),
-    status: text("status", { enum: ["open", "closed"] })
-      .default("open")
+    status: text("status", { enum: ["Open", "Closed"] })
+      .default("Open")
       .notNull(),
     createdAt: int("created_at", { mode: "timestamp" })
       .default(sql`(strftime('%s', 'now'))`)

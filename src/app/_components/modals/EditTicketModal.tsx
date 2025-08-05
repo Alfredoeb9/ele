@@ -11,40 +11,48 @@ import {
 import { useState } from "react";
 import { api } from "@/trpc/react";
 import { ToastContainer, toast } from "react-toastify";
-import { useSession } from "next-auth/react";
 
 import "react-toastify/dist/ReactToastify.css";
-import { ticketOptions } from "@/lib/sharedData";
 
-interface CreateNewTicketTypes {
-  open: boolean;
-  onOpenChange: () => void;
-  handleModalPath: (path: string) => void;
+interface editNewTicketTypes {
+    open: boolean;
+    onOpenChange: () => void;
+    handleModalPath: (path: string) => void;
+    ticketId: string;
+    ticketText: string;
+    selectedCategory: string;
+    sessionEmail: string | undefined;
+    sessionId: string | undefined;
+    editrUser: string | undefined;
 }
 
-export default function CreateNewTicket({
+export default function editNewTicket({
   open,
   onOpenChange,
   handleModalPath,
-}: CreateNewTicketTypes) {
+  ticketId,
+  ticketText,
+  selectedCategory,
+  sessionEmail,
+  sessionId,
+  editrUser
+}: editNewTicketTypes) {
   const { onClose } = useDisclosure();
   const [size] = useState<string>("md");
-  const [ticketText, setTicketText] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [text, setTicketText] = useState<string>(ticketText);
+//   const [category, setSelectedCategory] = useState(selectedCategory);
 
   const utils = api.useUtils();
 
-  const session = useSession();
-
-  const sessionUser = session.data?.user;
-
-  const createrUser = session.data?.user.username;
-
-  const createTicket = api.ticket.createNewTicket.useMutation({
+  const editTicket = api.ticket.editTicket.useMutation({
     onSuccess: async () => {
       await utils.user.getUserDataWithTickets.invalidate();
+      await utils.user.getUniqueTicket.invalidate({ ticketId: ticketId });
+
+      handleModalPath("");
+      onOpenChange();
       
-      toast(`Ticket has been created`, {
+      toast(`Ticket has been edited`, {
         position: "bottom-right",
         autoClose: 4500,
         closeOnClick: true,
@@ -52,10 +60,7 @@ export default function CreateNewTicket({
         type: "success",
         toastId: 76,
       });
-      setTicketText("");
-
-      handleModalPath("");
-      onOpenChange();
+    //   setTicketText("");
     },
 
     onError: (e) => {
@@ -94,9 +99,9 @@ export default function CreateNewTicket({
     },
   });
 
-  function handleTicketCatChange(e: string) {
-    setSelectedCategory(e);
-  }
+//   function handleTicketCatChange(e: string) {
+//     setSelectedCategory(e);
+//   }
 
   return (
     <>
@@ -105,7 +110,7 @@ export default function CreateNewTicket({
         isOpen={open}
         onClose={() => {
           handleModalPath("");
-          setTicketText("");
+          setTicketText(ticketText);
           onClose();
         }}
         onOpenChange={onOpenChange}
@@ -115,10 +120,10 @@ export default function CreateNewTicket({
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1 text-red-600">
-                Create New Ticket{" "}
+                Edit Ticket{" "}
               </ModalHeader>
               <ModalBody>
-                <Select label="Select Ticket Category" className="max-w-xs">
+                {/* <Select label="Select Ticket Category" className="max-w-xs">
                   {ticketOptions.map((option) => (
                     <SelectItem
                       key={option.value}
@@ -132,11 +137,11 @@ export default function CreateNewTicket({
                       {option.label}
                     </SelectItem>
                   ))}
-                </Select>
+                </Select> */}
                 <Textarea
                   placeholder="Enter your text here..."
                   onChange={(e) => setTicketText(e.target.value)}
-                  value={ticketText}
+                  value={text}
                 />
 
                 <div className="mt-2 flex justify-end gap-2 md:gap-3 xl:gap-4">
@@ -145,24 +150,25 @@ export default function CreateNewTicket({
                   </button>
                   <button
                     className="rounded-2xl bg-green-500 p-3 text-white"
-                    disabled={createTicket.isPending}
+                    disabled={editTicket.isPending}
                     onClick={(e) => {
                       e.preventDefault();
 
-                      createTicket.mutate({
-                        userName: createrUser!,
-                        userEmail: sessionUser?.email!,
-                        userId: sessionUser?.id!,
+                      editTicket.mutate({
+                        ticketId: ticketId,
+                        userName: editrUser!,
+                        userEmail: sessionEmail!,
+                        userId: sessionId!,
                         cat: selectedCategory,
-                        text: ticketText,
+                        text: text,
                       });
                     }}
                   >
-                    Create Ticket
+                    Edit Ticket
                   </button>
                 </div>
               </ModalBody>
-              <ToastContainer containerId={"create-ticket-toast"} />
+              <ToastContainer containerId={"edit-ticket-toast"} />
             </>
           )}
         </ModalContent>
