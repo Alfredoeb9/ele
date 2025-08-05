@@ -216,6 +216,7 @@ export const tabs = [
 export const statusGameMap: Record<string, string> = {
   mw3: "Call of Duty: Modern Warfare 3",
   fornite: "Fornite",
+  "Black Ops 6": "Black Ops 6"
 };
 
 export const friendTableColumn = [
