@@ -82,6 +82,25 @@ function formatTimestamp(timestamp: number, timezone: string) {
   });
 }
 
+export const formatDate = (timestamp: number | null | undefined): string => {
+  if (!timestamp) return "Unknown date";
+  return new Date(timestamp * 1000).toLocaleString();
+};
+
+export const formatTeamDate = (date: Date | number | null | undefined): string => {
+  if (!date) return "Unknown";
+  
+  if (typeof date === 'number') {
+    return new Date(date * 1000).toLocaleString();
+  }
+  
+  if (date instanceof Date) {
+    return date.toLocaleString();
+  }
+  
+  return "Unknown";
+};
+
 export function decodeUrlString(str: string): string {
   try {
     return decodeURIComponent(str);

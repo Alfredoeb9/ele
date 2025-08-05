@@ -12,6 +12,8 @@ import {
   type FollowsType,
   type TeamTypes,
   type UsersType,
+  TeamRecordType,
+  TeamMembersType,
 } from "@/server/db/schema";
 import Link from "next/link";
 import WithDrawCash from "@/app/_components/modals/WithdrawCash";
@@ -30,7 +32,10 @@ export default function Profile() {
   const [error, setError] = useState<string>("");
   const [path] = useState<string>("profile");
   const [areFriends, setAreFriends] = useState<boolean>(false);
-  const [tournaments, setTournaments] = useState([]);
+  const [tournaments, setTournaments] = useState<Array<{
+    team_id: string;
+    tournament_id: string;
+  }>>([]);
 
   let userFromPath = pathname.split("/")[2];
 
@@ -79,6 +84,8 @@ export default function Profile() {
     }
   }, [getUserData, router]);
 
+  console.log("getUserData", getUserData?.data);
+
   const user = getUserData?.data as UsersType & {
     teams: TeamTypes[];
     matches: Match[];
@@ -95,26 +102,20 @@ export default function Profile() {
   const usersTeams = user?.teams;
 
   useEffect(() => {
-    usersTeams?.map(
-      (team: {
-        id: string;
-        createdAt: number;
-        updatedAt: Date | null;
-        userId: string;
-        gameId: string;
-        gameTitle: string;
-        team_name: string;
-        teamCategory: string;
-        tournamentsEnrolled?: SetStateAction<never[]>;
-      }) => {
-        if (
-          team?.tournamentsEnrolled === undefined ||
-          !team?.tournamentsEnrolled
-        )
-          return null;
-        setTournaments(team.tournamentsEnrolled);
-      },
-    );
+    const allTournaments: Array<{team_id: string; tournament_id: string}> = [];
+
+    usersTeams?.forEach((team) => {
+      // Type assertion or safe property access
+      const teamWithTournaments = team as TeamTypes & {
+        tournamentsEnrolled?: Array<{team_id: string; tournament_id: string}>;
+      };
+      
+      if (teamWithTournaments?.tournamentsEnrolled && Array.isArray(teamWithTournaments.tournamentsEnrolled)) {
+        allTournaments.push(...teamWithTournaments.tournamentsEnrolled);
+      }
+    });
+    
+    setTournaments(allTournaments);
   }, [usersTeams]);
 
   useEffect(() => {
@@ -158,17 +159,22 @@ export default function Profile() {
     {
       "Battle.net": "",
       Playstation: "",
+      "Xbox Live ID": "",
+      "Steam Friend Code": "",
+      "EPIC Display Name": "",
+      "Switch Friend Code": "",
+      "2K ID": "",
+      "Activision ID": "",
     },
   ];
 
   if (gamerTagData?.length > 0) {
-    // eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let i = 0; i < gamerTagData?.length; i++) {
       if (gamerTagData[i].type === "Battle.net") {
         gamerTags[0]["Battle.net"] = gamerTagData[i].gamerTag;
       }
 
-      if (gamerTagData[i].type === "Playstation") {
+      if (gamerTagData[i].type === "PSN ID") {
         gamerTags[0].Playstation = gamerTagData[i].gamerTag;
       }
     }
@@ -204,14 +210,19 @@ export default function Profile() {
                     <div className="flex">
                       <h4 className="pr-1 font-semibold">Game ID:</h4>
                       <div className="">
-                        <p className="flex">
-                          <span className="font-semibold">Playstation:</span>{" "}
-                          {gamerTags[0]?.Playstation}
-                        </p>
-                        <p className="flex">
-                          <span className="font-semibold">Battlenet:</span>{" "}
-                          {gamerTags[0]["Battle.net"]}
-                        </p>
+                        {gamerTags[0]?.Playstation && (
+                          <p className="flex">
+                            <span className="font-semibold">Playstation: </span>{" "}
+                            {gamerTags[0]?.Playstation}
+                          </p>
+                        )}
+
+                        {gamerTags[0]?.["Battle.net"] && (
+                          <p className="flex">
+                            <span className="font-semibold">Battlenet: </span>{" "}
+                            {gamerTags[0]["Battle.net"]}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>

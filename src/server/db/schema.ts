@@ -3,6 +3,7 @@ import { relations, sql } from "drizzle-orm";
 import {
   index,
   int,
+  integer,
   primaryKey,
   sqliteTableCreator,
   text,
@@ -21,17 +22,16 @@ export const createTable = sqliteTableCreator((name) => `ele_${name}`);
 export const posts = createTable(
   "post",
   {
-    id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+    id: int("id", { mode: "number" }).primaryKey(),
     name: text("name", { length: 256 }),
     message: text("message", { length: 256 }),
     createdById: text("createdById", { length: 255 }).notNull(),
-    createdAt: text("created_at")
+    createdAt: int("created_at", { mode: "timestamp" })
       .notNull()
-      .default(sql`(CURRENT_TIMESTAMP)`),
-    updatedAt: text("updated_at")
-      .notNull()
-      .default(sql`(CURRENT_TIMESTAMP)`)
-      .$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
+      .default(sql`(strftime('%s', 'now'))`),
+    updatedAt: int("updated_at", { mode: "timestamp" })
+      .default(sql`(strftime('%s', 'now'))`)
+      .$onUpdate(() => sql`(strftime('%s', 'now'))`),
   },
   (example) => [
     index("createdById_idx").on(example.createdById),
@@ -40,6 +40,13 @@ export const posts = createTable(
 );
 
 export type PostsTypes = typeof posts.$inferSelect;
+
+export const postsRelations = relations(posts, ({ one }) => ({
+  createdBy: one(users, {
+    fields: [posts.createdById],
+    references: [users.id],
+  }),
+}));
 
 // bigInt --> int
 // text --> text
@@ -60,13 +67,13 @@ export const users = createTable("user", {
   email: text("email", { length: 255 }).notNull(),
   credits: int("credits", { mode: "number" }).default(15),
   teamId: text("team_id", { mode: "json" }),
-  emailVerified: int("emailVerified", {
-    mode: "timestamp",
-  }).default(sql`CURRENT_TIMESTAMP`),
+  emailVerified: int("emailVerified", { mode: "timestamp" })
+    .default(sql`(strftime('%s', 'now'))`),
   image: text("image", { length: 255 }),
 });
 
 export const stripeAccount = createTable("stripe_account", {
+  id: integer("id").primaryKey(),
   userId: text("user_id", { length: 255 }),
   stripeId: text("stripe_id", { length: 255 }),
   username: text("username", { length: 255 }),
@@ -86,20 +93,29 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   sessions: many(sessions),
   teams: many(teams),
   teamMembers: many(teamMembersTable),
-  follows: many(followsTables),
+  follows: many(followsTables, {
+    relationName: "follower", // ✅ Users who follow others
+  }),
+  followers: many(followsTables, {
+    relationName: "following", // ✅ Users who are followed by others
+  }),
   notifications: many(notificationsTable),
-  matches: many(matches),
+  matches: many(usersToMatches),
   payments: many(payments),
   gamerTags: many(gamerTags),
   socialMediaTags: many(socialTags),
-  nonCashMatch: many(nonCashMatch),
-  moneyMatch: many(moneyMatch),
+  // nonCashMatch: many(nonCashMatch),
+  // moneyMatch: many(moneyMatch),
   transactions: many(transactions),
   tickets: many(tickets),
-  stripeAccount: one(stripeAccount),
+  stripeAccount: one(stripeAccount, {
+    fields: [users.id],
+    references: [stripeAccount.userId],
+  }),
   subscription: one(subscription),
   userRecord: one(usersRecordTable),
   posts: many(posts),
+  teamInvites: many(teamInvites),
 }));
 
 export const gamerTags = createTable("gamer_tags", {
@@ -107,10 +123,12 @@ export const gamerTags = createTable("gamer_tags", {
   type: text("type", { length: 255 }).notNull(),
   gamerTag: text("gamer_tag", { length: 255 }).notNull(),
   createdAt: int("created_at", { mode: "timestamp" })
-    .default(sql`CURRENT_TIMESTAMP`)
+    .default(sql`(strftime('%s', 'now'))`)
     .notNull(),
-  updatedAt: int("updatedAt", { mode: "timestamp" }),
-});
+  updatedAt: int("updated_at", { mode: "timestamp" }),
+}, (t) => ({
+  pk: primaryKey({ columns: [t.userId, t.type] }),
+}));
 
 export const gamerTagsRelation = relations(gamerTags, ({ one }) => ({
   user: one(users, {
@@ -124,10 +142,12 @@ export const socialTags = createTable("social_tags", {
   type: text("type", { length: 255 }).notNull(),
   socialTag: text("social_tag", { length: 255 }).notNull(),
   createdAt: int("created_at", { mode: "timestamp" })
-    .default(sql`CURRENT_TIMESTAMP`)
+    .default(sql`(strftime('%s', 'now'))`)
     .notNull(),
-  updatedAt: int("updatedAt", { mode: "timestamp" }),
-});
+  updatedAt: int("updated_at", { mode: "timestamp" }),
+}, (t) => ({
+  pk: primaryKey({ columns: [t.userId, t.type] }), // ✅ Add primary key
+}));
 
 export const socialTagsRelation = relations(socialTags, ({ one }) => ({
   user: one(users, {
@@ -192,10 +212,10 @@ export const verificationTokens = createTable(
   {
     id: text("id", { length: 255 }).notNull(),
     token: text("token", { length: 384 }).notNull(),
-    createdAt: int("created_at")
-      .default(sql`CURRENT_TIMESTAMP`)
+    createdAt: int("created_at", { mode: "timestamp" })
+      .default(sql`(strftime('%s', 'now'))`)
       .notNull(),
-    updatedAt: int("updatedAt", { mode: "timestamp" }),
+    updatedAt: int("updated_at", { mode: "timestamp" }),
   },
   (vt) => ({
     compoundKey: primaryKey({ columns: [vt.id, vt.token] }),
@@ -203,9 +223,9 @@ export const verificationTokens = createTable(
 );
 
 export const transactions = createTable("transactions", {
-  transactionId: text("transaction_id", { length: 255 }).notNull(),
-  transactionsDate: int("created_at")
-    .default(sql`CURRENT_TIMESTAMP`)
+  transactionId: text("transaction_id", { length: 255 }).primaryKey(),
+  transactionsDate: int("created_at", { mode: "timestamp" })
+    .default(sql`(strftime('%s', 'now'))`) 
     .notNull(),
   withdrawAmt: int("withdraw_amount"),
   depositAmt: int("deposit_amount").notNull().default(0),
@@ -232,7 +252,7 @@ export type GameCategoryType = typeof gameCategory.$inferSelect;
 export const tournaments = createTable(
   "tournaments",
   {
-    id: text("id", { length: 255 }).notNull(),
+    id: text("id", { length: 255 }).primaryKey(),
     name: text("name", { length: 255 }).notNull(),
     game: text("game", { length: 255 }).notNull(),
     prize: int("prize").notNull().default(0),
@@ -275,7 +295,7 @@ export const gameRelations = relations(tournaments, ({ one }) => ({
 export const nonCashMatch = createTable(
   "non_cash_match",
   {
-    matchId: text("match_id", { length: 255 }).notNull(),
+    matchId: text("match_id", { length: 255 }).primaryKey(),
     gameTitle: text("game_title", { length: 255 }).notNull(),
     teamName: text("team_name", { length: 255 }).notNull(),
     createdBy: text("created_by", { length: 255 }).notNull(),
@@ -285,9 +305,8 @@ export const nonCashMatch = createTable(
     teamSize: text("team_size", { length: 255 }).notNull(),
     startTime: text("start_time", { length: 300 }).notNull(),
     rules: text("rules", { mode: "json" }).notNull(),
-    createdAt: int("created_at", { mode: "timestamp" }).default(
-      sql`CURRENT_TIMESTAMP`,
-    ),
+    createdAt: int("created_at", { mode: "timestamp" })
+      .default(sql`(strftime('%s', 'now'))`),
     updatedAt: int("updated_at", { mode: "timestamp" }),
   },
   (nonCashMatch) => [
@@ -300,21 +319,22 @@ export const nonCashMatch = createTable(
 );
 
 // the team.id will reference the moneyMatch.createdBy
-export const nonCashMatchRelation = relations(nonCashMatch, ({ one }) => ({
+export const nonCashMatchRelation = relations(nonCashMatch, ({ one, many }) => ({
   teams: one(teams, {
     fields: [nonCashMatch.createdBy],
     references: [teams.id],
   }),
-  nonCashMatch: one(gameCategory, {
+  gameCategory: one(gameCategory, {
     fields: [nonCashMatch.gameTitle],
     references: [gameCategory.game],
   }),
+  matches: many(matches),
 }));
 
 export const moneyMatch = createTable(
   "money_match",
   {
-    matchId: text("match_id", { length: 255 }).notNull(),
+    matchId: text("match_id", { length: 255 }).primaryKey(),
     gameTitle: text("game_title", { length: 255 }).notNull(),
     teamName: text("team_name", { length: 255 }).notNull(),
     createdBy: text("created_by", { length: 255 }).notNull(),
@@ -325,9 +345,8 @@ export const moneyMatch = createTable(
     teamSize: text("team_size", { length: 255 }).notNull(),
     startTime: text("start_time", { length: 300 }).notNull(),
     rules: text("rules", { mode: "json" }).notNull(),
-    createdAt: int("created_at", { mode: "timestamp" }).default(
-      sql`CURRENT_TIMESTAMP`,
-    ),
+    createdAt: int("created_at", { mode: "timestamp" })
+      .default(sql`(strftime('%s', 'now'))`),
     updatedAt: int("updated_at", { mode: "timestamp" }),
   },
   (match) => ({
@@ -339,30 +358,31 @@ export const moneyMatch = createTable(
 export type MoneyMatchType = typeof moneyMatch.$inferSelect;
 
 // the team.id will reference the moneyMatch.createdBy
-export const moneyMatchRelation = relations(moneyMatch, ({ one }) => ({
+export const moneyMatchRelation = relations(moneyMatch, ({ one, many }) => ({
   teams: one(teams, {
     fields: [moneyMatch.createdBy],
     references: [teams.id],
   }),
-  moneyMatch: one(gameCategory, {
+  gameCategory: one(gameCategory, {
     fields: [moneyMatch.gameTitle],
     references: [gameCategory.game],
   }),
+  matches: many(matches),
 }));
 
 export const teams = createTable(
   "team",
   {
-    id: text("id", { length: 255 }).notNull(),
+    id: text("id", { length: 255 }).primaryKey(),
     userId: text("user_id", { length: 255 }).notNull(),
     gameId: text("game_id", { length: 255 }).notNull(),
     gameTitle: text("game_title", { length: 255 }).notNull(),
     team_name: text("team_name", { length: 255 }).notNull(),
     teamCategory: text("team_category", { length: 50 }).notNull(),
-    createdAt: int("created_at")
-      .default(sql`CURRENT_TIMESTAMP`)
+    createdAt: int("created_at", { mode: "timestamp" })
+      .default(sql`(strftime('%s', 'now'))`)
       .notNull(),
-    updatedAt: int("updatedAt", { mode: "timestamp" }),
+    updatedAt: int("updated_at", { mode: "timestamp" }),
   },
   (team) => ({
     // userIdIdx: index("team_userId_idx").on(team.id),
@@ -376,7 +396,7 @@ export const teams = createTable(
 );
 
 export const usersRecordTable = createTable("users_record", {
-  id: text("cuid").notNull(),
+  id: text("cuid").notNull().primaryKey(),
   userId: text("user_id", { length: 255 }).notNull(),
   userName: text("user_name", { length: 255 }).notNull(),
   wins: int("wins").default(0),
@@ -431,10 +451,12 @@ export const teamMembersTable = createTable("team_members", {
     .notNull(),
   inviteId: text("inviteId", { length: 255 }),
   createdAt: int("created_at", { mode: "timestamp" })
-    .default(sql`CURRENT_TIMESTAMP`)
+    .default(sql`(strftime('%s', 'now'))`)
     .notNull(),
   updatedAt: int("updated_at", { mode: "timestamp" }),
-});
+}, (t) => ({
+  pk: primaryKey({ columns: [t.userId, t.teamId] }), // ✅ Add primary key
+}));
 
 export const usersToGroupsRelations = relations(
   teamMembersTable,
@@ -467,7 +489,7 @@ export type Tournament = typeof tournaments.$inferInsert;
 export const teamsRelations = relations(teams, ({ one, many }) => ({
   members: many(teamMembersTable),
   invites: many(teamInvites),
-  matches: many(matches),
+  matches: many(teamsToMatches),
   nonCashMatch: many(nonCashMatch),
   moneyMatches: many(moneyMatch),
   tournamentsEnrolled: many(tournamentsToTeams),
@@ -484,7 +506,7 @@ export const teamsRelations = relations(teams, ({ one, many }) => ({
 }));
 
 export const teamInvites = createTable("team_invites", {
-  id: text("id", { length: 255 }).notNull(),
+  id: text("id", { length: 255 }).primaryKey(),
   email: text("email", { length: 255 }).notNull(),
   teamId: text("team_id", { length: 255 }).notNull(),
   invitedAt: int("invited_at", { mode: "timestamp" }).notNull(),
@@ -508,11 +530,11 @@ export const teamInvitesRelations = relations(teamInvites, ({ one }) => ({
 export const tournamentTeamsEnrolled = createTable(
   "tournament_teams_enrolled",
   {
-    id: text("id", { length: 255 }).notNull(),
+    id: text("id", { length: 255 }).primaryKey(),
     teamId: text("team_id", { length: 255 }).notNull(),
     teamName: text("team_name", { length: 255 }).notNull(),
     createdAt: int("created_at", { mode: "timestamp" })
-      .default(sql`CURRENT_TIMESTAMP`)
+      .default(sql`(strftime('%s', 'now'))`)
       .notNull(),
     updatedAt: int("updated_at", { mode: "timestamp" }),
   },
@@ -541,7 +563,9 @@ export const tournamentStagesToTeams = createTable("tournament_stages_teams", {
     length: 255,
   }).notNull(),
   team_id: text("team_id", { length: 255 }).notNull(),
-});
+}, (t) => ({
+  pk: primaryKey({ columns: [t.tournament_stage_id, t.team_id] }), // ✅ Add primary key
+}));
 
 export const tournamentStagesToTeamsRelations = relations(
   tournamentStagesToTeams,
@@ -562,11 +586,12 @@ export type TournamentStagesToTeams =
 export type TournamentStagesToTeamsInsert =
   typeof tournamentStagesToTeams.$inferInsert;
 
-// // THIS MIGHT BE A DUPLICATE TABLE CREATED
 export const tournamentsToTeams = createTable("tournaments_teams", {
   tournament_id: text("tournament_id", { length: 255 }).notNull(),
   team_id: text("team_id", { length: 255 }).notNull(),
-});
+}, (t) => ({
+  pk: primaryKey({ columns: [t.tournament_id, t.team_id] }),
+}));
 
 export const tournamentsToTeamsRelations = relations(
   tournamentsToTeams,
@@ -588,37 +613,46 @@ export type TournamentsToTeamsInsert = typeof tournamentsToTeams.$inferInsert;
 export const followsTables = createTable("follows", {
   userId: text("user_id", { length: 255 }).notNull(),
   targetUser: text("target_user", { length: 255 }).notNull(),
-});
+}, (t) => ({
+  pk: primaryKey({ columns: [t.userId, t.targetUser] }),
+}));
 
 export type FollowsType = typeof followsTables.$inferSelect;
 
 export const notificationsTable = createTable("notifications", {
-  id: text("id", { length: 255 }).notNull(),
+  id: text("id", { length: 255 }).notNull().primaryKey(),
   userId: text("user_id", { length: 255 }).notNull(),
   userName: text("user_name", { length: 255 }).notNull(),
   type: text("type", { enum: ["invite", "team-invite"] }).notNull(),
   from: text("from", { length: 255 }).notNull(),
   resourceId: text("resource_id", { length: 255 }),
   isRead: int("is_read", { mode: "boolean" }).default(false),
-  metaData: text("meta_data", { mode: "json" }),
+  metaData: text("meta_data", { mode: "json" }).$type<{
+    teamId?: string;
+    game?: string;
+    teamName?: string;
+  }>(),
 });
 
 export type NotificationType = typeof notificationsTable.$inferSelect;
 
 export const usersToFollowsRelations = relations(followsTables, ({ one }) => ({
   user: one(users, {
+    fields: [followsTables.userId],
+    references: [users.id],
+    relationName: "follower",
+  }),
+
+  targetUser: one(users, {
     fields: [followsTables.targetUser],
     references: [users.id],
+    relationName: "following",
   }),
 }));
 
 export const usersToNotificationsRelations = relations(
   notificationsTable,
   ({ one }) => ({
-    group: one(followsTables, {
-      fields: [notificationsTable.userId],
-      references: [followsTables.userId],
-    }),
     user: one(users, {
       fields: [notificationsTable.userId],
       references: [users.id],
@@ -626,19 +660,64 @@ export const usersToNotificationsRelations = relations(
   }),
 );
 
+// Create junction tables (if you need many-to-many)
+export const matchesToNonCashMatches = createTable("matches_non_cash_matches", {
+  match_id: text("match_id", { length: 255 }).notNull(),
+  non_cash_match_id: text("non_cash_match_id", { length: 255 }).notNull(),
+}, (t) => ({
+  pk: primaryKey({ columns: [t.match_id, t.non_cash_match_id] }),
+}));
+
+export const matchesToMoneyMatches = createTable("matches_money_matches", {
+  match_id: text("match_id", { length: 255 }).notNull(),
+  money_match_id: text("money_match_id", { length: 255 }).notNull(),
+}, (t) => ({
+  pk: primaryKey({ columns: [t.match_id, t.money_match_id] }),
+}));
+
 export const matches = createTable("matches", {
   id: text("id", { length: 255 }).primaryKey(),
   teamId: text("team_id", { length: 255 }),
+  nonCashMatchId: text("non_cash_match_id", { length: 255 }),
+  moneyMatchId: text("money_match_id", { length: 255 }),
 });
 
 export const matchesRelations = relations(matches, ({ one, many }) => ({
   teams: many(teamsToMatches),
   users: many(usersToMatches),
-  nonCashMatch: many(nonCashMatch),
-  moneyMatches: many(moneyMatch),
+  nonCashMatch: one(nonCashMatch, {
+    fields: [matches.nonCashMatchId],
+    references: [nonCashMatch.matchId],
+  }),
+  moneyMatch: one(moneyMatch, {
+    fields: [matches.moneyMatchId],
+    references: [moneyMatch.matchId],
+  }),
   author: one(teams, {
     fields: [matches.teamId],
     references: [teams.id], // TODO: FIX THIS WTO WHERE IT GRABS THE TEAM_ID
+  }),
+}));
+
+export const matchesToNonCashMatchesRelations = relations(matchesToNonCashMatches, ({ one }) => ({
+  match: one(matches, {
+    fields: [matchesToNonCashMatches.match_id],
+    references: [matches.id],
+  }),
+  nonCashMatch: one(nonCashMatch, {
+    fields: [matchesToNonCashMatches.non_cash_match_id],
+    references: [nonCashMatch.matchId],
+  }),
+}));
+
+export const matchesToMoneyMatchesRelations = relations(matchesToMoneyMatches, ({ one }) => ({
+  match: one(matches, {
+    fields: [matchesToMoneyMatches.match_id],
+    references: [matches.id],
+  }),
+  moneyMatch: one(moneyMatch, {
+    fields: [matchesToMoneyMatches.money_match_id],
+    references: [moneyMatch.matchId],
   }),
 }));
 
@@ -653,7 +732,7 @@ export const usersToMatches = createTable(
   },
   (t) => ({
     pk: primaryKey({
-      columns: [t.match_id],
+      columns: [t.user_id, t.match_id],
     }),
   }),
 );
@@ -677,7 +756,7 @@ export const teamsToMatches = createTable(
   },
   (t) => ({
     pk: primaryKey({
-      columns: [t.match_id],
+      columns: [t.team_id, t.match_id],
     }),
   }),
 );
@@ -708,7 +787,7 @@ export type TeamsToMatchesInsert = typeof teamsToMatches.$inferInsert;
 // }));
 
 export const subscription = createTable("subscription", {
-  id: text("id", { length: 256 }).notNull(),
+  id: text("id", { length: 256 }).primaryKey(),
   userId: text("user_id", { length: 256 }),
   stripeSubscriptionId: text("stripe_subscription_id", { length: 191 }),
   stripePriceId: text("stripe_price_id", { length: 191 }),
@@ -732,7 +811,7 @@ export const subscriptionRelations = relations(subscription, ({ one }) => ({
 
 export const payments = createTable("payments", {
   id: text("id").primaryKey(),
-  userId: int("user_id").notNull(),
+  userId: text("user_id", { length: 255 }).notNull(),
   stripeAccountCreatedAt: int("stripe_account_created_at"),
   stripeAccountExpiresAt: int("stripe_account_expires_at"),
   createdAt: int("created_at", { mode: "timestamp" }).notNull(),
@@ -742,12 +821,12 @@ export const payments = createTable("payments", {
 export type Payment = typeof payments.$inferSelect;
 export type NewPayment = typeof payments.$inferInsert;
 
-// export const paymentsRelations = relations(payments, ({ one }) => ({
-//   user: one(stores, {
-//     fields: [payments.storeId],
-//     references: [stores.id]
-//   }),
-// }))
+export const paymentsRelations = relations(payments, ({ one }) => ({
+  user: one(users, {
+    fields: [payments.userId],
+    references: [users.id]
+  }),
+}))
 
 export const tickets = createTable(
   "tickets",
@@ -762,7 +841,7 @@ export const tickets = createTable(
       .default("open")
       .notNull(),
     createdAt: int("created_at", { mode: "timestamp" })
-      .default(sql`CURRENT_TIMESTAMP`)
+      .default(sql`(strftime('%s', 'now'))`)
       .notNull(),
     updatedAt: int("updated_at", { mode: "timestamp" }),
   },

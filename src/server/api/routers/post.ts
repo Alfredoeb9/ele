@@ -9,8 +9,6 @@ import {
 import { posts, type PostsTypes } from "@/server/db/schema";
 import { desc } from "drizzle-orm/sql";
 import { on } from "node:events";
-import { useCallback } from "react";
-// import { debounce } from "lodash";
 
 type EventMap<T> = Record<keyof T, any[]>;
 
@@ -146,7 +144,7 @@ export const postRouter = createTRPCRouter({
       const take = input.take ?? 10;
       // Only use the cursor from the client, not a new date
       const cursor = input.cursor;
-      const dateString = new Date().toISOString();
+      const dateString = new Date();
 
       console.log("cursor", cursor);
 

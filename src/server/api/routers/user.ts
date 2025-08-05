@@ -275,7 +275,7 @@ export const userRouter = createTRPCRouter({
                   },
                 },
                 stripeAccount: true,
-                // matches: true,
+                matches: true,
               },
             });
 
@@ -418,8 +418,8 @@ export const userRouter = createTRPCRouter({
               eq(notificationsTable.userName, input.senderUserName),
             ),
           );
-
-        if (isFriendRequestSent)
+        
+        if (isFriendRequestSent.length > 0)
           throw new Error("You have already sent user a friend request");
 
         const sentRequest = await ctx.db.insert(notificationsTable).values({
