@@ -44,6 +44,8 @@ const SignIn = () => {
     }
   }, [user]);
 
+  console.log("user", user)
+
   useEffect(() => {
     if (error2) {
       setError(error2);
@@ -92,10 +94,19 @@ const SignIn = () => {
       return setError(error as string);
     } finally {
       setLoading(false);
-
-      if (!error) {
+      setEmail("");
+      setPassword("");
+      setShow({ password: false });
+      setVerifyEmail(false);
+      if (error) {
+        console.error("Login error:", error);
+      }
+      if (user.status === "authenticated") {
         router.push("/");
       }
+
+      return null;
+      
     }
   };
 
