@@ -27,7 +27,7 @@ interface TeamMember {
 
 interface Team {
   id: string;
-  createdAt: number;
+  createdAt: Date;
   updatedAt: Date | null;
   userId: string;
   gameId: string;
@@ -101,7 +101,7 @@ export default function TeamSettings() {
           ) : (
             <>
               {teams.map(
-                (team: Team) => (
+                (team) => (
                   <div
                     className="w-[100%] rounded-xl bg-slate-800 p-2 text-white sm:w-[32.2%]"
                     key={team?.id}

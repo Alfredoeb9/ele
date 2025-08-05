@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import {
-  // matches,
   moneyMatch,
   teamMembersTable,
   teamRecordTable,

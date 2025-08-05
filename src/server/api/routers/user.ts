@@ -275,7 +275,7 @@ export const userRouter = createTRPCRouter({
                   },
                 },
                 stripeAccount: true,
-                // matches: true,
+                matches: true,
               },
             });
 

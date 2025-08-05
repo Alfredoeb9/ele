@@ -12,6 +12,8 @@ import {
   type FollowsType,
   type TeamTypes,
   type UsersType,
+  TeamRecordType,
+  TeamMembersType,
 } from "@/server/db/schema";
 import Link from "next/link";
 import WithDrawCash from "@/app/_components/modals/WithdrawCash";
@@ -30,7 +32,10 @@ export default function Profile() {
   const [error, setError] = useState<string>("");
   const [path] = useState<string>("profile");
   const [areFriends, setAreFriends] = useState<boolean>(false);
-  const [tournaments, setTournaments] = useState([]);
+  const [tournaments, setTournaments] = useState<Array<{
+    team_id: string;
+    tournament_id: string;
+  }>>([]);
 
   let userFromPath = pathname.split("/")[2];
 
@@ -97,26 +102,20 @@ export default function Profile() {
   const usersTeams = user?.teams;
 
   useEffect(() => {
-    usersTeams?.map(
-      (team: {
-        id: string;
-        createdAt: number;
-        updatedAt: Date | null;
-        userId: string;
-        gameId: string;
-        gameTitle: string;
-        team_name: string;
-        teamCategory: string;
-        tournamentsEnrolled?: SetStateAction<never[]>;
-      }) => {
-        if (
-          team?.tournamentsEnrolled === undefined ||
-          !team?.tournamentsEnrolled
-        )
-          return null;
-        setTournaments(team.tournamentsEnrolled);
-      },
-    );
+    const allTournaments: Array<{team_id: string; tournament_id: string}> = [];
+
+    usersTeams?.forEach((team) => {
+      // Type assertion or safe property access
+      const teamWithTournaments = team as TeamTypes & {
+        tournamentsEnrolled?: Array<{team_id: string; tournament_id: string}>;
+      };
+      
+      if (teamWithTournaments?.tournamentsEnrolled && Array.isArray(teamWithTournaments.tournamentsEnrolled)) {
+        allTournaments.push(...teamWithTournaments.tournamentsEnrolled);
+      }
+    });
+    
+    setTournaments(allTournaments);
   }, [usersTeams]);
 
   useEffect(() => {

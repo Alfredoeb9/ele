@@ -53,8 +53,7 @@ export const stripeRouter = createTRPCRouter({
           withdrawAmt: 0,
           depositAmt: paymentAmountDollars,
           balance: newBalance,
-          // Add transactions date if your schema requires it
-          transactionsDate: Math.floor(Date.now() / 1000), // Unix timestamp in seconds
+          transactionsDate: new Date(),
         });
 
         return {
@@ -232,7 +231,7 @@ export const stripeRouter = createTRPCRouter({
           withdrawAmt: input.amount,
           depositAmt: 0,
           balance: newBalance,
-          transactionsDate: Math.floor(Date.now() / 1000), // Unix timestamp in seconds
+          transactionsDate: new Date(), // Unix timestamp in seconds
         });
 
         return {

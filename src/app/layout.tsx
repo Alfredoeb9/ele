@@ -7,7 +7,6 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Provider from "./_components/providers/SessionProvider";
 import Header from "./_components/header";
 import ReduxProvider from "./_components/providers/ReduxProvider";
-import { getServerSession } from "next-auth/next";
 
 import { NextUiProvider } from "./_components/providers/NextUIProvider";
 import { ToastContainer } from "react-toastify";
@@ -32,28 +31,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerAuthSession();
-
-  // const user = await db.query.users.findMany({
-  //   with: {
-  //     teams: true
-  //   }
-  // })
-
-  // const user2 = await db.query.users.findMany({
-  //   with: {
-  //     teamMembers: true
-  //   }
-  // })
-
-  // const user = await db.query.users.findMany({
-  //   with: {
-  //     teams: {
-  //       where: (teams, {eq}) => eq(teams.game, "mw3")
-  //     }
-  //   }
-  // })
-
-  // console.log("user2", user[0])
 
   return (
     <html lang="en">

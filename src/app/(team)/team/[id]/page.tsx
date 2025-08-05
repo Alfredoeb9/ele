@@ -28,13 +28,13 @@ import {
   useState,
 } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import type { TeamMembersType, TeamRecordType } from "@/server/db/schema";
+import type { TeamMembersType } from "@/server/db/schema";
 import { friendTableColumn, statusGameMap } from "@/lib/sharedData";
 import Disband from "@/app/_components/modals/Disband";
 import { VerticalDotsIcon } from "@/app/friends/VerticalDotsIcon";
 import SendTeamInvite from "@/app/_components/modals/SendTeamInvite";
 import LeaveTeamModal from "@/app/_components/modals/LeaveTeamModal";
-import { formatDate, formatTeamDate } from "@/lib/utils/utils";
+import { formatTeamDate } from "@/lib/utils/utils";
 
 export default function Team() {
   const pathname = usePathname();
@@ -67,7 +67,6 @@ export default function Team() {
     currentSet: [0, 0] as [number, number],
   });
   
-
   const getTeamData = api.team.getSingleTeam.useQuery(
     { id: teamIdFromPath },
     { enabled: teamIdFromPath.length > 0 },
@@ -87,12 +86,8 @@ export default function Team() {
   }
 
   const team = getTeamData?.data;
-
-  console.log("team", team);
   const members = team?.members,
     teamRecord = team?.record;
-
-  // type User = typeof members;
 
   const items = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
