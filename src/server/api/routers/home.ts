@@ -1,5 +1,5 @@
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { desc, eq, gt } from "drizzle-orm";
+import { desc, eq, gt, gte } from "drizzle-orm";
 import { 
   gameCategory, 
   moneyMatch, 
@@ -10,6 +10,8 @@ import {
 export const homeRouter = createTRPCRouter({
   getHomePageData: publicProcedure.query(async ({ ctx }) => {
     try {
+      const currentDateTime = new Date().toISOString().slice(0, 16)
+
       // Run all queries in parallel for better performance
       const [
         gamesData,
@@ -20,117 +22,18 @@ export const homeRouter = createTRPCRouter({
         // Get featured games (using gameCategory table)
         ctx.db.select().from(gameCategory).limit(10),
         // Get recent money matches
-        // ctx.db.query.moneyMatch.findMany({
-        //   limit: 10,
-        //   orderBy: [desc(moneyMatch.createdAt)],
-        //   columns: {
-        //     matchId: true,
-        //     gameTitle: true,
-        //     teamName: true,
-        //     createdBy: true,
-        //     platform: true,
-        //     matchName: true,
-        //     matchType: true,
-        //     matchEntry: true,
-        //     teamSize: true,
-        //     startTime: true,
-        //     createdAt: true,
-        //   },
-        //   with: {
-        //     teams: {
-        //       columns: {
-        //         id: true,
-        //         team_name: true,
-        //         userId: true,
-        //       },
-        //       with: {
-        //         users: {
-        //           columns: {
-        //             id: true,
-        //             username: true,
-        //           }
-        //         }
-        //       }
-        //     },
-        //     gameCategory: {
-        //       columns: {
-        //         game: true,
-        //         platforms: true,
-        //         category: true,
-        //       }
-        //     }
-        //   }
-        // }),
+        ctx.db.select().from(moneyMatch)
+          .where(gte(moneyMatch.startTime, currentDateTime))
+          .orderBy(desc(moneyMatch.createdAt)),
 
-        ctx.db.select().from(moneyMatch).where(gt(moneyMatch.startTime, new Date().toISOString().slice(0, -8))),
-
-        // Get recent non-money matches
-        ctx.db.select().from(nonCashMatch).where(gt(nonCashMatch.startTime, new Date().toISOString().slice(0, -8))),
-        // ctx.db.query.nonCashMatch.findMany({
-        //   limit: 10,
-        //   orderBy: [desc(nonCashMatch.createdAt)],
-        //   columns: {
-        //     matchId: true,
-        //     gameTitle: true,
-        //     teamName: true,
-        //     createdBy: true,
-        //     platform: true,
-        //     matchName: true,
-        //     matchType: true,
-        //     teamSize: true,
-        //     startTime: true,
-        //     createdAt: true,
-        //   },
-        //   with: {
-        //     teams: {
-        //       columns: {
-        //         id: true,
-        //         team_name: true,
-        //         userId: true,
-        //       },
-        //       with: {
-        //         users: {
-        //           columns: {
-        //             id: true,
-        //             username: true,
-        //           }
-        //         }
-        //       }
-        //     },
-        //     gameCategory: {
-        //       columns: {
-        //         game: true,
-        //         platforms: true,
-        //         category: true,
-        //       }
-        //     }
-        //   }
-        // }),
+        ctx.db.select().from(nonCashMatch)
+          .where(gte(nonCashMatch.startTime, nonCashMatch))
+          .orderBy(desc(nonCashMatch.createdAt)),
 
         // Get recent tournaments
-        ctx.db
-              .select()
-              .from(nonCashMatch)
-              .where(gt(nonCashMatch.startTime, new Date().toISOString().slice(0, -8))),
-        // ctx.db.query.tournaments.findMany({
-        //   limit: 10,
-        //   orderBy: [desc(tournaments.created_by)], // Using created_by since no createdAt
-        //   columns: {
-        //     id: true,
-        //     name: true,
-        //     game: true,
-        //     prize: true,
-        //     category: true,
-        //     tournament_type: true,
-        //     platform: true,
-        //     entry: true,
-        //     team_size: true,
-        //     max_teams: true,
-        //     enrolled: true,
-        //     start_time: true,
-        //     created_by: true,
-        //   }
-        // }),
+        ctx.db.select().from(tournaments)
+          .where(gte(tournaments.start_time, currentDateTime))
+          .limit(10),
       ]);
 
       return {

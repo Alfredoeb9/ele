@@ -16,22 +16,6 @@ import { Rules, gameTitles, teamSizeRender } from "@/lib/sharedData";
 import { useSession } from "next-auth/react";
 import { ToastContainer, toast } from "react-toastify";
 import { decodeUrlString } from "@/lib/utils/utils";
-import { capitalizeWords } from "@/lib/utils/capitalizeString";
-
-// interface CreateMatchType {
-//   mw3: {
-//     solo: number;
-//     duo: number;
-//     trios: number;
-//     quads: number;
-//   };
-//   fornite: {
-//     solo: number;
-//     duo: number;
-//     trios: number;
-//     quads: number;
-//   };
-// }
 
 export default function CreateMatch() {
   const pathname = usePathname();
@@ -41,18 +25,10 @@ export default function CreateMatch() {
   const teamName = searchParamsNext.get("teamName");
   const teamIdNext = searchParamsNext.get("teamId");
   const teamCatNext = searchParamsNext.get("teamCategory");
-  // const searchParams = new URLSearchParams(location.search);
-  // const formattedParmas = searchParams.toString().split("&");
   const [loading] = useState<boolean>(false);
-  // const [error, setError] = useState<string>("");
-  // const [previousGameName, setPreviousGameName] = useState<string>("");
   const [selectedGames, setSelectedGames] = useState<string>(
     decodeUrlString(pathname.split("/")[3]),
   );
-  // const [teamId, setTeamId] = useState(formattedParmas[0]?.split("=")[1] || "");
-  // const [teamCat, setTeamCat] = useState(
-  //   formattedParmas[1]?.split("=")[1] || "",
-  // );
   const [confirmedGameRules, setConfirmedGameRules] = useState<any>([]);
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [gameRules, setGameRules] = useState<any>([]);
@@ -60,21 +36,11 @@ export default function CreateMatch() {
   const [teamSize, setTeamSize] = useState(null);
   const [matchEntry, setMatchEntry] = useState<number | string>(1);
   const [startTime, setStartTime] = useState(
-    `${new Date().toISOString().slice(0, -8)}`,
+    `${new Date().toISOString().slice(0, 16)}`,
   );
   const [selectedGameTitle, setSelectedGameTitle] = useState<string | null>("");
 
-  // if (session.status === "unauthenticated") {
-  //   toast("Player must be signed in", {
-  //     position: "bottom-right",
-  //     autoClose: 2800,
-  //     closeOnClick: true,
-  //     draggable: false,
-  //     type: "error",
-  //     toastId: 66,
-  //   });
-  //   router.push("/sign-in");
-  // }
+  const utils = api.useUtils();
 
   if (teamCatNext === "trios" || teamIdNext === undefined) {
     toast("Seems to be an error please try again", {
@@ -95,7 +61,9 @@ export default function CreateMatch() {
   );
 
   const createGame = api.create.createMoneyMatch.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
+      await utils.home.getHomePageData.invalidate();
+      await utils.games.getSingleGame.invalidate();
       toast("Money match created", {
         position: "bottom-right",
         autoClose: 3500,
@@ -109,7 +77,7 @@ export default function CreateMatch() {
       setSelectedPlatforms([]);
       setConfirmedGameRules([]);
       setMatchEntry(1);
-      setStartTime(`${new Date().toISOString().slice(0, -8)}`);
+      setStartTime(`${new Date().toISOString().slice(0, 16)}`);
       setTimeout(() => {
         router.push(`/team/${teamIdNext}`);
       });
@@ -174,39 +142,34 @@ export default function CreateMatch() {
     }
   }
 
-  function filterByID(item: { game: string }) {
-    if (capitalizeWords(selectedGames) === item?.game) {
-      return true;
-    }
-  }
-
-  const arrById: any = getSingleGame.data?.filter(filterByID);
-
-  // useEffect(() => {
-  //   if (formattedParmas.length > 0) {
-  //     setTeamId(formattedParmas[0]?.split("=")[1]);
-  //     setTeamCat(formattedParmas[1]?.split("=")[1]);
+  // function filterByID(item: { game: string }) {
+  //   if (capitalizeWords(selectedGames) === item?.game) {
+  //     return true;
   //   }
-  // }, [formattedParmas]);
+  // }
+
+  // const arrById: any = getSingleGame.data?.game;
+    const gameData = getSingleGame.data?.game;
+
 
   useEffect(() => {
-    if (arrById === undefined) return;
+    if (!gameData) return;
 
     if (selectedGames.length > 0) {
-      Rules.find((ele: any) => setGameRules(ele[arrById[0]?.game]));
+      Rules.find((ele: any) => setGameRules(ele[gameData.game]));
       gameTitles.find((title: any) =>
-        setGameTitles(title[arrById[0]?.game][teamCatNext!]),
+        setGameTitles(title[gameData.game][teamCatNext!]),
       );
       //@ts-expect-error using dynamic values to render value
       setTeamSize(teamSizeRender[0][`${selectedGames}`][teamCatNext]);
     } else {
       setSelectedGames(pathname.split("/")[3]);
     }
-  }, [selectedGames, gameRules, arrById, pathname, teamCatNext]);
+  }, [selectedGames, gameRules, gameData, pathname, teamCatNext]);
+
+  if (!gameData) return null;
 
   if (teamIdNext!.length <= 0 || teamCatNext!.length <= 0) return null;
-
-  if (arrById === undefined) return null;
 
   return (
     <div className="m-auto flex min-h-full w-96 flex-1 flex-col justify-center px-6 py-12 dark:bg-slate-800 lg:px-8">
@@ -299,18 +262,22 @@ export default function CreateMatch() {
           onValueChange={setSelectedPlatforms}
           isRequired
         >
-          {arrById[0]?.platforms.map((platform: any, i: number) => (
-            <Checkbox
-              key={i}
-              value={platform}
-              className="text-white"
-              classNames={{
-                label: "text-white",
-              }}
-            >
-              {platform}
-            </Checkbox>
-          ))}
+          {Array.isArray(gameData.platforms) ? (
+            gameData.platforms.map((platform: any, i: number) => (
+              <Checkbox
+                key={i}
+                value={platform}
+                className="text-white"
+                classNames={{
+                  label: "text-white",
+                }}
+              >
+                {platform}
+              </Checkbox>
+            ))
+          ) : (
+            <p className="text-white">No platforms available</p>
+          )}
         </CheckboxGroup>
 
         <div className="my-4">

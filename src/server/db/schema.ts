@@ -285,11 +285,13 @@ export const tournamentRelations = relations(gameCategory, ({ many }) => ({
 }));
 
 // tournament can only have one id
-export const gameRelations = relations(tournaments, ({ one }) => ({
-  tournaments: one(gameCategory, {
-    fields: [tournaments.game],
-    references: [gameCategory.game],
-  }),
+export const gameRelations = relations(tournaments, ({ many }) => ({
+  // Each game can have many tournaments
+  tournaments: many(tournaments),
+  // Each game can have many money matches
+  moneyMatches: many(moneyMatch),
+  // Each game can have many non-cash matches
+  nonCashMatches: many(nonCashMatch),
 }));
 
 export const nonCashMatch = createTable(

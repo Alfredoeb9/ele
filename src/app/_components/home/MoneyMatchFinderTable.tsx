@@ -100,15 +100,19 @@ export const MoneyMatchFinderTable = ({ data }: MatchListProps) => {
     (moneyMatch: Match, columnKey: React.Key): React.ReactNode => {
       const cellValue = moneyMatch[columnKey as keyof Match];
 
-      const d1 = new Date(moneyMatch.startTime),
-        d2 = new Date();
+      const startTime = new Date(moneyMatch.startTime);
+      const currentTime = new Date();
+      
+      // ✅ More readable variable names
+      const isUpcoming = startTime > currentTime;
+      const isPast = startTime <= currentTime;
 
       switch (columnKey) {
         case "game":
           return (
             <div>
               <Image
-                src={`/images/${moneyMatch.gameTitle}.png`} // Route of the image file
+                src={`/images/${moneyMatch.gameTitle.replaceAll(" ", "_")}.png`} // Route of the image file
                 height={50} // Desired size with correct aspect ratio
                 width={50} // Desired size with correct aspect ratio
                 alt={`${moneyMatch.gameTitle} placeholder image`}
@@ -128,14 +132,14 @@ export const MoneyMatchFinderTable = ({ data }: MatchListProps) => {
             <Chip
               className="gap-1 border-none capitalize text-default-600"
               color={
-                d2.valueOf() <= d1.valueOf()
+                isUpcoming
                   ? statusColorMap["available now"]
                   : statusColorMap["not available"]
               }
               size="sm"
               variant="dot"
             >
-              {d2.valueOf() <= d1.valueOf() ? "Available Now" : "Not Available"}
+              {isUpcoming ? "Available Now" : "Not Available"}
             </Chip>
           );
         case "support":
@@ -164,10 +168,12 @@ export const MoneyMatchFinderTable = ({ data }: MatchListProps) => {
           return (
             <div className="flex">
               <Button
-                isDisabled={d2.valueOf() >= d1.valueOf() ? true : false}
+                isDisabled={isPast}
                 className="rounded-2xl bg-green-600 p-2"
               >
-                <Link href={`/money-match/${moneyMatch.matchId}`}>Accept</Link>
+                <Link href={`/money-match/${moneyMatch.matchId}`}>
+                  {isPast ? "Unavailable" : "Accept"}
+                </Link>
               </Button>
             </div>
           );

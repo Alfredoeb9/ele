@@ -75,7 +75,8 @@ export default function Home() {
     undefined,
     {
       staleTime: 5 * 60 * 1000, // 5 minutes cache
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: true,
+      refetchInterval: 30000,
     }
   );
 
@@ -97,6 +98,8 @@ export default function Home() {
       toastId: "home-error",
     });
   }
+
+  console.log('homeData', homeData.data?.moneyMatches);
 
   return (
     <main>

@@ -9,19 +9,37 @@ import GameTabs from "./GameTabs";
 import Link from "next/link";
 import Image from "next/image";
 import { ToastContainer, toast } from "react-toastify";
-import { type TournamentType, type MoneyMatchType } from "@/server/db/schema";
+import { type TournamentType } from "@/server/db/schema";
+import { RouterOutputs } from "@/trpc/shared";
 
-function isTournamentType(
-  data: TournamentType | MoneyMatchType,
-): data is TournamentType {
-  return (data as TournamentType).game !== undefined;
+type GameData = RouterOutputs["games"]["getSingleGame"];
+type Tournament = GameData["tournaments"][0];
+type MoneyMatch = GameData["moneyMatches"][0];
+type NonCashMatch = GameData["nonCashMatches"][0];
+
+type RenderDataType = Tournament | MoneyMatch | NonCashMatch;
+
+function isTournamentType(data: RenderDataType): data is Tournament {
+  return 'id' in data && 'name' in data && 'game' in data;
 }
+
+function isMoneyMatchType(data: RenderDataType): data is MoneyMatch {
+  return 'matchId' in data && 'matchEntry' in data;
+}
+
+function isNonCashMatchType(data: RenderDataType): data is NonCashMatch {
+  return 'matchId' in data && !('matchEntry' in data);
+}
+
+// function isTournamentType(
+//   data: TournamentType | MoneyMatchType,
+// ): data is TournamentType {
+//   return (data as TournamentType).game !== undefined;
+// }
 
 export default function Game() {
   const [value, setValue] = useState("Community Tournaments");
-  const [renderData, setRenderData] = useState<
-    (TournamentType | MoneyMatchType)[]
-  >([]);
+  const [renderData, setRenderData] = useState<RenderDataType[]>([]);
   const pathname = usePathname();
   let gameFromPath = pathname.split("/")[2];
   const [active, setActive] = useState<string>("community tournaments");
@@ -30,35 +48,65 @@ export default function Game() {
     gameFromPath = gameFromPath.replace(/%20/g, " ");
   }
 
+  console.log("gameFromPath", gameFromPath);
+
   // get data from params
   const gameData = api.games.getSingleGame.useQuery(
     { gameName: gameFromPath },
-    { enabled: gameFromPath.length > 0 },
+    { enabled: gameFromPath?.length > 0 },
   );
 
+  console.log("gameData now", gameData.data);
+
   useEffect(() => {
-    if (value === "Community Tournaments" && gameData.data) {
-      setRenderData(gameData?.data[0]?.tournaments);
-    } else if (value === "Cash Matches" && gameData.data) {
-      setRenderData(gameData?.data[0]?.moneyMatch);
-    } else if (value === "XP Matches" && gameData.data) {
-      setRenderData([]);
+    if (gameData.isError) {
+      toast(
+        "There was an error with this service, please refresh or submit a support ticket",
+        {
+          position: "bottom-right",
+          autoClose: 5000,
+          closeOnClick: true,
+          draggable: false,
+          type: "error",
+          toastId: "game-error", // Use string ID to prevent duplicate toasts
+        },
+      );
+    }
+  }, [gameData.isError]);
+
+  useEffect(() => {
+    if (!gameData.data) return;
+
+    if (value === "Community Tournaments") {
+      setRenderData(gameData.data.tournaments || []);
+    } else if (value === "Cash Matches") {
+      setRenderData(gameData.data.moneyMatches || []);
+    } else if (value === "XP Matches") {
+      setRenderData(gameData.data.nonCashMatches || []);
     }
   }, [value, gameData.data]);
 
-  if (gameData.isError) {
-    toast(
-      "There was an error was this service, please refresh or submit a support ticket",
-      {
-        position: "bottom-right",
-        autoClose: 5000,
-        closeOnClick: true,
-        draggable: false,
-        type: "error",
-        toastId: 63,
-      },
+  if (gameData.isLoading) {
+    return (
+      <main className="bg-neutral-600 flex items-center justify-center min-h-screen">
+        <div className="text-white text-xl">Loading game data...</div>
+      </main>
     );
   }
+
+  // if (gameData.isError) {
+  //   toast(
+  //     "There was an error was this service, please refresh or submit a support ticket",
+  //     {
+  //       position: "bottom-right",
+  //       autoClose: 5000,
+  //       closeOnClick: true,
+  //       draggable: false,
+  //       type: "error",
+  //       toastId: 63,
+  //     },
+  //   );
+  // }
 
   return (
     <main className="bg-neutral-600">
@@ -95,11 +143,11 @@ export default function Game() {
                   mw3
                 </SelectItem>
                 <SelectItem
-                  href={`/game/fornite`}
-                  key={"fornite"}
-                  value={"fornite"}
+                  href={`/game/fortnite`}
+                  key={"fortnite"}
+                  value={"fortnite"}
                 >
-                  fornite
+                  fortnite
                 </SelectItem>
                 <SelectItem
                   href={`/game/Black%20Ops%206`}
@@ -124,13 +172,13 @@ export default function Game() {
                 ) : (
                   <>
                     {renderData?.map(
-                      (data: TournamentType | MoneyMatchType) => (
+                      (data: RenderDataType) => (
                         <div
                           key={isTournamentType(data) ? data.id : data.matchId}
                           className="m-3 flex h-[200px] rounded-xl bg-slate-800 p-2 md:w-[32.3%]"
                         >
                           <Image
-                            src={`/images/${isTournamentType(data) ? data.game : data.gameTitle}.png`}
+                            src={`/images/${isTournamentType(data) ? data.game.replaceAll(" ", "_") : data.gameTitle.replaceAll(" ", "_")}.png`}
                             alt={`${isTournamentType(data) ? data.game : data.gameTitle} placeholder image`}
                             width={50}
                             height={50}
@@ -170,9 +218,12 @@ export default function Game() {
                                 Prize:
                               </span>{" "}
                               $
-                              {isTournamentType(data)
-                                ? data.prize
-                                : data.matchEntry || 0}
+                              {isTournamentType(data) 
+                                ? data.prize 
+                                : isMoneyMatchType(data) 
+                                  ? data.matchEntry 
+                                  : 0
+                              }
                             </p>
                             <Link
                               href={`${isTournamentType(data) ? "/tournaments/" + data.id : "/money-match/" + data.matchId}`}
