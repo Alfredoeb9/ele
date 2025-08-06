@@ -89,8 +89,6 @@ export default function TeamSettings() {
 
   const teams = currentUser.data.teams;
 
-  console.log("Teams data:", teams);
-
   return (
     <div className="mx-auto flex min-h-screen items-center justify-center bg-stone-900 px-6 py-8 md:h-screen lg:py-0">
       <div className="flex min-h-full w-96 flex-1 flex-col px-5 py-8 sm:py-4 lg:px-7">

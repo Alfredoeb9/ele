@@ -2,10 +2,16 @@ import { Spinner } from "@nextui-org/react";
 import { api } from "@/trpc/react";
 import { MoneyMatchFinderTable } from "./MoneyMatchFinderTable";
 
-export default function HomeMoneyMatch() {
-  const moneyMatches = api.matches.getAllMoneyMatches.useQuery();
+interface HomeMoneyMatchProps {
+  data: any[];
+  isLoading: boolean;
+  isSuccess: boolean;
+  isError?: boolean;
+}
 
-  if (moneyMatches.isPending)
+export default function HomeMoneyMatch({ data, isLoading, isSuccess, isError }: HomeMoneyMatchProps) {
+
+  if (isLoading)
     return <Spinner label="Loading..." color="warning" />;
 
   return (
@@ -19,10 +25,10 @@ export default function HomeMoneyMatch() {
             Head to head matches where you pick the game, rules and prize.
           </p>
 
-          {moneyMatches.isSuccess && (
-            <MoneyMatchFinderTable data={moneyMatches.data} />
+          {isSuccess && (
+            <MoneyMatchFinderTable data={data} />
           )}
-          {moneyMatches.isError && <p>Please refresh again!</p>}
+          {isError && <p>Please refresh again!</p>}
         </div>
       </div>
     </section>

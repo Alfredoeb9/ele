@@ -55,8 +55,6 @@ export const gameCategoryRouter = createTRPCRouter({
           },
         });
 
-        console.log('data', data)
-
         if (data.length <= 0)
           throw new Error("Please select a game we support");
 

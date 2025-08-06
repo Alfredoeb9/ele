@@ -44,8 +44,6 @@ const SignIn = () => {
     }
   }, [user]);
 
-  console.log("user", user)
-
   useEffect(() => {
     if (error2) {
       setError(error2);

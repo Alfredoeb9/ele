@@ -2,12 +2,16 @@ import { api } from "@/trpc/react";
 import { Spinner } from "@nextui-org/react";
 import { MatchFinderTable } from "./MatchFinderTable";
 
-export default function HomeMatchFinder() {
-  const matches = api.matches.getAllNonMoneyMatches.useQuery();
+interface HomeMatchFinderProps {
+  data: any[];
+  isLoading: boolean;
+  isSuccess: boolean;
+  isError: boolean;
+}
 
-  // console.log("matches", matches);
+export default function HomeMatchFinder({ data, isLoading, isSuccess, isError }: HomeMatchFinderProps) {
 
-  if (matches.isPending) return <Spinner label="Loading..." color="warning" />;
+  if (isLoading) return <Spinner label="Loading..." color="warning" />;
 
   return (
     <section className="m-auto flex w-full max-w-7xl flex-col items-center justify-center p-8">
@@ -20,8 +24,8 @@ export default function HomeMatchFinder() {
             Head to head matches where you pick the game, rules and prize.
           </p>
 
-          {matches.isSuccess && <MatchFinderTable data={matches.data} />}
-          {matches.isError && <p>Please refresh again!</p>}
+          {isSuccess && <MatchFinderTable data={data} />}
+          {isError && <p>Please refresh again!</p>}
         </div>
       </div>
     </section>

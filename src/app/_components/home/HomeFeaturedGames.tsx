@@ -6,10 +6,13 @@ import type { GameCategoryType } from "@/server/db/schema";
 interface HomeDataProps {
   data: GameCategoryType[];
   error: string;
+  isLoading: boolean;
+  isSuccess: boolean;
+  isError: boolean;
 }
 
-export default function HomeFeaturedGames({ data, error }: HomeDataProps) {
-  if (!data) return <h2>Please refresh and try again!</h2>;
+export default function HomeFeaturedGames({ data, error, isLoading, isSuccess, isError }: HomeDataProps) {
+  if (isLoading) return <h2>Loading...</h2>;
 
   return (
     <section className="m-auto flex flex-col items-center justify-center bg-black p-8">

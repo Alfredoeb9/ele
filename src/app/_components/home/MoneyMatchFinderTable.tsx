@@ -109,8 +109,8 @@ export const MoneyMatchFinderTable = ({ data }: MatchListProps) => {
             <div>
               <Image
                 src={`/images/${moneyMatch.gameTitle}.png`} // Route of the image file
-                height={40} // Desired size with correct aspect ratio
-                width={40} // Desired size with correct aspect ratio
+                height={50} // Desired size with correct aspect ratio
+                width={50} // Desired size with correct aspect ratio
                 alt={`${moneyMatch.gameTitle} placeholder image`}
               />
             </div>

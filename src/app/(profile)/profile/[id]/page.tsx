@@ -84,8 +84,6 @@ export default function Profile() {
     }
   }, [getUserData, router]);
 
-  console.log("getUserData", getUserData?.data);
-
   const user = getUserData?.data as UsersType & {
     teams: TeamTypes[];
     matches: Match[];

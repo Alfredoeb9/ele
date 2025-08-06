@@ -423,6 +423,13 @@ export const gameTitles = [
         "Rio Only SND (trios)",
         "CDL Control (trios)",
       ],
+      quads: [
+        "CDL Search and Destory (quads)",
+        "CDL Hardpoint (quads)",
+        "CDL Variant (quads)",
+        "Rio Only SND (quads)",
+        "CDL Control (quads)",
+      ],
     }
   },
 ];

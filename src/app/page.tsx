@@ -1,39 +1,26 @@
 "use client";
 import { unstable_noStore as noStore } from "next/cache";
 import Link from "next/link";
-import HomeFeaturedGames from "./_components/home/HomeFeaturedGames";
-import LoginBanner from "./_components/LoginBanner";
 import { api } from "@/trpc/react";
-import { useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { ToastContainer, toast } from "react-toastify";
-import HomeMoneyMatch from "./_components/home/HomeMoneyMatch";
-import HomeMatchFinder from "./_components/home/HomeMatchFinder";
-import HomeTournamentMatchFinder from "./_components/home/HomeTournamentMatchFinder";
+import dynamic from "next/dynamic";
 
-// function singleEliminationTournament(players: string | any[]) {
-//   const rounds = [];
-//   const numberOfRounds = Math.log2(players.length);
+const HomeFeaturedGames = memo(dynamic(() => import("./_components/home/HomeFeaturedGames")));
+HomeFeaturedGames.displayName = 'HomeFeaturedGames';
 
-//   // Generate the initial round with players
-//   rounds.push(players);
+const LoginBanner = memo(dynamic(() => import("./_components/LoginBanner")));
+LoginBanner.displayName = 'LoginBanner';
 
-//   // Simulate each round
-//   for (let i = 0; i < numberOfRounds; i++) {
-//     const currentRound: string | unknown[] = rounds[rounds.length - 1];
-//     const nextRound = [];
+const HomeMatchFinder = memo(dynamic(() => import("./_components/home/HomeMatchFinder")));
+HomeMatchFinder.displayName = 'HomeMatchFinder';
 
-//     // Pair players for the next round
-//     for (let j = 0; j < currentRound.length; j += 2) {
-//       const match: string | unknown[] = [currentRound[j], currentRound[j + 1]];
-//       nextRound.push(match);
-//     }
+const HomeMoneyMatch = memo(dynamic(() => import("./_components/home/HomeMoneyMatch")));
+HomeMoneyMatch.displayName = 'HomeMoneyMatch';
 
-//     rounds.push(nextRound);
-//   }
-
-//   return rounds;
-// }
+const HomeTournamentMatchFinder = memo(dynamic(() => import("./_components/home/HomeTournamentMatchFinder")));
+HomeTournamentMatchFinder.displayName = 'HomeTournamentMatchFinder';
 
 export default function Home() {
   noStore();
@@ -79,73 +66,112 @@ export default function Home() {
 
   // const tournamentMatches = api.matches.getAllMatches.useQuery();
 
-  const getGames = api.games.getAllGames.useQuery();
+  // const getGames = api.games.getAllGames.useQuery(undefined, {
+  //   staleTime: 5 * 60 * 1000, // 5 minutes cache
+  //   refetchOnWindowFocus: false,
+  // });
 
-  // if (tournamentMatches.isError) {
-  //   setError("Match server is down, please reach out to admin");
-  //   return null;
-  // }
+  const homeData = api.home.getHomePageData.useQuery(
+    undefined,
+    {
+      staleTime: 5 * 60 * 1000, // 5 minutes cache
+      refetchOnWindowFocus: false,
+    }
+  );
 
-  if (getGames.isError) {
-    toast("There was an error with getting all games service", {
+  // Memoize derived data
+  const { games, moneyMatches, nonMoneyMatches, tournaments } = useMemo(() => ({
+    games: homeData.data?.games ?? [],
+    moneyMatches: homeData.data?.moneyMatches ?? [],
+    nonMoneyMatches: homeData.data?.nonMoneyMatches ?? [],
+    tournaments: homeData.data?.tournaments ?? [],
+  }), [homeData.data]);
+
+  if (homeData.isError) {
+    toast("There was an error loading the page", {
       position: "bottom-right",
       autoClose: 5000,
       closeOnClick: true,
       draggable: false,
       type: "error",
-      toastId: 53,
+      toastId: "home-error",
     });
   }
 
   return (
     <main>
-      <section className="min-h-128 m-auto flex h-[80vh] w-full flex-col place-content-center items-start justify-center bg-hero_bg bg-cover bg-no-repeat object-cover px-12 sm:h-lvh">
-        <div className="flex max-h-full flex-row place-content-start">
-          <div className="mr-4 h-52 w-2 bg-red-400" />
-          <div>
-            <h1 className="text-4xl text-white md:text-5xl lg:text-6xl">
-              WELCOME TO YOUR NEW COMPETITIVE JOURNEY
-            </h1>
-            <h1 className="text-3xl text-gray-400 md:text-4xl lg:text-5xl">
-              COMPETE FOR CASH.
-            </h1>
-            <h1 className="text-3xl text-gray-400 md:text-4xl lg:text-5xl">
-              COMPETE FOR ...
-            </h1>
-
-            {session.data ? (
-              <Link
-                href={"/team-settings"}
-                className="mt-6 inline-block border-2 border-slate-300 px-12 py-4 text-center text-lg text-white transition-all hover:scale-105 hover:border-slate-200"
-              >
-                GO TO DASHBOARD
-              </Link>
-            ) : (
-              <Link
-                href={"/sign-up"}
-                className="mt-6 inline-block border-2 border-slate-300 px-12 py-4 text-center text-lg text-white transition-all hover:scale-105 hover:border-slate-200"
-              >
-                JOIN MLG
-              </Link>
-            )}
-          </div>
-        </div>
-      </section>
-
-      <HomeFeaturedGames
-        data={getGames.isSuccess ? getGames?.data : []}
-        error={error}
+      <HeroSection session={session} />
+      
+      <HomeFeaturedGames 
+        data={games}
+        isLoading={homeData.isPending}
+        isSuccess={homeData.isSuccess}
+        isError={homeData.isError}
+        error={homeData.isError ? "Failed to load games" : ""} 
       />
 
       <LoginBanner session={session} />
 
-      <HomeMatchFinder />
+      <HomeMatchFinder 
+        data={nonMoneyMatches}
+        isLoading={homeData.isPending}
+        isSuccess={homeData.isSuccess}
+        isError={homeData.isError}
+      />
 
-      <HomeMoneyMatch />
+      <HomeMoneyMatch 
+        data={moneyMatches}
+        isLoading={homeData.isPending}
+        isSuccess={homeData.isSuccess}
+        isError={homeData.isError}
+      />
 
-      <HomeTournamentMatchFinder />
+      <HomeTournamentMatchFinder 
+        data={tournaments}
+        isLoading={homeData.isPending}
+        isSuccess={homeData.isSuccess}
+        isError={homeData.isError}
+      />
 
       <ToastContainer containerId={"home-page-toast"} />
     </main>
   );
 }
+
+
+const HeroSection = memo(({ session }: { session: any }) => (
+  <section className="min-h-128 m-auto flex h-[80vh] w-full flex-col place-content-center items-start justify-center bg-hero_bg bg-cover bg-no-repeat object-cover px-12 sm:h-lvh">
+    <div className="flex max-h-full flex-row place-content-start">
+      <div className="mr-4 h-52 w-2 bg-red-400" />
+      <div>
+        <h1 className="text-4xl text-white md:text-5xl lg:text-6xl">
+          WELCOME TO YOUR NEW COMPETITIVE JOURNEY
+        </h1>
+        <h1 className="text-3xl text-gray-400 md:text-4xl lg:text-5xl">
+          COMPETE FOR CASH.
+        </h1>
+        <h1 className="text-3xl text-gray-400 md:text-4xl lg:text-5xl">
+          COMPETE FOR ...
+        </h1>
+
+        {session.data ? (
+          <Link
+            href={"/team-settings"}
+            className="mt-6 inline-block border-2 border-slate-300 px-12 py-4 text-center text-lg text-white transition-all hover:scale-105 hover:border-slate-200"
+          >
+            GO TO DASHBOARD
+          </Link>
+        ) : (
+          <Link
+            href={"/sign-up"}
+            className="mt-6 inline-block border-2 border-slate-300 px-12 py-4 text-center text-lg text-white transition-all hover:scale-105 hover:border-slate-200"
+          >
+            JOIN MLG
+          </Link>
+        )}
+      </div>
+    </div>
+  </section>
+));
+
+HeroSection.displayName = 'HeroSection';

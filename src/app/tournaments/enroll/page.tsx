@@ -143,7 +143,6 @@ export default function Enroll() {
   const data = currentUser?.data;
   const teams = data?.teams;
 
-  console.log('teams', teams);
   return (
     <div className="container m-auto px-4 pt-2">
       <div className="px-4">
