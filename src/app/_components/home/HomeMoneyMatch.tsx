@@ -14,8 +14,6 @@ export default function HomeMoneyMatch({ data, isLoading, isSuccess, isError }: 
   if (isLoading)
     return <Spinner label="Loading..." color="warning" />;
 
-  console.log('data', data)
-
   return (
     <section className="m-auto flex w-full max-w-7xl flex-col items-center justify-center p-8">
       <div className="m-auto flex w-full max-w-7xl flex-row justify-center">

@@ -48,15 +48,10 @@ export default function Game() {
     gameFromPath = gameFromPath.replace(/%20/g, " ");
   }
 
-  console.log("gameFromPath", gameFromPath);
-
-  // get data from params
   const gameData = api.games.getSingleGame.useQuery(
     { gameName: gameFromPath },
     { enabled: gameFromPath?.length > 0 },
   );
-
-  console.log("gameData now", gameData.data);
 
   useEffect(() => {
     if (gameData.isError) {
@@ -93,21 +88,7 @@ export default function Game() {
       </main>
     );
   }
-
-  // if (gameData.isError) {
-  //   toast(
-  //     "There was an error was this service, please refresh or submit a support ticket",
-  //     {
-  //       position: "bottom-right",
-  //       autoClose: 5000,
-  //       closeOnClick: true,
-  //       draggable: false,
-  //       type: "error",
-  //       toastId: 63,
-  //     },
-  //   );
-  // }
-
+  
   return (
     <main className="bg-neutral-600">
       <div

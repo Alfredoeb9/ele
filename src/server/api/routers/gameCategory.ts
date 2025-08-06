@@ -1,8 +1,7 @@
 import { z } from "zod";
-import { and, eq, gte } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { gameCategory, moneyMatch, tournaments, nonCashMatch } from "@/server/db/schema";
-import { capitalizeWords } from "@/lib/utils/capitalizeString";
 
 export const gameCategoryRouter = createTRPCRouter({
   getAllGames: publicProcedure.query(async ({ ctx }) => {
@@ -36,11 +35,7 @@ export const gameCategoryRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
         try {
-          const currentDateTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
           const gameData = await ctx.db.select().from(gameCategory).where(eq(gameCategory.game, input.gameName))
-
-          console.log('gameData from api', gameData)
 
           if (!gameData) {
             throw new Error("Please select a game we support");
@@ -55,68 +50,10 @@ export const gameCategoryRouter = createTRPCRouter({
               .where(eq(nonCashMatch.gameTitle, input.gameName)),
           ]);
 
-        console.log('Final return data:', {
-          gameData,
-          tournamentsData,
-          moneyMatchesData,
-          nonCashMatchesData,
-        });
-
-          // const [tournamentsData, moneyMatchesData, nonCashMatchesData] = await Promise.all([
-          //   // Get tournaments for this game
-          //   ctx.db.query.tournaments.findMany({
-          //     where: and(
-          //       eq(tournaments.game, input.gameName),
-          //       gte(tournaments.start_time, currentDateTime)
-          //     ),
-          //   }),
-
-          //   console.log('input', input.gameName),
-          //   console.log('moneyMatch', moneyMatch.gameTitle),
-
-
-          //   // Get money matches for this game
-          //   ctx.db.select().from(moneyMatch).where(eq(moneyMatch.gameTitle, input.gameName)),
-          //     // with: {
-          //     //   teams: {
-          //     //     with: {
-          //     //       users: {
-          //     //         columns: {
-          //     //           id: true,
-          //     //           username: true,
-          //     //         }
-          //     //       }
-          //     //     }
-          //     //   }
-          //     // }
-          //   // }),
-
-          //   // Get non-cash matches for this game
-          //   ctx.db.query.nonCashMatch.findMany({
-          //     where: and(
-          //       eq(nonCashMatch.gameTitle, input.gameName),
-          //       gte(nonCashMatch.startTime, currentDateTime)
-          //     ),
-          //     with: {
-          //       teams: {
-          //         with: {
-          //           users: {
-          //             columns: {
-          //               id: true,
-          //               username: true,
-          //             }
-          //           }
-          //         }
-          //       }
-          //     }
-          //   }),
-          // ]);
-
-
           return {
-            game: gameData[0],                    // ✅ Match frontend expectation
-            tournaments: tournamentsData,  // ✅ Match frontend expectation
-            moneyMatches: moneyMatchesData, // ✅ Match frontend expectation
+            game: gameData[0],                   
+            tournaments: tournamentsData,  
+            moneyMatches: moneyMatchesData,
             nonCashMatches: nonCashMatchesData,
           };
         } catch (error) {

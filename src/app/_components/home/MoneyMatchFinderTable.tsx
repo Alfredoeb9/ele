@@ -103,7 +103,6 @@ export const MoneyMatchFinderTable = ({ data }: MatchListProps) => {
       const startTime = new Date(moneyMatch.startTime);
       const currentTime = new Date();
       
-      // ✅ More readable variable names
       const isUpcoming = startTime > currentTime;
       const isPast = startTime <= currentTime;
 

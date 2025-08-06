@@ -99,8 +99,6 @@ export default function Home() {
     });
   }
 
-  console.log('homeData', homeData.data?.moneyMatches);
-
   return (
     <main>
       <HeroSection session={session} />

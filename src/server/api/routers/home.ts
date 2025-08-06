@@ -1,5 +1,5 @@
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { desc, eq, gt, gte } from "drizzle-orm";
+import { desc, gte } from "drizzle-orm";
 import { 
   gameCategory, 
   moneyMatch, 
@@ -19,9 +19,8 @@ export const homeRouter = createTRPCRouter({
         nonMoneyMatchesData,
         tournamentsData
       ] = await Promise.all([
-        // Get featured games (using gameCategory table)
         ctx.db.select().from(gameCategory).limit(10),
-        // Get recent money matches
+
         ctx.db.select().from(moneyMatch)
           .where(gte(moneyMatch.startTime, currentDateTime))
           .orderBy(desc(moneyMatch.createdAt)),
