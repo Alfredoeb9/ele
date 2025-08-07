@@ -475,7 +475,7 @@ export default function Tournaments({
                         {statusGameMap[tournament?.game]}
                       </h1>
                     )}
-                    {tournament.game.toLowerCase() === "fornite" && (
+                    {tournament.game.toLowerCase() === "fortnite" && (
                       <h1 className="text-3xl font-bold">
                         {statusGameMap[tournament?.game]}
                       </h1>

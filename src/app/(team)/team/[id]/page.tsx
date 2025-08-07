@@ -259,7 +259,7 @@ export default function Team() {
                   </p>
                   {team?.gameTitle.toLowerCase() === "mw3" &&
                     statusGameMap[team?.gameTitle]}
-                  {team?.gameTitle.toLowerCase() === "fornite" &&
+                  {team?.gameTitle.toLowerCase() === "fortnite" &&
                     statusGameMap[team?.gameTitle]}
                   <h2 className="mb-2">{team?.team_name}</h2>
                 </div>

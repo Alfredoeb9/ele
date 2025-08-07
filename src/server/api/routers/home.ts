@@ -26,7 +26,7 @@ export const homeRouter = createTRPCRouter({
           .orderBy(desc(moneyMatch.createdAt)),
 
         ctx.db.select().from(nonCashMatch)
-          .where(gte(nonCashMatch.startTime, nonCashMatch))
+          .where(gte(nonCashMatch.startTime, currentDateTime))
           .orderBy(desc(nonCashMatch.createdAt)),
 
         // Get recent tournaments

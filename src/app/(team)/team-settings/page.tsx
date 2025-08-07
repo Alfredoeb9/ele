@@ -118,7 +118,7 @@ export default function TeamSettings() {
                         Game:{" "}
                         {team.gameTitle === "mw3" &&
                           statusGameMap[team?.gameTitle]}
-                        {team.gameTitle === "fornite" &&
+                        {team.gameTitle === "fortnite" &&
                           statusGameMap[team?.gameTitle]}
                         {team.gameTitle === "valorant" &&
                           statusGameMap[team?.gameTitle]}

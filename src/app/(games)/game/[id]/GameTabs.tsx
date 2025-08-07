@@ -1,4 +1,5 @@
-import type { Dispatch, SetStateAction } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useEffect, type Dispatch, type SetStateAction } from "react";
 
 interface GameTabTypes {
   id: string;
@@ -15,6 +16,26 @@ export default function GameTabs({
   setActive,
   setValue,
 }: GameTabTypes) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const handleTabClick = () => {
+    setActive(id);
+    setValue(label);
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", id);
+    router.push(`?${params.toString()}`);
+  };
+
+  useEffect(() => {
+    const currentTab = searchParams.get("tab");
+    if (currentTab === id) {
+      setActive(id);
+      setValue(label);
+    }
+  }, [searchParams, id, label, setActive, setValue]);
+  
   return (
     <li
       key={id}
@@ -22,10 +43,7 @@ export default function GameTabs({
     >
       <button
         type="button"
-        onClick={() => {
-          setActive(id);
-          setValue(label);
-        }}
+        onClick={handleTabClick}
       >
         {label}
       </button>

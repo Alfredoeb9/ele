@@ -215,7 +215,7 @@ export const tabs = [
 
 export const statusGameMap: Record<string, string> = {
   mw3: "Call of Duty: Modern Warfare 3",
-  fornite: "Fornite",
+  fortnite: "fortnite",
   "Black Ops 6": "Black Ops 6"
 };
 
@@ -336,7 +336,7 @@ export interface TeamCategoryTypes {
 export const teamCategory = [
   {
     mw3: { category: ["solo", "duo", "trios", "quads"] },
-    fornite: { category: ["solo", "duo", "trios", "quads"] },
+    fortnite: { category: ["solo", "duo", "trios", "quads"] },
     "Black Ops 6": { category: ["solo", "duo", "trios", "quads"] },
   },
 ];
@@ -372,7 +372,7 @@ export const gameTitles = [
         "CDL Control (quads)",
       ],
     },
-    fornite: {
+    fortnite: {
       solo: [
         "Kill Race",
         "Kill Race - Zero Build",
@@ -443,7 +443,7 @@ export const Rules = [
       allowed_input: ["Controller", "MKB", "Controller + MKB"],
     },
 
-    fornite: {
+    fortnite: {
       pc_player: ["Allowed", "Not Allowed"],
       smg: ["Allowed", "Not Allowed"],
     },
@@ -471,7 +471,7 @@ export const teamSizeRender = [
       trios: 3,
       quads: 4,
     },
-    fornite: {
+    fortnite: {
       solo: 1,
       duo: 2,
       trios: 3,

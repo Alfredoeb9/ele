@@ -31,12 +31,6 @@ function isNonCashMatchType(data: RenderDataType): data is NonCashMatch {
   return 'matchId' in data && !('matchEntry' in data);
 }
 
-// function isTournamentType(
-//   data: TournamentType | MoneyMatchType,
-// ): data is TournamentType {
-//   return (data as TournamentType).game !== undefined;
-// }
-
 export default function Game() {
   const [value, setValue] = useState("Community Tournaments");
   const [renderData, setRenderData] = useState<RenderDataType[]>([]);
@@ -120,18 +114,18 @@ export default function Game() {
                 disabledKeys={[gameFromPath]}
                 selectionMode="single"
               >
-                <SelectItem href={`/game/mw3`} key={"mw3"} value={"mw3"}>
+                <SelectItem href={`/game/mw3?tab=community+tournaments`} key={"mw3"} value={"mw3"}>
                   mw3
                 </SelectItem>
                 <SelectItem
-                  href={`/game/fortnite`}
+                  href={`/game/fortnite?tab=community+tournaments`}
                   key={"fortnite"}
                   value={"fortnite"}
                 >
-                  fortnite
+                  Fortnite
                 </SelectItem>
                 <SelectItem
-                  href={`/game/Black%20Ops%206`}
+                  href={`/game/Black%20Ops%206?tab=community+tournaments`}
                   key={"Black Ops 6"}
                   value={"Black Ops 6"}
                 >

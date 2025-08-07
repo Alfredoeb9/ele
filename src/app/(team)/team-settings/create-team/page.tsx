@@ -14,7 +14,7 @@ interface GameCategory {
 
 interface TeamCategory {
   mw3: GameCategory;
-  fornite: GameCategory;
+  fortnite: GameCategory;
   "Black Ops 6": GameCategory;
 }
 

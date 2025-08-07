@@ -35,11 +35,11 @@ export default function HomeFeaturedGames({ data, error, isLoading, isSuccess, i
                     .map((set: { id: React.Key; game: string }) => (
                       <Link
                         key={set.id}
-                        href={`/game/${set?.game}`}
+                        href={`/game/${set?.game}?tab=community+tournaments`}
                         className={`h-[150px] w-[150px] border-2 border-slate-500 text-white`}
                       >
                         <Image
-                          src={`/images/${set?.game}.png`}
+                          src={`/images/${set?.game.replaceAll(" ", "_")}.png`}
                           width={150}
                           height={150}
                           style={{ height: "100%" }}

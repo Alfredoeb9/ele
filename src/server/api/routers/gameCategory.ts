@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { desc, gte, eq, and } from "drizzle-orm";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { gameCategory, moneyMatch, tournaments, nonCashMatch } from "@/server/db/schema";
 
@@ -41,13 +41,16 @@ export const gameCategoryRouter = createTRPCRouter({
             throw new Error("Please select a game we support");
           }
 
+          const currentDateTime = new Date().toISOString().slice(0, 16)
           const [tournamentsData, moneyMatchesData, nonCashMatchesData] = await Promise.all([
             ctx.db.select().from(tournaments)
-              .where(eq(tournaments.game, input.gameName)),
+              .where(and(gte(tournaments.start_time, currentDateTime), eq(tournaments.game, input.gameName))),
             ctx.db.select().from(moneyMatch)
-              .where(eq(moneyMatch.gameTitle, input.gameName)),
+              .where(and(gte(moneyMatch.startTime, currentDateTime), eq(moneyMatch.gameTitle, input.gameName)))
+              .orderBy(desc(moneyMatch.createdAt)),
             ctx.db.select().from(nonCashMatch)
-              .where(eq(nonCashMatch.gameTitle, input.gameName)),
+              .where(and(gte(nonCashMatch.startTime, currentDateTime), eq(nonCashMatch.gameTitle, input.gameName)))
+              .orderBy(desc(nonCashMatch.createdAt)),
           ]);
 
           return {
