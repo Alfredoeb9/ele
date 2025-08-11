@@ -1,19 +1,19 @@
 "use client";
-import React, { type FormEvent, useEffect, useState } from "react";
+import React, { type FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { type Session } from "next-auth";
 import { useSession, signIn, getSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAppDispatch } from "@/redux/hooks";
 import { useResend } from "../hooks/resend";
 import { login, type UserAuthProps } from "../redux/features/AuthContext";
 
 const transformSessionToUserAuthProps = (session: Session): UserAuthProps => {
   return {
-    isError: false, // Set appropriate values
-    isSuccess: true, // Set appropriate values
-    isLoading: false, // Set appropriate values
-    message: "User authenticated successfully", // Set appropriate message
+    isError: false,
+    isSuccess: true,
+    isLoading: false,
+    message: "User authenticated successfully",
     user: {
       id: session.user.id,
       username: session.user.username,
@@ -26,9 +26,10 @@ const transformSessionToUserAuthProps = (session: Session): UserAuthProps => {
 };
 
 const SignIn = () => {
-  const user = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState<string>("");
   const [, setLoading] = useState<boolean>(false);
   const [spinnerLoading] = useState<boolean>(false);
@@ -38,11 +39,21 @@ const SignIn = () => {
   const { resend, error2, isLoading2 } = useResend();
   const [show, setShow] = useState({ password: false });
 
-  useEffect(() => {
-    if (user.status == "authenticated") {
-      router.push("/");
+  const callbackUrl = useMemo(() => {
+    const callback = searchParams.get("callbackUrl");
+    // Only allow internal paths for security
+    if (callback && callback.startsWith("/") && !callback.startsWith("//")) {
+      return decodeURIComponent(callback);
     }
-  }, [user]);
+    return "/";
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (status === "authenticated" && session) {
+      dispatch(login(transformSessionToUserAuthProps(session)));
+      router.push(callbackUrl);
+    }
+  }, [status, session, callbackUrl, router, dispatch]);
 
   useEffect(() => {
     if (error2) {
@@ -53,58 +64,51 @@ const SignIn = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       if (email === "" || password === "") {
         return setError("Please provide a email and password");
       }
-      await signIn("credentials", {
-        email: email,
-        password: password,
+
+      const result =await signIn("credentials", {
+        email,
+        password,
         redirect: false,
-      })
-        .then(async (res) => {
-          setVerifyEmail(false);
-          if (!res) return null;
+      });
 
-          if (!res?.ok) {
-            if (!res.error) return null;
-            setError(res?.error);
-            if (res?.error.includes("Email is not verified")) {
-              setVerifyEmail(true);
-            }
-            return null;
-          }
+      if (!result?.ok) {
+        const errorMessage = result?.error || "Sign in failed";
+        setError(errorMessage);
+        
+        if (errorMessage.includes("Email is not verified")) {
+          setVerifyEmail(true);
+        }
+        return;
+      }
 
-          const session = await getSession();
+      const newSession = await getSession();
+      
+      if (!newSession) {
+        setError("Error: cannot find user");
+        return;
+      }
 
-          if (!session) return setError(`Error: cannot find user`);
+      dispatch(login(transformSessionToUserAuthProps(newSession)));
+      
+      router.push(callbackUrl);
 
-          setError("");
-          setVerifyEmail(false);
-          dispatch(login(transformSessionToUserAuthProps(session)));
-          return session;
-        })
-        .catch((error) => {
-          console.log("error", error);
-          return setError(error);
-        });
     } catch (error) {
-      return setError(error as string);
+      console.error("Login error:", error);
+      setError("An unexpected error occurred");
     } finally {
       setLoading(false);
-      setEmail("");
-      setPassword("");
-      setShow({ password: false });
-      setVerifyEmail(false);
-      if (error) {
-        console.error("Login error:", error);
-      }
-      if (user.status === "authenticated") {
-        router.push("/");
-      }
 
-      return null;
-      
+      if (error) {
+        setEmail("");
+        setPassword("");
+        setShow({ password: false });
+        setVerifyEmail(false);
+      }
     }
   };
 

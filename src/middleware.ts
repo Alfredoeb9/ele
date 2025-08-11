@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const sessionCookie = request.cookies.get("next-auth.session-token")?.value;
@@ -18,29 +18,33 @@ export function middleware(request: NextRequest) {
     );
   }
 
-  if (
-    request.nextUrl.pathname === "/team-settings" ||
-    request.nextUrl.pathname === "/team-settings/create-team" ||
-    request.nextUrl.pathname === "/match/create/:id" ||
-    request.nextUrl.pathname === "/match/enroll" ||
-    request.nextUrl.pathname === "/money-match/:id" ||
-    request.nextUrl.pathname === "/profile/:id" ||
-    request.nextUrl.pathname === "/tickets" ||
-    request.nextUrl.pathname === "/tickets/:id" ||
-    request.nextUrl.pathname === "/account-manage" ||
-    request.nextUrl.pathname === "/game/:id" ||
-    request.nextUrl.pathname === "/games" ||
-    request.nextUrl.pathname === "/friends" ||
-    request.nextUrl.pathname === "/chat-feature"
-  ) {
-    // if (sessionCookie) {
-    return NextResponse.next();
-    // }
+  const currentPath = request.nextUrl.pathname;
 
-    // return NextResponse.redirect(`${request.nextUrl.origin}/sign-in`, 301);
+  const isProtectedRoute = (path: string): boolean => {
+    const protectedPatterns = [
+      /^\/friends(\/.*)?$/,                    // /friends and /friends/*
+      /^\/team-settings(\/.*)?$/,              // /team-settings and /team-settings/*
+      /^\/match\/enroll(\/.*)?$/,              // /match/enroll and /match/enroll/*
+      /^\/tickets(\/.*)?$/,                    // /tickets and /tickets/*
+      /^\/account-manage(\/.*)?$/,             // /account-manage and /account-manage/*
+      /^\/chat-feature(\/.*)?$/,               // /chat-feature and /chat-feature/*
+      /^\/profile\/[^\/]+$/,                   // /profile/[id]
+      /^\/money-match\/[^\/]+$/,               // /money-match/[id]
+    ];
+
+    return protectedPatterns.some(pattern => pattern.test(path));
+  };
+
+  if (isProtectedRoute(currentPath)) {
+    if (!sessionCookie) {
+      const signInUrl = new URL('/sign-in', request.url);
+      signInUrl.searchParams.set('callbackUrl', currentPath);
+      return NextResponse.redirect(signInUrl);
+    }
   }
 
   return NextResponse.next();
+
 }
 
 export const config = {
