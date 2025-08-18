@@ -110,6 +110,15 @@ export function decodeUrlString(str: string): string {
   }
 }
 
+export function formatGameNameFromPath(pathname: string): string {
+  const gameName = pathname.split("/")[2];
+  return gameName?.includes("-") ? gameName?.replaceAll(/-/g, " ") : gameName;
+}
+
+export function fromGameNameFromData(gameName: string): string {
+  return gameName?.includes("%20") ? gameName?.replaceAll(/%20/g, "-") : gameName;
+}
+
 // import { format, fromUnixTime } from 'date-fns';
 // import { formatInTimeZone } from 'date-fns-tz';
 

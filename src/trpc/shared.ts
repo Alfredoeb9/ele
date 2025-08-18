@@ -9,7 +9,7 @@ export const transformer = superjson;
 function getBaseUrl() {
   if (typeof window !== "undefined") return "";
   if (env.REACT_APP_BASE_URL) return `https://${env.REACT_APP_BASE_URL}`;
-  return `http://localhost:3000}`;
+  return `http://localhost:3000`;
 }
 
 export function getUrl() {

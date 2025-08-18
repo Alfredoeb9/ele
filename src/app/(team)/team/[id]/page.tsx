@@ -18,7 +18,6 @@ import {
 } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
-
 import {
   type Key,
   type ReactNode,
@@ -29,7 +28,7 @@ import {
 } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import type { TeamMembersType } from "@/server/db/schema";
-import { friendTableColumn, statusGameMap } from "@/lib/sharedData";
+import { teamTableColumn, statusGameMap } from "@/lib/sharedData";
 import Disband from "@/app/_components/modals/Disband";
 import { VerticalDotsIcon } from "@/app/friends/VerticalDotsIcon";
 import SendTeamInvite from "@/app/_components/modals/SendTeamInvite";
@@ -72,18 +71,24 @@ export default function Team() {
     { enabled: teamIdFromPath.length > 0 },
   );
 
-  if (getTeamData?.isError) {
-    toast("Error retreving team data", {
-      position: "bottom-right",
-      autoClose: 2400,
-      closeOnClick: true,
-      draggable: false,
-      type: "error",
-      toastId: 28,
-    });
+  useEffect(() => {
+    if (getTeamData?.isError) {
+      toast("Error retreving team data", {
+        position: "bottom-right",
+        autoClose: 2400,
+        closeOnClick: true,
+        draggable: false,
+        type: "error",
+        toastId: 28,
+      });
 
-    setTimeout(() => [router.push("/")], 2500);
-  }
+      const t = setTimeout(() => {
+        router.replace("/")
+      }, 2500)
+
+      return () => clearTimeout(t);
+    }
+  }, [getTeamData?.isError, router]);
 
   const team = getTeamData?.data;
   const members = team?.members,
@@ -128,20 +133,20 @@ export default function Team() {
 
   const renderCell = useCallback(
     (user: { [x: string]: any; userName: string }, columnKey: React.Key) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      const cellValue = user[columnKey as number];
+      const key = String(columnKey);
+      const cellValue = user[key];
 
-      switch (columnKey) {
-        case "userId":
+      switch (key) {
+        case "userName":
           return (
             <div>
               {cellValue}
               {/* <Image
-                            src={`/images/${user.game}.png`} // Route of the image file
-                            height={40} // Desired size with correct aspect ratio
-                            width={40} // Desired size with correct aspect ratio
-                            alt={`${user.game} placeholder image`}
-                        /> */}
+                src={`/images/${user.game}.png`}
+                height={40}
+                width={40}
+                alt={`${user.game} placeholder image`}
+              /> */}
             </div>
           );
         case "role":
@@ -204,24 +209,6 @@ export default function Team() {
     );
   }, []);
 
-  // useEffect(() => {
-  //   //@ts-expect-error members is expected
-  //   if ((team?.members && (team?.members as TeamMembersType[]))?.length > 0) {
-  //     //@ts-expect-error members is expected
-  //     team?.members?.map(
-  //       (member: { userId: string | null | undefined; role: string }) => {
-  //         if (member?.userId === session?.data?.user?.email) {
-  //           if (member?.role === "owner") {
-  //             setIsUserOwner(true);
-  //           } else if (member?.role === "member") {
-  //             setIsUserMember(true);
-  //           }
-  //         }
-  //       },
-  //     );
-  //   }
-  // }, [team, session.data]);
-
   useEffect(() => {
     if (!team?.members || !session?.data?.user?.email) return;
 
@@ -270,7 +257,7 @@ export default function Team() {
                   <>
                     <Button
                       onPress={() => [
-                        router.push(`/game/${team?.gameTitle.toLowerCase()}`),
+                        router.push(`/game/${team?.gameTitle.toLowerCase().replaceAll(" ", "-")}`),
                       ]}
                     >
                       Find Match
@@ -279,11 +266,21 @@ export default function Team() {
                       color="success"
                       onPress={() => [
                         router.push(
-                          `/match/create/${team?.gameTitle.toLowerCase()}?teamId=${team?.id}&teamCategory=${team?.teamCategory}&teamName=${team?.team_name}`,
+                          `/match/create/${team?.gameTitle.toLowerCase().replaceAll(" ", "-")}?teamId=${team?.id}&teamCategory=${team?.teamCategory}&teamName=${team?.team_name}&matchType=money`,
                         ),
                       ]}
                     >
                       Create Money Match
+                    </Button>
+                    <Button
+                      color="success"
+                      onPress={() => [
+                        router.push(
+                          `/match/create/${team?.gameTitle.toLowerCase().replaceAll(" ", "-")}?teamId=${team?.id}&teamCategory=${team?.teamCategory}&teamName=${team?.team_name}&matchType=xp`,
+                        ),
+                      ]}
+                    >
+                      Create XP Match
                     </Button>
                     <CustomButton
                       teamName={team?.team_name!}
@@ -367,7 +364,7 @@ export default function Team() {
                 removeWrapper
                 // onSelectionChange={setSelectedKeys}
               >
-                <TableHeader columns={friendTableColumn}>
+                <TableHeader columns={teamTableColumn}>
                   {(column: { key: string; label: string }) => (
                     <TableColumn
                       key={column.key}

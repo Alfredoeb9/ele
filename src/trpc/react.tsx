@@ -17,6 +17,15 @@ import { env } from "@/env";
 // Create a singleton WebSocket client
 let wsClient: ReturnType<typeof createWSClient> | undefined = undefined;
 
+function getDefaultWsUrl() {
+  if (typeof window === "undefined") return "";
+  const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+  const hostname = window.location.hostname;
+  // Default to the same host with port 3001 where the server websocket listens in dev
+  const port = 3001;
+  return `${protocol}://${hostname}:${port}`;
+}
+
 // Add proper batching configuration
 const httpLink = httpBatchLink({
   url: getUrl(),
@@ -129,11 +138,12 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
 
       // Create WebSocket client with connection status callbacks
       if (!wsClient) {
+        const url = env.NEXT_PUBLIC_WS_URL || getDefaultWsUrl();
         wsClient = createWSClient({
-          url: env.NEXT_PUBLIC_WS_URL,
+          url,
           onOpen: () => {
             setConnectionStatus("connected");
-            console.log("WebSocket connected");
+            console.log("WebSocket connected ->", url);
           },
           onClose: () => {
             setConnectionStatus("disconnected");

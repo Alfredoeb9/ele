@@ -9,8 +9,8 @@ import GameTabs from "./GameTabs";
 import Link from "next/link";
 import Image from "next/image";
 import { ToastContainer, toast } from "react-toastify";
-import { type TournamentType } from "@/server/db/schema";
 import { RouterOutputs } from "@/trpc/shared";
+import { formatGameNameFromPath } from "@/lib/utils/utils";
 
 type GameData = RouterOutputs["games"]["getSingleGame"];
 type Tournament = GameData["tournaments"][0];
@@ -32,15 +32,18 @@ function isNonCashMatchType(data: RenderDataType): data is NonCashMatch {
 }
 
 export default function Game() {
+  const pathname = usePathname();
   const [value, setValue] = useState("Community Tournaments");
   const [renderData, setRenderData] = useState<RenderDataType[]>([]);
-  const pathname = usePathname();
-  let gameFromPath = pathname.split("/")[2];
   const [active, setActive] = useState<string>("community tournaments");
+  const [gameFromPath, setGameFromPath] = useState<string>("");
 
-  if (gameFromPath.includes("%20")) {
-    gameFromPath = gameFromPath.replace(/%20/g, " ");
-  }
+  useEffect(() => {
+    const formattedGameName = formatGameNameFromPath(pathname).toLowerCase(); // Normalize to lowercase
+    setGameFromPath(formattedGameName);
+  }, [pathname]);
+
+  const allGames = api.games.getAllGames.useQuery();
 
   const gameData = api.games.getSingleGame.useQuery(
     { gameName: gameFromPath },
@@ -48,7 +51,7 @@ export default function Game() {
   );
 
   useEffect(() => {
-    if (gameData.isError) {
+    if (gameData.isError || allGames.isError) {
       toast(
         "There was an error with this service, please refresh or submit a support ticket",
         {
@@ -57,11 +60,11 @@ export default function Game() {
           closeOnClick: true,
           draggable: false,
           type: "error",
-          toastId: "game-error", // Use string ID to prevent duplicate toasts
+          toastId: "game-error",
         },
       );
     }
-  }, [gameData.isError]);
+  }, [gameData.isError, allGames.isError]);
 
   useEffect(() => {
     if (!gameData.data) return;
@@ -82,7 +85,14 @@ export default function Game() {
       </main>
     );
   }
-  
+
+  const games = allGames?.data ?? [];
+
+  const normalizedGameFromPath = gameFromPath.toLowerCase();
+  const isGameInCollection = games.some(
+    (game) => game.game.replaceAll(" ", "-").toLowerCase() === normalizedGameFromPath
+  );
+
   return (
     <main className="bg-neutral-600">
       <div
@@ -110,27 +120,22 @@ export default function Game() {
             <div className="absolute right-5 flex w-36 justify-end">
               <Select
                 label="Game Drop down"
-                defaultSelectedKeys={[gameFromPath]}
-                disabledKeys={[gameFromPath]}
+                defaultSelectedKeys={isGameInCollection ? [gameFromPath] : []}
+                disabledKeys={isGameInCollection ? [gameFromPath] : []}
                 selectionMode="single"
               >
-                <SelectItem href={`/game/mw3?tab=community+tournaments`} key={"mw3"} value={"mw3"}>
-                  mw3
-                </SelectItem>
-                <SelectItem
-                  href={`/game/fortnite?tab=community+tournaments`}
-                  key={"fortnite"}
-                  value={"fortnite"}
-                >
-                  Fortnite
-                </SelectItem>
-                <SelectItem
-                  href={`/game/Black%20Ops%206?tab=community+tournaments`}
-                  key={"Black Ops 6"}
-                  value={"Black Ops 6"}
-                >
-                  Black Ops 6
-                </SelectItem>
+                {games.map((game) => {
+                  const value = game.game.replaceAll(" ", "-").toLowerCase();
+                  return (
+                    <SelectItem
+                      href={`/game/${value}?tab=community+tournaments`}
+                      key={game.id}
+                      value={value}
+                    >
+                      {game.game}
+                    </SelectItem>
+                  )
+                })}
               </Select>
             </div>
 

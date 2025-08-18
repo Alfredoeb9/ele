@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import type { GameCategoryType } from "@/server/db/schema";
+import { fromGameNameFromData } from "@/lib/utils/utils";
 
 interface HomeDataProps {
   data: GameCategoryType[];
@@ -35,11 +36,11 @@ export default function HomeFeaturedGames({ data, error, isLoading, isSuccess, i
                     .map((set: { id: React.Key; game: string }) => (
                       <Link
                         key={set.id}
-                        href={`/game/${set?.game}?tab=community+tournaments`}
+                        href={`/game/${set?.game.replaceAll(" ", "-").toLowerCase()}?tab=community+tournaments`}
                         className={`h-[150px] w-[150px] border-2 border-slate-500 text-white`}
                       >
                         <Image
-                          src={`/images/${set?.game.replaceAll(" ", "_")}.png`}
+                          src={`/images/${fromGameNameFromData(set?.game)}.png`}
                           width={150}
                           height={150}
                           style={{ height: "100%" }}

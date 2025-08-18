@@ -234,6 +234,21 @@ export const friendTableColumn = [
   },
 ];
 
+export const teamTableColumn = [
+  {
+    key: "userName",
+    label: "USERNAME",
+  },
+  {
+    key: "role",
+    label: "ROLE",
+  },
+  {
+    key: "actions",
+    label: "ACTIONS",
+  },
+]
+
 export const subscriptionCards = [
   {
     id: 1,
