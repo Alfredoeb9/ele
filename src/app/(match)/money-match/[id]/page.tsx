@@ -98,8 +98,6 @@ export default function Tournaments({
 
   const rules = matchData.data[0].rules as [{ value: string }];
 
-  console.log('match', matchData.data[0]);
-
   return (
     <div>
       <div
