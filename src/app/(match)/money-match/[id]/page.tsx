@@ -98,12 +98,15 @@ export default function Tournaments({
 
   const rules = matchData.data[0].rules as [{ value: string }];
 
-  //http://localhost:3000/match/enroll?id=44c08fc3-b2b5-4fee-ba94-601365c674cd
+  console.log('match', matchData.data[0]);
 
   return (
     <div>
       <div
         className={`h-[300px] w-full bg-${matchData?.data && matchData?.data[0].gameTitle.toLowerCase()}_team_background bg-cover bg-fixed bg-center bg-no-repeat`}
+        style={{
+          backgroundImage: `url(/images/${matchData?.data[0].gameTitle.replaceAll(" ", "_").toLowerCase()}_team_background.png)`,
+        }}
       />
 
       <main className="relative mt-[-150px] px-4">
@@ -123,7 +126,7 @@ export default function Tournaments({
                       removeWrapper
                       alt={`${match?.gameTitle} game poster`}
                       className="z-0 h-full w-full object-cover"
-                      src={`/images/${match?.gameTitle}.png`}
+                      src={`/images/${match?.gameTitle.replaceAll(" ", "_").toLowerCase()}.png`}
                       width={400}
                     />
                     <CardFooter className="absolute bottom-0 z-10 border-t-1 border-default-600 bg-black/40 dark:border-default-100">
