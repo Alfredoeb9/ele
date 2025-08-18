@@ -17,8 +17,9 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { type ReactNode, useCallback, useMemo, useState } from "react";
-import type { Selection, ChipProps, SortDescriptor } from "@nextui-org/react";
+import type { Selection, SortDescriptor } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
+import dynamic from "next/dynamic";
 import { api } from "@/trpc/react";
 import {
   friendsVisibleColumns,
@@ -27,9 +28,15 @@ import {
 } from "@/lib/sharedData";
 import { VerticalDotsIcon } from "../../../../public/svg/VerticalDotsIcon";
 import type { UsersType } from "@/server/db/schema";
-import CreateNewTicket from "@/components/modals/CreateNewTicket";
 
-const statusColorMap: Record<string, ChipProps["color"]> = {
+const CreateNewTicket = dynamic(() => import("@/components/modals/CreateNewTicket"));
+
+type TicketStatus = "Open" | "Closed" | "Pending";
+
+const statusColorMap: Record<
+  TicketStatus,
+  "default" | "success" | "warning" | "primary" | "secondary" | "danger"
+> = {
   Open: "success",
   Closed: "danger",
   Pending: "warning",
@@ -57,7 +64,7 @@ export default function TicketsDashboard() {
   );
 
   const tickets = userTicketsData.data ?? [];
-  const pages = Math.ceil(tickets.length / rowsPerPage);
+  const pages = useMemo(() => Math.ceil(tickets.length / rowsPerPage), [tickets.length, rowsPerPage]);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -83,15 +90,6 @@ export default function TicketsDashboard() {
     return filteredItems?.slice(start, end);
   }, [page, filteredItems, rowsPerPage, hasSearchFilter]);
 
-  // const sortedItems = useMemo(() => {
-  //   return items?.sort((a: UsersType | any, b: UsersType | any) => {
-  //     const first = a[sortDescriptor.column as keyof UsersType] as number;
-  //     const second = b[sortDescriptor.column as keyof UsersType] as number;
-  //     const cmp = first < second ? -1 : first > second ? 1 : 0;
-
-  //     return sortDescriptor.direction === "descending" ? -cmp : cmp;
-  //   });
-  // }, [sortDescriptor, items]);
   const sortedItems = useMemo(() => {
     return items?.sort((a: UsersType | any, b: UsersType | any) => {
       const first = a[sortDescriptor.column as any] as string | number | bigint;
@@ -108,81 +106,133 @@ export default function TicketsDashboard() {
     });
   }, [sortDescriptor, items]);
 
-  const headerColumns = useMemo(() => {
-    if (visibleColumns === "all") return ticketColumns;
-
-    return ticketColumns.filter((column) =>
-      Array.from(visibleColumns).includes(column.key),
-    );
-  }, [visibleColumns, userTicketsData.data]);
+  const headerColumns = visibleColumns === "all" ? ticketColumns : ticketColumns.filter((column) =>
+    Array.from(visibleColumns).includes(column.key),
+  ) || [];
 
   const renderCell = useCallback(
-    (
-      ticket: { [x: string]: any; id: string; status: string | number },
-      columnKey: React.Key,
-    ) => {
-      const cellValue = ticket[columnKey as string];
+    (ticket: { [x: string]: any; id: string; status: string | number }, columnKey: React.Key) => {
+      const cellRenderers: Record<string, ReactNode> = {
+        id: <p>{ticket.id}</p>,
+        username: (
+          <div className="flex flex-col">
+            <p className="text-bold text-small capitalize">{ticket.username}</p>
+          </div>
+        ),
+        email: (
+          <div className="flex flex-col">
+            <p className="text-bold text-small">{ticket.email}</p>
+          </div>
+        ),
+        status: (
+          <Chip
+            className="gap-1 border-none capitalize text-default-600"
+            color={statusColorMap[ticket.status as TicketStatus]}
+            size="sm"
+            variant="dot"
+          >
+            {ticket.status}
+          </Chip>
+        ),
+        actions: (
+          <div className="relative flex items-center justify-end gap-2">
+            <Dropdown className="border-1 border-default-200 bg-background">
+              <DropdownTrigger>
+                <Button isIconOnly radius="full" size="sm" variant="light">
+                  <VerticalDotsIcon className="text-default-400" />
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu>
+                <DropdownItem key={"view"} href={`/tickets/${ticket?.id}`}>
+                  View
+                </DropdownItem>
+                <DropdownItem
+                  key={"delete"}
+                  onPress={() => {
+                    onOpen();
+                    setUserId(ticket.id);
+                  }}
+                >
+                  Delete
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+        ),
+      };
 
-      switch (columnKey) {
-        case "id":
-          return <p>{ticket.id}</p>;
-        case "username":
-          return (
-            <div className="flex flex-col">
-              <p className="text-bold text-small capitalize">{cellValue}</p>
-            </div>
-          );
-        case "email":
-          return (
-            <div className="flex flex-col">
-              <p className="text-bold text-small">{cellValue}</p>
-            </div>
-          );
-        case "status":
-          return (
-            <Chip
-              className="gap-1 border-none capitalize text-default-600"
-              color={statusColorMap[ticket.status]}
-              size="sm"
-              variant="dot"
-            >
-              {cellValue}
-            </Chip>
-          );
-        case "actions":
-          return (
-            <div className="relative flex items-center justify-end gap-2">
-              <Dropdown className="border-1 border-default-200 bg-background">
-                <DropdownTrigger>
-                  <Button isIconOnly radius="full" size="sm" variant="light">
-                    <VerticalDotsIcon className="text-default-400" />
-                  </Button>
-                </DropdownTrigger>
-                <DropdownMenu>
-                  <DropdownItem key={"view"} href={`/tickets/${ticket?.id}`}>
-                    View
-                  </DropdownItem>
-                  <DropdownItem
-                    key={"delete"}
-                    onPress={() => {
-                      onOpen();
-                      // setUsername(ticket.username);
-                      // setEmail(ticket.email);
-                      setUserId(ticket.id);
-                    }}
-                  >
-                    Delete
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </div>
-          );
-        default:
-          return cellValue as ReactNode;
-      }
+      return cellRenderers[columnKey as string] || ticket[columnKey as string];
     },
-    [userTicketsData.data],
+    [onOpen],
   );
+
+  // const renderCell = useCallback(
+  //   (
+  //     ticket: { [x: string]: any; id: string; status: string | number },
+  //     columnKey: React.Key,
+  //   ) => {
+  //     const cellValue = ticket[columnKey as string];
+
+  //     switch (columnKey) {
+  //       case "id":
+  //         return <p>{ticket.id}</p>;
+  //       case "username":
+  //         return (
+  //           <div className="flex flex-col">
+  //             <p className="text-bold text-small capitalize">{cellValue}</p>
+  //           </div>
+  //         );
+  //       case "email":
+  //         return (
+  //           <div className="flex flex-col">
+  //             <p className="text-bold text-small">{cellValue}</p>
+  //           </div>
+  //         );
+  //       case "status":
+  //         return (
+  //           <Chip
+  //             className="gap-1 border-none capitalize text-default-600"
+  //             color={statusColorMap[ticket.status]}
+  //             size="sm"
+  //             variant="dot"
+  //           >
+  //             {cellValue}
+  //           </Chip>
+  //         );
+  //       case "actions":
+  //         return (
+  //           <div className="relative flex items-center justify-end gap-2">
+  //             <Dropdown className="border-1 border-default-200 bg-background">
+  //               <DropdownTrigger>
+  //                 <Button isIconOnly radius="full" size="sm" variant="light">
+  //                   <VerticalDotsIcon className="text-default-400" />
+  //                 </Button>
+  //               </DropdownTrigger>
+  //               <DropdownMenu>
+  //                 <DropdownItem key={"view"} href={`/tickets/${ticket?.id}`}>
+  //                   View
+  //                 </DropdownItem>
+  //                 <DropdownItem
+  //                   key={"delete"}
+  //                   onPress={() => {
+  //                     onOpen();
+  //                     // setUsername(ticket.username);
+  //                     // setEmail(ticket.email);
+  //                     setUserId(ticket.id);
+  //                   }}
+  //                 >
+  //                   Delete
+  //                 </DropdownItem>
+  //               </DropdownMenu>
+  //             </Dropdown>
+  //           </div>
+  //         );
+  //       default:
+  //         return cellValue as ReactNode;
+  //     }
+  //   },
+  //   [userTicketsData.data],
+  // );
 
   const onRowsPerPageChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -192,14 +242,11 @@ export default function TicketsDashboard() {
     [],
   );
 
-  const onSearchChange = useCallback((value?: string) => {
-    if (value) {
-      setFilterValue(value);
-      setPage(1);
-    } else {
-      setFilterValue("");
-    }
+  const onSearchChange = useCallback((value: string = "") => {
+    setFilterValue(value);
+    setPage(1);
   }, []);
+
   const topContent = useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
@@ -341,17 +388,50 @@ export default function TicketsDashboard() {
   }, []);
 
   if (userTicketsData.isLoading) {
-    return <div>Loading tickets...</div>;
+    return (
+      <div className="m-auto mt-2 flex h-full max-w-7xl flex-col place-content-center items-start justify-center px-2 sm:px-10">
+        <h1>Tickets</h1>
+
+        <Table
+          isCompact
+          removeWrapper
+          aria-label="Loading table"
+          className="overflow-auto bg-white p-3"
+          topContent={topContent}
+        >
+          <TableHeader columns={headerColumns}>
+            {(column) => (
+              <TableColumn 
+                key={column.key}
+                align={column.key === "actions" ? "center" : "start"}
+                allowsSorting={column.sortable}
+              >
+                {column.label}
+              </TableColumn>
+            )}
+          </TableHeader>
+          <TableBody>
+            
+            <TableRow>
+              {Array.from({ length: 3 }).map((_, index) => (
+                <TableCell key={index}>
+                  <div className="h-32 w-full bg-gray-200 animate-pulse rounded"></div>
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableBody>
+          
+        </Table>
+      </div>
+    );
   }
 
   if (userTicketsData.isError) {
-    return <div>Error loading tickets</div>;
+    return <div className="flex justify-center items-center h-full text-red-500">Error loading tickets</div>;
   }
 
   return (
     <div className="m-auto mt-2 flex h-full max-w-7xl flex-col place-content-center items-start justify-center px-2 sm:px-10">
-      <h1>Tickets</h1>
-
       <Table
         isCompact
         removeWrapper
