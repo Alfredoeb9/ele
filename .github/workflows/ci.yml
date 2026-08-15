@@ -1,0 +1,43 @@
+name: Check Environment Secrets
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check-secrets:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Check GitHub secrets
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+          SRIPE_WEBHOOK_SECRET: ${{ secrets.SRIPE_WEBHOOK_SECRET }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+        run: |
+          echo "Checking GitHub Actions secrets..."
+
+          if [ -n "$DATABASE_URL" ]; then
+            echo "DATABASE_URL: SET"
+          else
+            echo "DATABASE_URL: NOT SET"
+          fi
+
+          if [ -n "$AUTH_TOKEN" ]; then
+            echo "AUTH_TOKEN: SET"
+          else
+            echo "AUTH_TOKEN: NOT SET"
+          fi
+
+          if [ -n "$SRIPE_WEBHOOK_SECRET" ]; then
+            echo "SRIPE_WEBHOOK_SECRET: SET"
+          else
+            echo "SRIPE_WEBHOOK_SECRET: NOT SET"
+          fi
+
+          if [ -n "$STRIPE_SECRET_KEY" ]; then
+            echo "STRIPE_SECRET_KEY: SET"
+          else
+            echo "STRIPE_SECRET_KEY: NOT SET"
+          fi
