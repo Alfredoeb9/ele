@@ -18,9 +18,7 @@ import { createRandomUUID, createToken, emailRegx } from "@/lib/utils/utils";
 // import { sentVerifyUserEmail } from "@/app/api/auth/[...nextauth]/mailer";
 import { env } from "@/env";
 
-const { sentVerifyUserEmail } = await import(
-  "@/app/api/auth/[...nextauth]/mailer"
-);
+
 
 export const userRouter = createTRPCRouter({
   create: publicProcedure
@@ -90,6 +88,10 @@ export const userRouter = createTRPCRouter({
           userId: newUser[0].id,
           balance: 0,
         });
+
+        const { sentVerifyUserEmail } = await import(
+          "@/app/api/auth/[...nextauth]/mailer"
+        );
 
         await sentVerifyUserEmail(newUser[0].email, fullName, link);
         return "success";
