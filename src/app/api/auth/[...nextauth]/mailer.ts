@@ -36,7 +36,7 @@ export async function sentVerifyUserEmail (toEmail: string, fullName: string, ur
   const subTxt = "";
   const mainLink = url;
 
-  const html = await createEmailTemplate("forgotPassword.html", {
+  const html = createEmailTemplate("forgotPassword.html", {
     fullName,
     content,
     title,
@@ -76,7 +76,7 @@ export async function sendResetPasswordLink (toEmail: string, fullName: string, 
   const subTxt = "";
   const mainLink = url;
 
-  const html = await createEmailTemplate("forgotPassword.html", {
+  const html = createEmailTemplate("forgotPassword.html", {
     fullName,
     content,
     title,
