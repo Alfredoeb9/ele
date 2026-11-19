@@ -242,7 +242,7 @@ export default function TicketsDashboard() {
     [],
   );
 
-  const onSearchChange = useCallback((value: string = "") => {
+  const onSearchChange = useCallback((value = "") => {
     setFilterValue(value);
     setPage(1);
   }, []);
