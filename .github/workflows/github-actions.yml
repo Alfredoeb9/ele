@@ -27,7 +27,7 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
-          SRIPE_WEBHOOK_SECRET: ${{ secrets.SRIPE_WEBHOOK_SECRET}}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET}}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
   test:
     strategy:
@@ -50,14 +50,14 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
-          SRIPE_WEBHOOK_SECRET: ${{ secrets.SRIPE_WEBHOOK_SECRET}}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET}}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
 
       - name: Build Next.js for E2E
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
-          SRIPE_WEBHOOK_SECRET: ${{ secrets.SRIPE_WEBHOOK_SECRET}}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET}}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
         run: npm run build
 

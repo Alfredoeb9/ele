@@ -44,7 +44,7 @@ export const env = createEnv({
     PRICE_ID_250: z.string(),
     SUB_PRICE_ID_PRICE: z.string(),
     STRIPE_SECRET_KEY: z.string(),
-    SRIPE_WEBHOOK_SECRET: z.string(),
+    STRIPE_WEBHOOK_SECRET: z.string(),
     AUTH_TOKEN: z.string(),
     ADD_CASH_5: z.string(),
     ADD_CASH_10: z.string(),
@@ -101,7 +101,7 @@ export const env = createEnv({
     ADD_CASH_100: process.env.ADD_CASH_100,
     NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
-    SRIPE_WEBHOOK_SECRET: process.env.SRIPE_WEBHOOK_SECRET,
+    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
   },

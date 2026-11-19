@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { and, eq, sql, desc } from "drizzle-orm";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import {
   followsTables,

@@ -6,8 +6,7 @@ import { eq } from "drizzle-orm";
 import { env } from "@/env";
 import { db } from "@/server/db";
 import { createTable, users } from "@/server/db/schema";
-import { compare } from "bcrypt";
-
+import { compare } from "bcryptjs";
 import validator from "validator";
 import { type DefaultSQLiteSchema } from "node_modules/@auth/drizzle-adapter/lib/sqlite";
 import Credentials from "next-auth/providers/credentials";

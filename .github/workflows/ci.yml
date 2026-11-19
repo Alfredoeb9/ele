@@ -13,7 +13,7 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
-          SRIPE_WEBHOOK_SECRET: ${{ secrets.SRIPE_WEBHOOK_SECRET }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
         run: |
           echo "Checking GitHub Actions secrets..."
@@ -30,10 +30,10 @@ jobs:
             echo "AUTH_TOKEN: NOT SET"
           fi
 
-          if [ -n "$SRIPE_WEBHOOK_SECRET" ]; then
-            echo "SRIPE_WEBHOOK_SECRET: SET"
+          if [ -n "$STRIPE_WEBHOOK_SECRET" ]; then
+            echo "STRIPE_WEBHOOK_SECRET: SET"
           else
-            echo "SRIPE_WEBHOOK_SECRET: NOT SET"
+            echo "STRIPE_WEBHOOK_SECRET: NOT SET"
           fi
 
           if [ -n "$STRIPE_SECRET_KEY" ]; then

@@ -121,13 +121,15 @@ export const TournamentMatchFinderTable = ({ data }: MatchListProps) => {
 
       const d1 = new Date(user.start_time!),
         d2 = new Date();
+      
+      const imageName = user.game.trim().toLowerCase().replaceAll(" ", "_");
 
       switch (columnKey) {
         case "game":
           return (
             <div>
               <Image
-                src={`/images/${user.game}.png`} // Route of the image file
+                src={`/images/${imageName}.png`} // Route of the image file
                 height={40} // Desired size with correct aspect ratio
                 width={40} // Desired size with correct aspect ratio
                 alt={`${user.game} placeholder image`}
