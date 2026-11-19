@@ -13,7 +13,7 @@
     "dev:wss": "cross-env PORT=3001 tsx watch src/server/websocket/socket.ts --tsconfig tsconfig.server.json ",
     "lint": "next lint",
     "start": "next start",
-    "stripe:listen": "stripe listen --forward-to localhost:3000/api/stripe-credits",
+    "stripe:listen": "stripe listen --forward-to localhost:3000/api/stripe-credits --events checkout.session.completed",
     "stripe:sub-listen": "stripe listen --forward-to localhost:3000/api/stripe-subscription",
     "stripe:add-cash": "stripe listen --forward-to localhost:3000/api/stripe-add-cash"
   },

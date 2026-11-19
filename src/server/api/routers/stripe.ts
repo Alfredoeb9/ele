@@ -35,7 +35,7 @@ export const stripeRouter = createTRPCRouter({
 
         // Step 2: Calculate new balance by adding payment amount
         // Convert payment amount from cents to dollars if needed
-        const paymentAmountDollars = input.paymentIntent;
+        const paymentAmountDollars = input.paymentIntent / 100;        
         const newBalance = currentBalance + paymentAmountDollars;
 
         console.log("newBalance", newBalance);
