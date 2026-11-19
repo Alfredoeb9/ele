@@ -15,8 +15,12 @@ import {
   verificationTokens,
 } from "@/server/db/schema";
 import { createRandomUUID, createToken, emailRegx } from "@/lib/utils/utils";
-import { sentVerifyUserEmail } from "@/app/api/auth/[...nextauth]/mailer";
+// import { sentVerifyUserEmail } from "@/app/api/auth/[...nextauth]/mailer";
 import { env } from "@/env";
+
+const { sentVerifyUserEmail } = await import(
+  "@/app/api/auth/[...nextauth]/mailer"
+);
 
 export const userRouter = createTRPCRouter({
   create: publicProcedure

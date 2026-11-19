@@ -86,6 +86,6 @@
   },
   "packageManager": "npm@10.2.3",
   "engines": {
-    "node": ">=22.x"
+    "node": "22.x"
   }
 }
